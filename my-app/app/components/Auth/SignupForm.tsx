@@ -2,8 +2,8 @@
 
 import { useState, FormEvent } from "react";
 import Link from "next/link";
-import Input from "./ui/Input";
-import Button from "./ui/Button";
+import Input from "../ui/Input";
+import Button from "../ui/Button";
 
 export default function SignupForm() {
   const [fullName, setFullName] = useState("");
@@ -36,7 +36,7 @@ export default function SignupForm() {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log("Signup:", { fullName, email });
       // Redirect or show success message
-    } catch (err) {
+    } catch {
       setError("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
@@ -107,7 +107,10 @@ export default function SignupForm() {
 
         <p className="text-center text-sm text-gray-600">
           Have an account?{" "}
-          <Link href="/login" className="text-gray-900 font-medium hover:underline">
+          <Link
+            href="/login"
+            className="text-gray-900 font-medium hover:underline"
+          >
             Login
           </Link>
         </p>
@@ -115,4 +118,3 @@ export default function SignupForm() {
     </div>
   );
 }
-

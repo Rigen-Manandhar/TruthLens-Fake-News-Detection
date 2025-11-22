@@ -31,6 +31,7 @@ export default function NewsCard({ article }: NewsCardProps) {
     <article className="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 h-full flex flex-col">
       {article.urlToImage && (
         <div className="relative w-full h-48 bg-gray-200 overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={article.urlToImage}
             alt={article.title}
@@ -38,7 +39,7 @@ export default function NewsCard({ article }: NewsCardProps) {
           />
         </div>
       )}
-      <div className="p-4 md:p-5 flex flex-col flex-grow">
+      <div className="p-4 md:p-5 flex flex-col grow">
         <div className="flex items-center justify-between mb-3">
           <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-medium text-blue-700">
             {article.source.name}
@@ -51,7 +52,7 @@ export default function NewsCard({ article }: NewsCardProps) {
           {article.title}
         </h3>
         {article.description && (
-          <p className="text-sm text-gray-600 mb-4 line-clamp-3 flex-grow">
+          <p className="text-sm text-gray-600 mb-4 line-clamp-3 grow">
             {article.description}
           </p>
         )}

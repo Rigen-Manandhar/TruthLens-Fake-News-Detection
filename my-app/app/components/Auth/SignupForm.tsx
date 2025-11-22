@@ -44,7 +44,8 @@ export default function SignupForm() {
   };
 
   return (
-    <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
           Create your account
@@ -115,6 +116,7 @@ export default function SignupForm() {
           </Link>
         </p>
       </form>
+      </div>
     </div>
   );
 }

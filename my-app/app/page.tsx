@@ -9,7 +9,8 @@ export default function Home() {
             Welcome to TruthLens
           </h1>
           <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
-            AI-powered fake media detection to help you identify and verify news content
+            AI-powered fake media detection to help you identify and verify news
+            content
           </p>
           <div className="flex gap-4 justify-center">
             <Link

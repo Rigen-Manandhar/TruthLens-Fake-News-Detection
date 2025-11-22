@@ -1,6 +1,6 @@
-import LoginForm from "../components/Auth/LoginForm";
+import LoginForm from "../components/auth/LoginForm";
 
-export default function SignupPage() {
+export default function LoginPage() {
   return (
     <div>
       <LoginForm />

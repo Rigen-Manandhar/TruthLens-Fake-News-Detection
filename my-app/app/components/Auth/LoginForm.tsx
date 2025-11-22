@@ -5,7 +5,7 @@ import Link from "next/link";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 
-export default function LoginPage() {
+export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);

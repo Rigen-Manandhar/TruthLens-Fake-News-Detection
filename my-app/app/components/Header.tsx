@@ -1,23 +1,54 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import Logo from "./ui/Logo";
 
 export default function Header() {
+  const pathname = usePathname();
+  const isNews = pathname === "/" || pathname === "";
+  const isFake = pathname?.startsWith("/fake-detection");
+
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Logo />
-        <nav className="flex items-center gap-4">
+    <header className="fixed top-0 inset-x-0 z-50 border-b border-gray-100 bg-white/80 backdrop-blur-md">
+      <div className="max-w-6xl xl:max-w-7xl mx-auto flex items-center justify-between gap-6 px-4 sm:px-6 py-3.5">
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <Logo />
+        </div>
+
+        {/* Center navigation */}
+        <nav className="hidden md:flex items-center justify-center gap-8 text-sm text-gray-600">
           <Link
-            href="/signup"
-            className="px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            href="/"
+            className={`transition-colors ${
+              isNews ? "font-semibold text-gray-900" : "hover:text-gray-900"
+            }`}
           >
-            Signup
+            News
           </Link>
           <Link
-            href="/login"
-            className="px-5 py-2 text-gray-900 text-sm font-medium hover:text-gray-600 transition-colors"
+            href="/fake-detection"
+            className={`transition-colors ${
+              isFake ? "font-semibold text-gray-900" : "hover:text-gray-900"
+            }`}
           >
-            Login
+            Fake News Detection
+          </Link>
+        </nav>
+
+        {/* Auth actions */}
+        <nav className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <Link
+            href="/login"
+            className="hidden sm:inline-flex items-center px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+          >
+            Log in
+          </Link>
+          <Link
+            href="/signup"
+            className="inline-flex items-center px-4 sm:px-5 py-2 rounded-full bg-gray-900 text-white text-xs sm:text-sm font-semibold hover:bg-black transition-colors shadow-sm"
+          >
+            Get started
           </Link>
         </nav>
       </div>

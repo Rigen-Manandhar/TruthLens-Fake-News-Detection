@@ -44,14 +44,13 @@ export default function SignupForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+    <div className="w-full max-w-md rounded-2xl bg-white/90 backdrop-blur border border-gray-100 shadow-lg p-8 sm:p-9">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
           Create your account
         </h1>
         <p className="text-sm text-gray-500">
-          Join TruthLens to personalize your feed
+          Join TruthLens to personalise your news feed.
         </p>
       </div>
 
@@ -103,20 +102,19 @@ export default function SignupForm() {
         )}
 
         <Button type="submit" disabled={isLoading} className="mt-2">
-          {isLoading ? "Creating Account..." : "Create Account"}
+          {isLoading ? "Creating account..." : "Create account"}
         </Button>
 
-        <p className="text-center text-sm text-gray-600">
-          Have an account?{" "}
+        <p className="text-center text-sm text-gray-600 mt-3">
+          Already have an account?{" "}
           <Link
             href="/login"
             className="text-gray-900 font-medium hover:underline"
           >
-            Login
+            Log in
           </Link>
         </p>
       </form>
-      </div>
     </div>
   );
 }

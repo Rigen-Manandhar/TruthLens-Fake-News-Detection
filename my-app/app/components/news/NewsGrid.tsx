@@ -15,9 +15,10 @@ interface NewsArticle {
 }
 
 interface NewsResponse {
-  articles: NewsArticle[];
-  status: string;
-  totalResults: number;
+  articles?: NewsArticle[];
+  status?: string;
+  totalResults?: number;
+  error?: string;
 }
 
 interface NewsGridProps {
@@ -58,7 +59,7 @@ export default function NewsGrid({
         const data: NewsResponse = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.status || "Failed to fetch news");
+          throw new Error(data.error || data.status || "Failed to fetch news");
         }
 
         setNews(data.articles || []);
@@ -109,4 +110,3 @@ export default function NewsGrid({
     </div>
   );
 }
-

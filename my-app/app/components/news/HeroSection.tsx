@@ -49,7 +49,7 @@ export default function HeroSection({
           </h1>
           <p className="text-sm sm:text-base text-gray-600 mb-7 max-w-xl">
             Curated headlines and deep dives across technology, business and
-            world affairs, sports and culture – updated in realtime.
+            world affairs, sports and culture, updated in real time.
           </p>
 
           {/* Search bar */}

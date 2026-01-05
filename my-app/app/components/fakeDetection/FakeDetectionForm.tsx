@@ -49,10 +49,6 @@ export default function FakeDetectionForm({
         />
       </div>
 
-      <p className="mb-4 text-[11px] text-gray-500">
-        The fine‑tuned model will analyse only text and URLs – no files needed.
-      </p>
-
       <div className="space-y-2 mb-4">
         <label
           htmlFor="sourceUrl"
@@ -86,5 +82,3 @@ export default function FakeDetectionForm({
     </form>
   );
 }
-
-

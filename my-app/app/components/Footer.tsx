@@ -10,7 +10,7 @@ export default function Footer() {
           <span className="hover:text-gray-700 cursor-default">Terms</span>
         </div>
         <div className="text-gray-400">
-          © {new Date().getFullYear()} TruthLens Media
+          (c) {new Date().getFullYear()} TruthLens Media
         </div>
       </div>
     </footer>

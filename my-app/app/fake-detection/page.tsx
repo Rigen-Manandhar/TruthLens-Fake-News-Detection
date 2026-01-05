@@ -7,11 +7,27 @@ import Footer from "../components/Footer";
 
 type CredibilityLevel = "high" | "mixed" | "low";
 
+type PredictResponse = {
+  label: string;
+  confidence: number;
+};
+
+const mapLabelToLevel = (label: string): CredibilityLevel => {
+  const l = (label || "").toLowerCase();
+
+  // Adjust these if your backend uses different label names
+  if (l.includes("fake") || l.includes("false")) return "low";
+  if (l.includes("real") || l.includes("true")) return "high";
+
+  return "mixed";
+};
+
 export default function FakeDetectionPage() {
   const [articleText, setArticleText] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const [resultLevel, setResultLevel] = useState<CredibilityLevel>("mixed");
   const [resultLabel, setResultLabel] = useState("Mixed credibility");
   const [resultDetails, setResultDetails] = useState(
@@ -26,46 +42,52 @@ export default function FakeDetectionPage() {
       return;
     }
 
+    // Since you said you'll mainly use /predict-text, require text
+    if (!articleText.trim()) {
+      setError("Please enter some article text to analyse.");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      // TODO: Replace this mock with a real call to your FastAPI (or other) backend.
-      // Example:
-      // const response = await fetch(process.env.NEXT_PUBLIC_FAKE_API_URL!, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ text: articleText, url: sourceUrl }),
-      // });
-      // const data = await response.json();
-      // setResultLevel(data.level);
-      // setResultLabel(data.label);
-      // setResultDetails(data.details);
+      // Calls your Next.js proxy route: app/api/predict/route.ts
+      const res = await fetch("/api/predict", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: articleText,
+      });
 
-      await new Promise((resolve) => setTimeout(resolve, 700));
+      if (!res.ok) {
+        const msg = await res.text();
+        throw new Error(msg || "Prediction failed");
+      }
 
-      const lower = articleText.toLowerCase();
-      let level: CredibilityLevel = "mixed";
-      let label = "Mixed credibility";
+      const data = (await res.json()) as PredictResponse;
+
+      const level = mapLabelToLevel(data.label);
+      const pct = (data.confidence * 100).toFixed(2);
+
       let details =
-        "Some signals suggest this content may mix factual reporting with opinion or unverified claims. Treat with caution and cross‑check with reputable sources.";
+        level === "high"
+          ? `Model thinks this looks like legitimate reporting.\nConfidence: ${pct}%.\n\nTip: Cross-check key claims with another reputable outlet.`
+          : level === "low"
+          ? `Model flags this as likely misinformation.\nConfidence: ${pct}%.\n\nTip: Check the source, date, and whether other outlets confirm it.`
+          : `Model is uncertain / mixed.\nConfidence: ${pct}%.\n\nTip: The text may be missing context; verify with multiple sources.`;
 
-      if (lower.includes("breaking") || lower.includes("shocking")) {
-        level = "low";
-        label = "Potentially misleading";
-        details =
-          "The language in this article uses sensational phrases often associated with clickbait or low‑credibility sources. Verify key claims with multiple trusted outlets.";
-      } else if (lower.includes("report") || lower.includes("according to")) {
-        level = "high";
-        label = "Likely credible";
-        details =
-          "The writing style and phrasing resemble conventional reporting. Still, always check the original publisher and look for independent confirmation.";
+      if (sourceUrl.trim()) {
+        details += `\n\nSource URL provided: ${sourceUrl}\n(Note: current model call uses text only.)`;
       }
 
       setResultLevel(level);
-      setResultLabel(label);
+      setResultLabel(`${data.label} (${pct}%)`);
       setResultDetails(details);
-    } catch {
-      setError("Something went wrong while analysing. Please try again.");
+    } catch (e: unknown) {
+      const message =
+        e instanceof Error
+          ? e.message
+          : "Something went wrong while analysing. Please try again.";
+      setError(message);
     } finally {
       setIsLoading(false);
     }
@@ -81,11 +103,6 @@ export default function FakeDetectionPage() {
           <h1 className="text-3xl sm:text-[2.3rem] font-semibold text-gray-900 leading-tight tracking-tight">
             Fake News Detection
           </h1>
-          <p className="text-sm sm:text-base text-gray-600 max-w-2xl">
-            Paste an article excerpt and an optional source URL to get an
-            AI-assisted credibility preview. Later, this will connect to your
-            FastAPI backend for full model scoring.
-          </p>
         </header>
 
         <section className="grid gap-6 lg:grid-cols-2 items-start">

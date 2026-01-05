@@ -7,16 +7,11 @@ export async function GET(request: Request) {
   const pageSize = searchParams.get("pageSize") || "20";
   const query = searchParams.get("q") || "";
 
-  // Try to read from env; fall back to the provided key so things \"just work\" in dev
-  const apiKey =
-    process.env.NEWS_API_KEY ||
-    process.env.NEXT_PUBLIC_NEWS_API_KEY ||
-    "8eaafb90d974456abf01ea845aa4e78d";
-
-  // NOTE: In production you should rely on env vars only and remove the hard-coded fallback above.
+  
+  const apiKey = process.env.NEWS_API_KEY;
 
   try {
-    // Build the NewsAPI URL
+    // NewsAPI URL
     let url = `https://newsapi.org/v2/top-headlines?country=${country}&pageSize=${pageSize}&apiKey=${apiKey}`;
 
     if (category) {
@@ -49,4 +44,3 @@ export async function GET(request: Request) {
     );
   }
 }
-

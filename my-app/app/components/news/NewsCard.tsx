@@ -62,7 +62,7 @@ export default function NewsCard({ article }: NewsCardProps) {
           rel="noopener noreferrer"
           className="text-sm font-medium text-blue-600 hover:text-blue-700 mt-auto text-left"
         >
-          Read more →
+          Read more
         </Link>
       </div>
     </article>

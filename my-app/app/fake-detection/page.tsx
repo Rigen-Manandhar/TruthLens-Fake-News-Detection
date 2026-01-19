@@ -10,6 +10,8 @@ type CredibilityLevel = "high" | "mixed" | "low";
 type PredictResponse = {
   label: string;
   confidence: number;
+  explanation?: [string, number][];
+  explanation_html?: string;
 };
 
 const mapLabelToLevel = (label: string): CredibilityLevel => {
@@ -33,6 +35,8 @@ export default function FakeDetectionPage() {
   const [resultDetails, setResultDetails] = useState(
     "Paste some text and a source URL, then run an analysis to see a preview of credibility insights."
   );
+  const [explanation, setExplanation] = useState<[string, number][] | undefined>(undefined);
+  const [analyzedText, setAnalyzedText] = useState<string | undefined>(undefined);
 
   const analyze = async () => {
     setError(null);
@@ -72,8 +76,8 @@ export default function FakeDetectionPage() {
         level === "high"
           ? `Model thinks this looks like legitimate reporting.\nConfidence: ${pct}%.\n\nTip: Cross-check key claims with another reputable outlet.`
           : level === "low"
-          ? `Model flags this as likely misinformation.\nConfidence: ${pct}%.\n\nTip: Check the source, date, and whether other outlets confirm it.`
-          : `Model is uncertain / mixed.\nConfidence: ${pct}%.\n\nTip: The text may be missing context; verify with multiple sources.`;
+            ? `Model flags this as likely misinformation.\nConfidence: ${pct}%.\n\nTip: Check the source, date, and whether other outlets confirm it.`
+            : `Model is uncertain / mixed.\nConfidence: ${pct}%.\n\nTip: The text may be missing context; verify with multiple sources.`;
 
       if (sourceUrl.trim()) {
         details += `\n\nSource URL provided: ${sourceUrl}\n(Note: current model call uses text only.)`;
@@ -82,6 +86,8 @@ export default function FakeDetectionPage() {
       setResultLevel(level);
       setResultLabel(`${data.label} (${pct}%)`);
       setResultDetails(details);
+      setExplanation(data.explanation);
+      setAnalyzedText(articleText); // Store the text that was analyzed
     } catch (e: unknown) {
       const message =
         e instanceof Error
@@ -120,6 +126,8 @@ export default function FakeDetectionPage() {
             level={resultLevel}
             label={resultLabel}
             details={resultDetails}
+            explanation={explanation}
+            analyzedText={analyzedText}
           />
         </section>
 

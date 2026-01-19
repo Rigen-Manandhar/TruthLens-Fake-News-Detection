@@ -25,7 +25,7 @@ export default function FakeDetectionForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex h-full flex-col rounded-3xl bg-white/90 backdrop-blur border border-gray-100 shadow-lg px-6 sm:px-8 py-6 sm:py-7"
+      className="flex flex-col rounded-3xl bg-white/90 backdrop-blur border border-gray-100 shadow-lg px-6 sm:px-8 py-6 sm:py-7 h-[550px]"
     >
       <div className="space-y-1.5 mb-4">
         <label
@@ -45,7 +45,7 @@ export default function FakeDetectionForm({
           value={articleText}
           onChange={(e) => onArticleChange(e.target.value)}
           placeholder="Paste article text here..."
-          className="h-40 w-full resize-none rounded-2xl border border-gray-200 bg-gray-50/60 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="h-full w-full resize-none rounded-2xl border border-gray-200 bg-gray-50/60 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
@@ -75,7 +75,7 @@ export default function FakeDetectionForm({
       <button
         type="submit"
         disabled={isLoading}
-        className="mt-auto inline-flex h-11 items-center justify-center rounded-full bg-blue-600 px-8 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-auto inline-flex h-11 items-center justify-center rounded-full bg-blue-600 px-8 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60 shrink-0"
       >
         {isLoading ? "Analyzing..." : "Analyze"}
       </button>

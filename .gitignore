@@ -17,8 +17,8 @@ coverage/
 .next/
 out/
 
-#Backend
-Backend/
+
+
 
 # production
 build/

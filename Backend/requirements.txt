@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pydantic
+torch
+transformers
+peft
+python-dotenv
+lime
+numpy
+scikit-learn

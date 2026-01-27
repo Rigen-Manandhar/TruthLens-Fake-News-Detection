@@ -25,7 +25,7 @@ export default function FakeDetectionForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col rounded-3xl bg-white/90 backdrop-blur border border-gray-100 shadow-lg px-6 sm:px-8 py-6 sm:py-7 h-[550px]"
+      className="flex flex-col rounded-3xl bg-white/90 backdrop-blur border border-gray-100 shadow-lg px-6 sm:px-8 py-6 sm:py-7 h-[600px]"
     >
       <div className="space-y-1.5 mb-4">
         <label

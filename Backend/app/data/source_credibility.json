@@ -1,0 +1,52 @@
+[
+    {
+        "domain": "cnn.com",
+        "type": "REAL",
+        "credibility": "High"
+    },
+    {
+        "domain": "reuters.com",
+        "type": "REAL",
+        "credibility": "High"
+    },
+    {
+        "domain": "bbc.com",
+        "type": "REAL",
+        "credibility": "High"
+    },
+    {
+        "domain": "nytimes.com",
+        "type": "REAL",
+        "credibility": "High"
+    },
+    {
+        "domain": "theonion.com",
+        "type": "SATIRE",
+        "credibility": "Low"
+    },
+    {
+        "domain": "babylonbee.com",
+        "type": "SATIRE",
+        "credibility": "Low"
+    },
+    {
+        "domain": "infowars.com",
+        "type": "FAKE",
+        "credibility": "Very Low"
+    },
+    {
+        "domain": "naturalnews.com",
+        "type": "FAKE",
+        "credibility": "Very Low"
+    },
+    {
+        "domain": "breitbart.com",
+        "type": "BIASED",
+        "credibility": "Mixed"
+    },
+    {
+        "domain": "xn--bbc-p98d.com",
+        "type": "FAKE",
+        "credibility": "Very Low"
+    }
+]

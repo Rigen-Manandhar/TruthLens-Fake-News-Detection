@@ -14,6 +14,8 @@ venv/
 #env ignore
 .env
 
+
+
 # Distribution / packaging
 .Python
 build/

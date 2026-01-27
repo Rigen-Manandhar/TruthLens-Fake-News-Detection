@@ -7,20 +7,26 @@ import Footer from "../components/Footer";
 
 type CredibilityLevel = "high" | "mixed" | "low";
 
+type Step = {
+  step: string;
+  score_impact: number;
+  details: string;
+  sentence_preview?: string;
+};
+
 type PredictResponse = {
-  label: string;
-  confidence: number;
+  final_score: number;
+  verdict: string;
+  risk_level: string;
+  steps: Step[];
   explanation?: [string, number][];
   explanation_html?: string;
 };
 
-const mapLabelToLevel = (label: string): CredibilityLevel => {
-  const l = (label || "").toLowerCase();
-
-  // Adjust these if your backend uses different label names
-  if (l.includes("fake") || l.includes("false")) return "low";
-  if (l.includes("real") || l.includes("true")) return "high";
-
+const mapVerdictToLevel = (verdict: string): CredibilityLevel => {
+  const v = verdict.toUpperCase();
+  if (v === "SUSPICIOUS") return "low";
+  if (v === "LIKELY REAL") return "high";
   return "mixed";
 };
 
@@ -31,35 +37,38 @@ export default function FakeDetectionPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [resultLevel, setResultLevel] = useState<CredibilityLevel>("mixed");
-  const [resultLabel, setResultLabel] = useState("Mixed credibility");
+  const [resultLabel, setResultLabel] = useState("Input Text or URL to detect if the news is Fake or Real");
   const [resultDetails, setResultDetails] = useState(
     "Paste some text and a source URL, then run an analysis to see a preview of credibility insights."
   );
+  // We'll treat 'explanation' as 'steps' for now, but better to update the Result component next.
+  // For now, I will pass steps as "details" text formatted nicely.
+  const [steps, setSteps] = useState<Step[] | undefined>(undefined);
   const [explanation, setExplanation] = useState<[string, number][] | undefined>(undefined);
   const [analyzedText, setAnalyzedText] = useState<string | undefined>(undefined);
 
   const analyze = async () => {
     setError(null);
 
+    // Require either text or URL
     if (!articleText.trim() && !sourceUrl.trim()) {
       setError("Please enter some article text or a source URL to analyse.");
       return;
     }
 
-    // Since you said you'll mainly use /predict-text, require text
-    if (!articleText.trim()) {
-      setError("Please enter some article text to analyse.");
-      return;
-    }
-
     setIsLoading(true);
+    setSteps(undefined);
+    setExplanation(undefined);
+    setAnalyzedText(undefined);
 
     try {
-      // Calls your Next.js proxy route: app/api/predict/route.ts
       const res = await fetch("/api/predict", {
         method: "POST",
-        headers: { "Content-Type": "text/plain" },
-        body: articleText,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: articleText,
+          url: sourceUrl
+        }),
       });
 
       if (!res.ok) {
@@ -69,25 +78,15 @@ export default function FakeDetectionPage() {
 
       const data = (await res.json()) as PredictResponse;
 
-      const level = mapLabelToLevel(data.label);
-      const pct = (data.confidence * 100).toFixed(2);
-
-      let details =
-        level === "high"
-          ? `Model thinks this looks like legitimate reporting.\nConfidence: ${pct}%.\n\nTip: Cross-check key claims with another reputable outlet.`
-          : level === "low"
-            ? `Model flags this as likely misinformation.\nConfidence: ${pct}%.\n\nTip: Check the source, date, and whether other outlets confirm it.`
-            : `Model is uncertain / mixed.\nConfidence: ${pct}%.\n\nTip: The text may be missing context; verify with multiple sources.`;
-
-      if (sourceUrl.trim()) {
-        details += `\n\nSource URL provided: ${sourceUrl}\n(Note: current model call uses text only.)`;
-      }
+      const level = mapVerdictToLevel(data.verdict);
 
       setResultLevel(level);
-      setResultLabel(`${data.label} (${pct}%)`);
-      setResultDetails(details);
+      setResultLabel(`${data.verdict}`);
+      setResultDetails("");
+      setSteps(data.steps);
       setExplanation(data.explanation);
-      setAnalyzedText(articleText); // Store the text that was analyzed
+      setAnalyzedText(articleText);
+
     } catch (e: unknown) {
       const message =
         e instanceof Error
@@ -126,6 +125,7 @@ export default function FakeDetectionPage() {
             level={resultLevel}
             label={resultLabel}
             details={resultDetails}
+            steps={steps}
             explanation={explanation}
             analyzedText={analyzedText}
           />

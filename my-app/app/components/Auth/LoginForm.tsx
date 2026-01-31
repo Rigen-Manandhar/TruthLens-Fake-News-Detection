@@ -1,28 +1,44 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import Link from "next/link";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 
 export default function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
     setIsLoading(true);
 
-    // TODO: Implement actual login logic
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Login:", { email });
-      // Redirect or show success message
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        toast.error(data.error ?? "Invalid email or password.");
+        return;
+      }
+
+      toast.success("Welcome back.");
+      window.dispatchEvent(new Event("auth-changed"));
+      router.push("/");
     } catch {
-      setError("Invalid email or password");
+      toast.error("Network error. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -59,12 +75,6 @@ export default function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-
-        {error && (
-          <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">
-            {error}
-          </p>
-        )}
 
         <Button type="submit" disabled={isLoading} className="mt-2">
           {isLoading ? "Logging in..." : "Continue"}

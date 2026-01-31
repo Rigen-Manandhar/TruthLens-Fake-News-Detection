@@ -1,43 +1,59 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import Link from "next/link";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 
 export default function SignupForm() {
+  const router = useRouter();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
 
     // Basic validation
     if (password.length < 8) {
-      setError("Password must be at least 8 characters");
+      toast.error("Password must be at least 8 characters.");
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      toast.error("Passwords do not match.");
       return;
     }
 
     setIsLoading(true);
 
-    // TODO: Implement actual signup logic
     try {
-      // Placeholder for API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Signup:", { fullName, email });
-      // Redirect or show success message
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: fullName.trim(),
+          email: email.trim(),
+          password,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        toast.error(data.error ?? "Signup failed. Please try again.");
+        return;
+      }
+
+      toast.success("Account created. Welcome to TruthLens.");
+      window.dispatchEvent(new Event("auth-changed"));
+      router.push("/");
     } catch {
-      setError("Something went wrong. Please try again.");
+      toast.error("Network error. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -94,12 +110,6 @@ export default function SignupForm() {
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
-
-        {error && (
-          <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">
-            {error}
-          </p>
-        )}
 
         <Button type="submit" disabled={isLoading} className="mt-2">
           {isLoading ? "Creating account..." : "Create account"}

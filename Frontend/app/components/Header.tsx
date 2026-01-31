@@ -123,13 +123,14 @@ export default function Header() {
     }
   };
 
-  const rawInitial = user?.fullName?.trim()?.[0] ?? user?.email?.trim()?.[0] ?? "U";
+  const rawInitial =
+    user?.fullName?.trim()?.[0] ?? user?.email?.trim()?.[0] ?? "U";
   const avatarInitial = rawInitial.toUpperCase();
 
   return (
     <header className="fixed top-0 inset-x-0 z-50 border-b border-gray-100 bg-white/80 backdrop-blur-md">
       <div className="max-w-6xl xl:max-w-7xl mx-auto flex items-center justify-between gap-6 px-4 sm:px-6 py-3.5">
-        <div className="flex items-center gap-3 flex-shrink-0">
+        <div className="flex items-center gap-3">
           <Logo />
         </div>
 
@@ -154,7 +155,7 @@ export default function Header() {
         </nav>
 
         {/* Auth actions */}
-        <nav className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        <nav className="flex items-center gap-2 sm:gap-3">
           {isLoadingUser ? (
             <div
               className="h-9 w-9 rounded-full bg-gray-100 animate-pulse"

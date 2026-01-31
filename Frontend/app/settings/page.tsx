@@ -1,6 +1,6 @@
 export default function SettingsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-100 pt-20">
+    <div className="min-h-screen from-gray-50 via-white to-gray-100 pt-20">
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         <div className="space-y-3">
           <p className="text-xs font-semibold tracking-[0.2em] text-gray-400 uppercase">

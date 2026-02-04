@@ -14,6 +14,7 @@ interface FakeDetectionResultProps {
   steps?: Step[];
   explanation?: [string, number][];
   analyzedText?: string;
+  explanationClass?: string;
 }
 
 const levelStyles: Record<CredibilityLevel, string> = {
@@ -29,12 +30,25 @@ export default function FakeDetectionResult({
   steps,
   explanation,
   analyzedText,
+  explanationClass,
 }: FakeDetectionResultProps) {
 
   // Helper to render text with inline highlights for LIME
   const renderHighlightedText = () => {
     if (!analyzedText || !explanation || explanation.length === 0) {
       return null;
+    }
+
+    const normalizedClass = (explanationClass ?? "").toUpperCase();
+    let colorMode: "fake" | "real" | "neutral" = "neutral";
+    if (normalizedClass.includes("FAKE") || normalizedClass.includes("FALSE")) {
+      colorMode = "fake";
+    } else if (normalizedClass.includes("REAL") || normalizedClass.includes("TRUE")) {
+      colorMode = "real";
+    } else if (level === "low") {
+      colorMode = "fake";
+    } else if (level === "high") {
+      colorMode = "real";
     }
 
     // Create a map for quick lookup: word (lowercase) -> weight
@@ -57,30 +71,20 @@ export default function FakeDetectionResult({
 
             if (weight !== undefined) {
               // Word has a LIME weight - highlight it
-              const isPositive = weight > 0;
-              // For Fake/Real classification:
-              // If model says FAKE (Low Credibility): Positive weight contributes to Fake.
-              // If model says REAL (High Credibility): Positive weight contributes to Real.
-              // Let's color code based on "contribution to current decision".
-
-              // Actually, standard LIME colors: green for supported class, red for opposed.
-              // But here we want simple visual cues.
-              // Let's stick to Green = Real/Safe, Red = Fake/Risky.
-              // If verdict is FAKE, positive weights pushed it towards Fake -> Red.
-              // If verdict is REAL, positive weights pushed it towards Real -> Green.
+              const isPositive = weight >= 0;
 
               let bgColor = "transparent";
               let textColor = "inherit";
 
-              if (level === 'low') { // Verdict: Fake
-                if (weight > 0) { bgColor = "rgba(239, 68, 68, 0.2)"; textColor = "#991b1b"; } // Contributes to Fake -> Red
-                else { bgColor = "rgba(34, 197, 94, 0.2)"; textColor = "#166534"; } // Opposes Fake -> Green
-              } else if (level === 'high') { // Verdict: Real
-                if (weight > 0) { bgColor = "rgba(34, 197, 94, 0.2)"; textColor = "#166534"; } // Contributes to Real -> Green
-                else { bgColor = "rgba(239, 68, 68, 0.2)"; textColor = "#991b1b"; } // Opposes Real -> Red
+              if (colorMode === "fake") {
+                if (isPositive) { bgColor = "rgba(239, 68, 68, 0.2)"; textColor = "#991b1b"; }
+                else { bgColor = "rgba(34, 197, 94, 0.2)"; textColor = "#166534"; }
+              } else if (colorMode === "real") {
+                if (isPositive) { bgColor = "rgba(34, 197, 94, 0.2)"; textColor = "#166534"; }
+                else { bgColor = "rgba(239, 68, 68, 0.2)"; textColor = "#991b1b"; }
               } else {
-                // Mixed
-                bgColor = "rgba(156, 163, 175, 0.2)";
+                if (isPositive) { bgColor = "rgba(34, 197, 94, 0.2)"; textColor = "#166534"; }
+                else { bgColor = "rgba(239, 68, 68, 0.2)"; textColor = "#991b1b"; }
               }
 
               return (

@@ -39,6 +39,7 @@ class PredictResponse(BaseModel):
     steps: list[StepDetail]
     explanation: list[tuple[str, float]] | None = None
     explanation_html: str | None = None
+    article_class: str | None = None
 
 @app.on_event("startup")
 def startup():
@@ -92,7 +93,8 @@ def predict(req: PredictRequest):
             risk_level=report_dict["risk_level"],
             steps=report_dict["steps"],
             explanation=explanation_list,
-            explanation_html=explanation_html
+            explanation_html=explanation_html,
+            article_class=report_dict.get("article_class")
         )
     except Exception as e:
         print(f"Error during analysis: {e}")

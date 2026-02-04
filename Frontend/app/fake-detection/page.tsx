@@ -21,6 +21,7 @@ type PredictResponse = {
   steps: Step[];
   explanation?: [string, number][];
   explanation_html?: string;
+  article_class?: string;
 };
 
 const mapVerdictToLevel = (verdict: string): CredibilityLevel => {
@@ -46,6 +47,7 @@ export default function FakeDetectionPage() {
   const [steps, setSteps] = useState<Step[] | undefined>(undefined);
   const [explanation, setExplanation] = useState<[string, number][] | undefined>(undefined);
   const [analyzedText, setAnalyzedText] = useState<string | undefined>(undefined);
+  const [explanationClass, setExplanationClass] = useState<string | undefined>(undefined);
 
   const analyze = async () => {
     setError(null);
@@ -60,6 +62,7 @@ export default function FakeDetectionPage() {
     setSteps(undefined);
     setExplanation(undefined);
     setAnalyzedText(undefined);
+    setExplanationClass(undefined);
 
     try {
       const res = await fetch("/api/predict", {
@@ -86,6 +89,7 @@ export default function FakeDetectionPage() {
       setSteps(data.steps);
       setExplanation(data.explanation);
       setAnalyzedText(articleText);
+      setExplanationClass(data.article_class);
 
     } catch (e: unknown) {
       const message =
@@ -128,6 +132,7 @@ export default function FakeDetectionPage() {
             steps={steps}
             explanation={explanation}
             analyzedText={analyzedText}
+            explanationClass={explanationClass}
           />
         </section>
 

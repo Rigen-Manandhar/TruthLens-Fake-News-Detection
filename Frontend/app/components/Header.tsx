@@ -2,78 +2,25 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { signOut, useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import Logo from "./ui/Logo";
-
-type UserProfile = {
-  id: string;
-  fullName: string;
-  email: string;
-};
 
 export default function Header() {
   const pathname = usePathname();
   const isNews = pathname === "/" || pathname === "";
   const isFake = pathname?.startsWith("/fake-detection");
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const { data: session, status } = useSession();
+  const user = session?.user ?? null;
+  const isLoadingUser = status === "loading";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const isMountedRef = useRef(true);
-
-  const loadUser = useCallback(async (showLoading = false) => {
-    if (showLoading) {
-      setIsLoadingUser(true);
-    }
-
-    try {
-      const response = await fetch("/api/auth/me", {
-        cache: "no-store",
-        credentials: "include",
-      });
-      const data = await response.json().catch(() => ({}));
-
-      if (!isMountedRef.current) {
-        return;
-      }
-
-      setUser(data?.user ?? null);
-    } catch {
-      if (isMountedRef.current) {
-        setUser(null);
-      }
-    } finally {
-      if (showLoading && isMountedRef.current) {
-        setIsLoadingUser(false);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    isMountedRef.current = true;
-    loadUser(true);
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, [loadUser]);
 
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);
-
-  useEffect(() => {
-    const handleAuthChanged = () => {
-      loadUser(false);
-    };
-
-    window.addEventListener("auth-changed", handleAuthChanged);
-
-    return () => {
-      window.removeEventListener("auth-changed", handleAuthChanged);
-    };
-  }, [loadUser]);
 
   useEffect(() => {
     if (!isMenuOpen) {
@@ -101,20 +48,8 @@ export default function Header() {
     setIsLoggingOut(true);
 
     try {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        toast.error(data.error ?? "Logout failed. Please try again.");
-        return;
-      }
-
-      setUser(null);
+      await signOut({ redirect: false });
       setIsMenuOpen(false);
-      window.dispatchEvent(new Event("auth-changed"));
       toast.success("You have been logged out.");
     } catch {
       toast.error("Network error. Please try again.");
@@ -124,7 +59,7 @@ export default function Header() {
   };
 
   const rawInitial =
-    user?.fullName?.trim()?.[0] ?? user?.email?.trim()?.[0] ?? "U";
+    user?.name?.trim()?.[0] ?? user?.email?.trim()?.[0] ?? "U";
   const avatarInitial = rawInitial.toUpperCase();
 
   return (

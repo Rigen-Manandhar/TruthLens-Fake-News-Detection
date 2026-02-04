@@ -160,11 +160,16 @@ class HybridModelLoader:
             "details": source_res["reason"]
         })
 
-        # Step 2: Headline Check (First Sentence)
-        # Simple extraction of first sentence
-        first_sentence = text
-        if "." in text:
-            first_sentence = text.split('.', 1)[0] + "."
+        # Step 2: Headline Check (First Line or First Sentence)
+        # Try splitting by newline first to get the "Title"
+        lines = text.strip().split('\n', 1)
+        if len(lines) > 0 and 5 < len(lines[0]) < 200:
+            first_sentence = lines[0].strip()
+        else:
+            # Fallback to period splitting
+            first_sentence = text
+            if "." in text:
+                first_sentence = text.split('.', 1)[0] + "."
         
         # Guard against empty text
         if not first_sentence.strip():
@@ -173,14 +178,28 @@ class HybridModelLoader:
         label_hl, conf_hl = self.model_headline.predict(first_sentence)
         
         hl_score = 0
-        # Logic: If FAKE (>60% conf): Score += 2
-        # Normalizing label: Assume model returns "FAKE" or "LABEL_1" (mapped to fake)
-        label_upper = label_hl.upper()
-        # Common variations for "Fake": 1, LABEL_1, FAKE
-        is_fake_hl = "FAKE" in label_upper or label_hl == "1" or label_upper == "LABEL_1"
+        label_hl_upper = label_hl.upper()
+        is_fake_hl = (
+            "FAKE" in label_hl_upper
+            or "FALSE" in label_hl_upper
+            or label_hl == "0"
+            or label_hl_upper == "LABEL_0"
+        )
+        is_real_hl = (
+            "REAL" in label_hl_upper
+            or "TRUE" in label_hl_upper
+            or label_hl == "1"
+            or label_hl_upper == "LABEL_1"
+        )
         
+        # Logic:
+        # Headline Model (~65% Acc) captures nuance/clickbait; treat as primary signal.
+        # FAKE (>60%) -> +2 (Stronger warning)
+        # REAL (>60%) -> -2 (Stronger positive signal)
         if is_fake_hl and conf_hl > 0.60:
             hl_score = 2
+        elif is_real_hl and conf_hl > 0.60:
+            hl_score = -2
         
         total_score += hl_score
         steps.append({
@@ -195,14 +214,40 @@ class HybridModelLoader:
         art_score = 0
         
         label_full_upper = label_full.upper()
-        is_fake_full = "FAKE" in label_full_upper or label_full == "1" or label_full_upper == "LABEL_1"
-        is_real_full = "REAL" in label_full_upper or label_full == "0" or label_full_upper == "LABEL_0"
+        is_fake_full = (
+            "FAKE" in label_full_upper
+            or "FALSE" in label_full_upper
+            or label_full == "0"
+            or label_full_upper == "LABEL_0"
+        )
+        is_real_full = (
+            "REAL" in label_full_upper
+            or "TRUE" in label_full_upper
+            or label_full == "1"
+            or label_full_upper == "LABEL_1"
+        )
+
+        if is_fake_full:
+            article_class = "FAKE"
+        elif is_real_full:
+            article_class = "REAL"
+        else:
+            article_class = "UNKNOWN"
         
-        # Logic: FAKE (>60%) -> +2, REAL (>90%) -> -1
-        if is_fake_full and conf_full > 0.60:
-            art_score = 2
-        elif is_real_full and conf_full > 0.90:
+        # Logic:
+        # Article Model (~99% Acc) can be keyword-biased; treat as secondary signal.
+        # FAKE (>85%) -> +1 (Moderate signal)
+        # REAL (>97%) -> -1 (Moderate signal)
+        if is_fake_full and conf_full > 0.85:
+            art_score = 1
+        elif is_real_full and conf_full > 0.97:
             art_score = -1
+
+        # Only let the article model reinforce the headline signal.
+        if hl_score > 0 and art_score < 0:
+            art_score = 0
+        elif hl_score < 0 and art_score > 0:
+            art_score = 0
             
         total_score += art_score
         steps.append({
@@ -215,18 +260,19 @@ class HybridModelLoader:
         if total_score >= 2:
             verdict = "SUSPICIOUS"
             risk = "High Risk"
-        elif total_score == 1:
-            verdict = "UNCERTAIN"
-            risk = "Medium Risk"
-        else:
+        elif total_score <= -2:
             verdict = "LIKELY REAL"
             risk = "Low Risk"
+        else:
+            verdict = "UNCERTAIN"
+            risk = "Medium Risk"
 
         return {
             "final_score": total_score,
             "verdict": verdict,
             "risk_level": risk,
-            "steps": steps
+            "steps": steps,
+            "article_class": article_class
         }
 
 original_loader = None

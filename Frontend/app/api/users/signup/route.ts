@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import dbConnect from "@/lib/mongodb";
-import User from "@/models/User";
-import { setAuthCookie, signAuthToken } from "@/lib/auth";
+import clientPromise from "@/lib/mongodb-client";
 
 export const runtime = "nodejs";
 
@@ -27,9 +25,12 @@ export async function POST(req: Request) {
     const normalizedEmail = String(email).trim().toLowerCase();
     const normalizedName = String(fullName).trim();
 
-    await dbConnect();
+    const client = await clientPromise;
+    const db = client.db();
 
-    const existingUser = await User.findOne({ email: normalizedEmail });
+    const existingUser = await db
+      .collection("users")
+      .findOne({ email: normalizedEmail });
 
     if (existingUser) {
       return NextResponse.json(
@@ -40,29 +41,25 @@ export async function POST(req: Request) {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
-    const user = await User.create({
+    const result = await db.collection("users").insertOne({
+      name: normalizedName,
       fullName: normalizedName,
       email: normalizedEmail,
       passwordHash,
+      emailVerified: null,
+      image: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
 
-    const token = signAuthToken({
-      sub: user._id.toString(),
-      email: user.email,
-    });
-
-    const response = NextResponse.json({
+    return NextResponse.json({
       ok: true,
       user: {
-        id: user._id.toString(),
-        fullName: user.fullName,
-        email: user.email,
+        id: result.insertedId.toString(),
+        name: normalizedName,
+        email: normalizedEmail,
       },
     });
-
-    setAuthCookie(response, token);
-
-    return response;
   } catch (error) {
     console.error(error);
     return NextResponse.json(

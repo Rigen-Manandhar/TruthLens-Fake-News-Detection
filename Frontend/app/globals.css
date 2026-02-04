@@ -24,3 +24,23 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes authFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-appear {
+  animation: authFadeUp 0.7s ease-out both;
+}
+
+.auth-appear-delay {
+  animation: authFadeUp 0.85s ease-out both;
+  animation-delay: 0.12s;
+}

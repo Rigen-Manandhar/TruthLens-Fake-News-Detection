@@ -3,6 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import bcrypt from "bcryptjs";
+import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb-client";
 
 export const runtime = "nodejs";
@@ -17,12 +18,43 @@ export const authOptions: NextAuthOptions = {
       if (user?.id) {
         token.id = user.id;
       }
+      if (!token.id && token.sub) {
+        token.id = token.sub;
+      }
+      if (user?.name) {
+        token.name = user.name;
+      }
+      if (user?.email) {
+        token.email = user.email;
+      }
+      if (user?.image) {
+        token.picture = user.image;
+      }
       return token;
     },
     async session({ session, token }) {
-      if (session.user && token?.id) {
-        session.user.id = String(token.id);
+      if (token?.id && session.user) {
+        (session.user as { id?: string }).id = String(token.id);
       }
+
+      try {
+        if (token?.id && session.user) {
+          const client = await clientPromise;
+          const db = client.db();
+          const user = await db
+            .collection("users")
+            .findOne({ _id: new ObjectId(String(token.id)) });
+
+          if (user) {
+            session.user.name = user.name ?? user.fullName ?? session.user.name ?? "";
+            session.user.email = user.email ?? session.user.email ?? "";
+            session.user.image = user.image ?? session.user.image ?? null;
+          }
+        }
+      } catch {
+        // Keep session as-is if lookup fails.
+      }
+
       return session;
     },
   },

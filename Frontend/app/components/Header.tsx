@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import Logo from "./ui/Logo";
+import ConfirmDialog from "./ui/ConfirmDialog";
 
 export default function Header() {
   const pathname = usePathname();
@@ -16,6 +17,7 @@ export default function Header() {
   const isLoadingUser = status === "loading";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -50,12 +52,25 @@ export default function Header() {
     try {
       await signOut({ redirect: false });
       setIsMenuOpen(false);
+      setIsLogoutOpen(false);
       toast.success("You have been logged out.");
     } catch {
       toast.error("Network error. Please try again.");
     } finally {
       setIsLoggingOut(false);
     }
+  };
+
+  const handleLogoutRequest = () => {
+    setIsMenuOpen(false);
+    setIsLogoutOpen(true);
+  };
+
+  const handleLogoutCancel = () => {
+    if (isLoggingOut) {
+      return;
+    }
+    setIsLogoutOpen(false);
   };
 
   const rawInitial =
@@ -118,7 +133,7 @@ export default function Header() {
                   </Link>
                   <button
                     type="button"
-                    onClick={handleLogout}
+                    onClick={handleLogoutRequest}
                     disabled={isLoggingOut}
                     className={`block w-full px-4 py-2 text-left transition-colors ${
                       isLoggingOut
@@ -149,6 +164,16 @@ export default function Header() {
           )}
         </nav>
       </div>
+      <ConfirmDialog
+        open={isLogoutOpen}
+        title="Sign out"
+        message="Are you sure you want to sign out of your account?"
+        confirmLabel="Sign out"
+        cancelLabel="Stay signed in"
+        isLoading={isLoggingOut}
+        onConfirm={handleLogout}
+        onCancel={handleLogoutCancel}
+      />
     </header>
   );
 }

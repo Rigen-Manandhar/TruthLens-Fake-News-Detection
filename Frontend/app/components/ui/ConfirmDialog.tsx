@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import Button from "./Button";
 
@@ -25,12 +25,6 @@ export default function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   useEffect(() => {
     if (!open) {
       return;
@@ -46,13 +40,13 @@ export default function ConfirmDialog({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [open, isLoading, onCancel]);
 
-  if (!open || !isMounted) {
+  if (!open || typeof document === "undefined") {
     return null;
   }
 
   const dialog = (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/45 backdrop-blur-md px-4"
+      className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/45 backdrop-blur-md px-4"
       onClick={() => {
         if (!isLoading) {
           onCancel();

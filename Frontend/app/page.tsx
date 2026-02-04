@@ -25,8 +25,27 @@ export default function Home() {
           onCategoryChange={setSelectedCategory}
         />
 
-        {/* Main content sections */}
-        <section className="space-y-10">
+        <section className="space-y-8">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[11px] font-semibold tracking-[0.25em] text-gray-400 uppercase">
+                Top headlines
+              </p>
+              <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mt-2">
+                Today&apos;s briefings
+              </h2>
+              <p className="text-sm text-gray-600 mt-2 max-w-xl">
+                Fresh stories curated from trusted sources, updated throughout the day.
+              </p>
+            </div>
+            <div className="hidden sm:flex items-center gap-2 text-xs text-gray-500">
+              <span className="h-2 w-2 rounded-full bg-emerald-500/70" />
+              Live updates every hour
+            </div>
+          </div>
+
+          <div className="border-b border-gray-200/70" />
+
           <div>
             <NewsGrid
               country="us"

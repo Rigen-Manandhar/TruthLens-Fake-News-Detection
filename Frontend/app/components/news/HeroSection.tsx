@@ -32,27 +32,32 @@ export default function HeroSection({
   };
 
   return (
-    <section className="mb-12 lg:mb-16">
+    <section className="mb-12 lg:mb-16 relative">
+      <div className="pointer-events-none absolute -top-16 left-0 h-40 w-40 rounded-full bg-sky-100/60 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 right-0 h-40 w-40 rounded-full bg-emerald-100/60 blur-3xl" />
+
       <p className="text-[11px] font-semibold tracking-[0.25em] text-gray-400 uppercase mb-3">
         Powered by News API
       </p>
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] items-center">
-        {/* Left: copy, search, topics */}
         <div>
-          <h1 className="text-3xl sm:text-[2.6rem] lg:text-[3rem] font-semibold sm:font-bold text-gray-900 leading-tight tracking-tight mb-4">
+          <h1 className="text-3xl sm:text-[2.7rem] lg:text-[3.1rem] font-semibold sm:font-bold text-gray-900 leading-tight tracking-tight mb-4">
             Stay informed with a
             <br />
             clean modern news
             <br />
             experience
           </h1>
-          <p className="text-sm sm:text-base text-gray-600 mb-7 max-w-xl">
+          <p className="text-sm sm:text-base text-gray-600 mb-4 max-w-xl">
             Curated headlines and deep dives across technology, business and
             world affairs, sports and culture, updated in real time.
           </p>
+          <div className="flex items-center gap-3 text-xs text-gray-500 mb-7">
+            <span className="h-2 w-2 rounded-full bg-emerald-500/70" />
+            Today&apos;s brief: 20+ stories refreshed hourly.
+          </div>
 
-          {/* Search bar */}
           <form
             onSubmit={handleSubmit}
             className="flex flex-col sm:flex-row gap-3 mb-6 max-w-xl"
@@ -62,7 +67,7 @@ export default function HeroSection({
               value={searchInput}
               onChange={(e) => onSearchInputChange(e.target.value)}
               placeholder="Search stories, topics and publishers..."
-              className="flex-1 px-5 py-3 rounded-full border border-gray-200/70 bg-white/80 shadow-sm text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400"
+              className="flex-1 px-5 py-3 rounded-full border border-gray-200/70 bg-white/80 shadow-sm text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 focus:border-transparent placeholder:text-gray-400"
             />
             <button
               type="submit"
@@ -72,7 +77,6 @@ export default function HeroSection({
             </button>
           </form>
 
-          {/* Topic chips */}
           <div className="flex flex-wrap gap-2">
             {quickTopics.map((topic) => {
               const isActive = selectedCategory === topic.value;
@@ -94,14 +98,13 @@ export default function HeroSection({
           </div>
         </div>
 
-        {/* Right: hero image */}
         <div className="hidden lg:flex items-center justify-center">
           <div className="w-full max-w-md">
-            <div className="rounded-3xl overflow-hidden bg-transparent">
+            <div className="overflow-visible bg-transparent">
               <Image
                 src={HeroImage}
                 alt="Illustration of a modern news experience"
-                className="w-full h-auto"
+                className="w-full h-auto drop-shadow-[0_30px_70px_rgba(15,23,42,0.25)]"
                 priority
               />
             </div>
@@ -111,5 +114,3 @@ export default function HeroSection({
     </section>
   );
 }
-
-

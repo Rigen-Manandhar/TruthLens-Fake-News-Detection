@@ -33,6 +33,8 @@ export default function FakeDetectionResult({
   explanationClass,
 }: FakeDetectionResultProps) {
 
+  const hasResult = label !== "Input Text or URL to detect if the news is Fake or Real";
+
   // Helper to render text with inline highlights for LIME
   const renderHighlightedText = () => {
     if (!analyzedText || !explanation || explanation.length === 0) {
@@ -113,29 +115,69 @@ export default function FakeDetectionResult({
 
 
   return (
-    <section className="flex flex-col rounded-3xl bg-white/90 backdrop-blur border border-gray-100 shadow-lg px-6 sm:px-8 py-6 sm:py-7 h-[600px]">
-      <div
-        className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${levelStyles[level]} shrink-0 w-fit`}
-      >
-        {label === "Input Text or URL to detect if the news is Fake or Real" ? label : `Result: ${label}`}
-      </div>
+    <section className="relative flex flex-col rounded-3xl bg-white/90 backdrop-blur border border-white/60 shadow-[0_30px_80px_-60px_rgba(15,23,42,0.6)] px-6 sm:px-8 py-6 sm:py-7 h-[600px] overflow-hidden">
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-red-500 via-amber-500 to-emerald-500" />
 
-      {label !== "Input Text or URL to detect if the news is Fake or Real" && (
-        <p className="mt-4 text-sm text-gray-700 leading-relaxed font-medium">
-          {level === "high" && "The advanced hybrid model analysis indicates this content is likely credible and authentic."}
-          {level === "low" && "The advanced hybrid model analysis detected significant indicators commonly associated with fake or misleading news."}
-          {level === "mixed" && "The model detected mixed signals and could not definitively verify the credibility of this content. Proceed with caution."}
+      <div className="relative flex flex-col h-full">
+        <div className="flex flex-wrap items-center gap-3">
+          <div
+            className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${levelStyles[level]} shrink-0 w-fit`}
+          >
+            {hasResult ? `Result: ${label}` : label}
+          </div>
+          <span className="text-xs text-gray-400">
+            Hybrid credibility analysis
+          </span>
+        </div>
+
+        {hasResult && (
+          <p className="mt-4 text-sm text-gray-700 leading-relaxed font-medium">
+            {level === "high" &&
+              "The hybrid model analysis indicates this content is likely credible and authentic."}
+            {level === "low" &&
+              "The analysis detected strong indicators commonly associated with misleading or fabricated content."}
+            {level === "mixed" &&
+              "The model detected mixed signals and could not definitively verify credibility. Proceed with caution."}
+          </p>
+        )}
+
+        <div className="mt-6 flex-1 min-h-0 rounded-2xl bg-gray-50/70 border border-dashed border-gray-200 px-4 py-4 text-sm text-gray-600 overflow-y-auto">
+          {details && <div className="whitespace-pre-wrap mb-4">{details}</div>}
+
+          {steps && steps.length > 0 && (
+            <div className="space-y-3 mb-6">
+              <h4 className="font-semibold text-gray-800 text-xs uppercase tracking-wide">
+                Signal breakdown
+              </h4>
+              {steps.map((stepItem, index) => (
+                <div
+                  key={`${stepItem.step}-${index}`}
+                  className="rounded-xl border border-gray-200 bg-white/80 px-3 py-3"
+                >
+                  <div className="flex items-center justify-between text-xs font-semibold text-gray-700">
+                    <span>{stepItem.step}</span>
+                    <span className="text-gray-500">Score {stepItem.score_impact}</span>
+                  </div>
+                  <p className="text-xs text-gray-600 mt-2">
+                    {stepItem.details}
+                  </p>
+                  {stepItem.sentence_preview && (
+                    <p className="text-xs text-gray-500 mt-2 italic">
+                      “{stepItem.sentence_preview}”
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {renderHighlightedText()}
+        </div>
+
+        <p className="mt-4 text-[11px] text-gray-500 shrink-0">
+          Results powered by Hybrid Deep Learning Analysis.
         </p>
-      )}
-
-      <div className="mt-6 flex-1 min-h-0 rounded-2xl bg-gray-50/70 border border-dashed border-gray-200 px-4 py-4 text-sm text-gray-600 overflow-y-auto">
-        <div className="whitespace-pre-wrap mb-4">{details}</div>
-        {renderHighlightedText()}
       </div>
-
-      <p className="mt-4 text-[11px] text-gray-500 shrink-0">
-        Results powered by Hybrid Deep Learning Analysis.
-      </p>
     </section>
   );
 }

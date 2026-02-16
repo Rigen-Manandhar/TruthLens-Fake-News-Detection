@@ -86,17 +86,54 @@ class HybridModelLoader:
     def __init__(self):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.repo_root = Path(__file__).resolve().parents[1]
+        load_dotenv(self.repo_root / ".env")
         
         # Load Source Credibility DB
         self.source_cred_path = self.repo_root / "app" / "data" / "source_credibility.json"
         self.source_db = self._load_source_db()
 
+        headline_model_path = self._resolve_model_dir(
+            env_var="HEADLINE_MODEL_PATH",
+            fallback_dirs=["model_a", "roberta-lora-liar"],
+        )
+        article_model_path = self._resolve_model_dir(
+            env_var="ARTICLE_MODEL_PATH",
+            fallback_dirs=["model_b", "roberta-lora-diverse"],
+        )
+
         # Load Models
-        print("Loading Headline Model (Liar)...")
-        self.model_headline = InferenceModel(self.repo_root / "model" / "roberta-lora-liar")
+        print(f"Loading Headline Model from: {headline_model_path}")
+        self.model_headline = InferenceModel(headline_model_path)
         
-        print("Loading Article Model (Diverse)...")
-        self.model_article = InferenceModel(self.repo_root / "model" / "roberta-lora-diverse")
+        print(f"Loading Article Model from: {article_model_path}")
+        self.model_article = InferenceModel(article_model_path)
+
+    def _resolve_model_dir(self, env_var: str, fallback_dirs: list[str]) -> Path:
+        def is_valid_adapter_dir(path: Path) -> bool:
+            return (path / "adapter_config.json").exists()
+
+        configured = os.getenv(env_var, "").strip()
+        if configured:
+            configured_path = Path(configured)
+            if not configured_path.is_absolute():
+                configured_path = self.repo_root / configured_path
+            if is_valid_adapter_dir(configured_path):
+                return configured_path
+            raise FileNotFoundError(
+                f"{env_var} points to '{configured_path}', but adapter_config.json was not found."
+            )
+
+        tried_paths = []
+        for dirname in fallback_dirs:
+            candidate = self.repo_root / "model" / dirname
+            tried_paths.append(str(candidate))
+            if is_valid_adapter_dir(candidate):
+                return candidate
+
+        raise FileNotFoundError(
+            f"Could not resolve a valid model directory for {env_var}. "
+            f"Tried: {', '.join(tried_paths)}"
+        )
 
     def _load_source_db(self):
         import json

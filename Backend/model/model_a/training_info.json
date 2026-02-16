@@ -1,0 +1,37 @@
+{
+  "train_samples": 20783,
+  "valid_samples": 2647,
+  "config": {
+    "base_model": "roberta-base",
+    "max_length": 128,
+    "learning_rate": 0.0002,
+    "num_epochs": 5,
+    "label_smoothing": 0.05,
+    "hard_negative_weight": 2.5,
+    "balance_by_dataset": false,
+    "use_description": true
+  },
+  "final_metrics": {
+    "eval_loss": 0.38242971897125244,
+    "eval_accuracy": 0.8243294295428787,
+    "eval_precision": 0.8220608618228715,
+    "eval_recall": 0.8244084596083634,
+    "eval_macro_f1": 0.8228976692688381,
+    "eval_fake_precision": 0.8545197740112994,
+    "eval_fake_recall": 0.8236895847515316,
+    "eval_fake_f1": 0.8388214904679376,
+    "eval_real_precision": 0.7896019496344435,
+    "eval_runtime": 4.5928,
+    "eval_samples_per_second": 576.342,
+    "eval_steps_per_second": 18.072,
+    "epoch": 5.0
+  },
+  "augmentation_stats": {
+    "samples_processed": 103915,
+    "entities_masked": 19770,
+    "artifacts_dropped": 16,
+    "words_dropped": 0
+  },
+  "class_weights": null,
+  "weighted_sampler_enabled": true
+}

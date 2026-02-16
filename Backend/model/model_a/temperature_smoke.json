@@ -1,0 +1,11 @@
+{
+  "temperature": 1.3217285156249994,
+  "is_fitted": true,
+  "fit_info": {
+    "optimal_temperature": 1.3217285156249994,
+    "loss_before": 0.13203932344913483,
+    "loss_after": 0.12916594743728638,
+    "improvement": 0.0028733760118484497,
+    "n_samples": 8189
+  }
+}

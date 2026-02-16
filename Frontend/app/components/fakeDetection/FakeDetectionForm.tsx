@@ -1,20 +1,26 @@
 interface FakeDetectionFormProps {
   articleText: string;
   sourceUrl: string;
+  inputMode: "auto" | "headline_only" | "full_article" | "headline_plus_article";
   isLoading: boolean;
   error: string | null;
   onArticleChange: (value: string) => void;
   onSourceUrlChange: (value: string) => void;
+  onInputModeChange: (
+    value: "auto" | "headline_only" | "full_article" | "headline_plus_article"
+  ) => void;
   onAnalyze: () => void;
 }
 
 export default function FakeDetectionForm({
   articleText,
   sourceUrl,
+  inputMode,
   isLoading,
   error,
   onArticleChange,
   onSourceUrlChange,
+  onInputModeChange,
   onAnalyze,
 }: FakeDetectionFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
@@ -58,6 +64,37 @@ export default function FakeDetectionForm({
             placeholder="Paste article text here..."
             className="h-full w-full resize-none rounded-2xl border border-gray-200 bg-gray-50/70 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500/60"
           />
+        </div>
+
+        <div className="space-y-2 mb-4">
+          <label
+            htmlFor="inputMode"
+            className="text-sm font-medium text-gray-900"
+          >
+            Input Mode
+          </label>
+          <select
+            id="inputMode"
+            value={inputMode}
+            onChange={(e) =>
+              onInputModeChange(
+                e.target.value as
+                  | "auto"
+                  | "headline_only"
+                  | "full_article"
+                  | "headline_plus_article"
+              )
+            }
+            className="w-full rounded-2xl border border-gray-200 bg-gray-50/70 px-4 py-3 text-sm text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500/60"
+          >
+            <option value="auto">Auto detect</option>
+            <option value="headline_only">Headline only</option>
+            <option value="full_article">Full article</option>
+            <option value="headline_plus_article">Headline + article</option>
+          </select>
+          <p className="text-xs text-gray-500">
+            Auto mode is recommended. Use manual mode if your paste format is unusual.
+          </p>
         </div>
 
         <div className="space-y-2 mb-4">

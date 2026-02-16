@@ -8,3 +8,5 @@ python-dotenv
 lime
 numpy
 scikit-learn
+httpx
+trafilatura

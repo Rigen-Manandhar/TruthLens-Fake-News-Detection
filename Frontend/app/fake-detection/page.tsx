@@ -6,12 +6,56 @@ import FakeDetectionResult from "../components/fakeDetection/FakeDetectionResult
 import Footer from "../components/Footer";
 
 type CredibilityLevel = "high" | "mixed" | "low";
+type InputMode = "auto" | "headline_only" | "full_article" | "headline_plus_article";
+type ExplanationMode = "none" | "auto" | "force";
 
 type Step = {
   step: string;
   score_impact: number;
   details: string;
   sentence_preview?: string;
+  input_preview?: string;
+  metadata?: Record<string, unknown>;
+};
+
+type UncertaintyInfo = {
+  reason_code?: "CONFLICT" | "LOW_CONFIDENCE" | "INSUFFICIENT_TEXT" | "FETCH_FAILED" | null;
+  reason_message?: string | null;
+};
+
+type ParseMetadata = {
+  used_mode: string;
+  detected_shape: string;
+  headline_word_count: number;
+  body_word_count: number;
+  headline_source?: string | null;
+};
+
+type SingleModelOutput = {
+  ran: boolean;
+  label?: string | null;
+  confidence?: number | null;
+  score_impact?: number;
+  input_word_count?: number;
+};
+
+type ModelOutputs = {
+  model_a: SingleModelOutput;
+  model_b: SingleModelOutput;
+};
+
+type ConflictInfo = {
+  is_conflict: boolean;
+  threshold?: number | null;
+  raw_score_before_override?: number | null;
+};
+
+type FetchMetadata = {
+  attempted: boolean;
+  success?: boolean | null;
+  status_code?: number | null;
+  error_type?: string | null;
+  resolved_url?: string | null;
 };
 
 type PredictResponse = {
@@ -22,6 +66,19 @@ type PredictResponse = {
   explanation?: [string, number][];
   explanation_html?: string;
   article_class?: string;
+  uncertainty?: UncertaintyInfo;
+  parse_metadata?: ParseMetadata;
+  model_outputs?: ModelOutputs;
+  conflict?: ConflictInfo;
+  fetch_metadata?: FetchMetadata;
+  lime_model?: "A" | "B" | null;
+  lime_input_text?: string | null;
+};
+
+type PredictPayload = {
+  text: string;
+  url: string;
+  input_mode: InputMode;
 };
 
 const mapVerdictToLevel = (verdict: string): CredibilityLevel => {
@@ -34,63 +91,100 @@ const mapVerdictToLevel = (verdict: string): CredibilityLevel => {
 export default function FakeDetectionPage() {
   const [articleText, setArticleText] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
+  const [inputMode, setInputMode] = useState<InputMode>("auto");
   const [isLoading, setIsLoading] = useState(false);
+  const [isExplaining, setIsExplaining] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [resultLevel, setResultLevel] = useState<CredibilityLevel>("mixed");
   const [resultLabel, setResultLabel] = useState("Input Text or URL to detect if the news is Fake or Real");
+  const [riskLevel, setRiskLevel] = useState<string>("Needs Review");
   const [resultDetails, setResultDetails] = useState(
     "Paste some text and a source URL, then run an analysis to see a preview of credibility insights."
   );
-  // We'll treat 'explanation' as 'steps' for now, but better to update the Result component next.
-  // For now, I will pass steps as "details" text formatted nicely.
   const [steps, setSteps] = useState<Step[] | undefined>(undefined);
   const [explanation, setExplanation] = useState<[string, number][] | undefined>(undefined);
   const [analyzedText, setAnalyzedText] = useState<string | undefined>(undefined);
   const [explanationClass, setExplanationClass] = useState<string | undefined>(undefined);
+  const [uncertainty, setUncertainty] = useState<UncertaintyInfo | undefined>(undefined);
+  const [parseMetadata, setParseMetadata] = useState<ParseMetadata | undefined>(undefined);
+  const [modelOutputs, setModelOutputs] = useState<ModelOutputs | undefined>(undefined);
+  const [conflict, setConflict] = useState<ConflictInfo | undefined>(undefined);
+  const [fetchMetadata, setFetchMetadata] = useState<FetchMetadata | undefined>(undefined);
+  const [limeModel, setLimeModel] = useState<"A" | "B" | null | undefined>(undefined);
+  const [lastPayload, setLastPayload] = useState<PredictPayload | null>(null);
+
+  const applyPrediction = (data: PredictResponse, payload: PredictPayload) => {
+    const level = mapVerdictToLevel(data.verdict);
+
+    setResultLevel(level);
+    setResultLabel(`${data.verdict}`);
+    setRiskLevel(data.risk_level ?? "Needs Review");
+    setResultDetails(data.uncertainty?.reason_message ?? "");
+    setSteps(data.steps);
+    setExplanation(data.explanation);
+    setAnalyzedText(data.lime_input_text ?? payload.text);
+    setExplanationClass(data.article_class);
+    setUncertainty(data.uncertainty);
+    setParseMetadata(data.parse_metadata);
+    setModelOutputs(data.model_outputs);
+    setConflict(data.conflict);
+    setFetchMetadata(data.fetch_metadata);
+    setLimeModel(data.lime_model);
+    setLastPayload(payload);
+  };
+
+  const runPrediction = async (payload: PredictPayload, explanationMode: ExplanationMode) => {
+    const res = await fetch("/api/predict", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...payload,
+        explanation_mode: explanationMode,
+      }),
+    });
+
+    const json = (await res.json().catch(() => null)) as
+      | (PredictResponse & { detail?: string })
+      | null;
+
+    if (!res.ok) {
+      const detail = json?.detail ?? "Prediction failed";
+      throw new Error(typeof detail === "string" ? detail : "Prediction failed");
+    }
+
+    return json as PredictResponse;
+  };
 
   const analyze = async () => {
     setError(null);
 
-    // Require either text or URL
     if (!articleText.trim() && !sourceUrl.trim()) {
       setError("Please enter some article text or a source URL to analyse.");
       return;
     }
+
+    const payload: PredictPayload = {
+      text: articleText,
+      url: sourceUrl,
+      input_mode: inputMode,
+    };
 
     setIsLoading(true);
     setSteps(undefined);
     setExplanation(undefined);
     setAnalyzedText(undefined);
     setExplanationClass(undefined);
+    setUncertainty(undefined);
+    setParseMetadata(undefined);
+    setModelOutputs(undefined);
+    setConflict(undefined);
+    setFetchMetadata(undefined);
+    setLimeModel(undefined);
 
     try {
-      const res = await fetch("/api/predict", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: articleText,
-          url: sourceUrl
-        }),
-      });
-
-      if (!res.ok) {
-        const msg = await res.text();
-        throw new Error(msg || "Prediction failed");
-      }
-
-      const data = (await res.json()) as PredictResponse;
-
-      const level = mapVerdictToLevel(data.verdict);
-
-      setResultLevel(level);
-      setResultLabel(`${data.verdict}`);
-      setResultDetails("");
-      setSteps(data.steps);
-      setExplanation(data.explanation);
-      setAnalyzedText(articleText);
-      setExplanationClass(data.article_class);
-
+      const data = await runPrediction(payload, "auto");
+      applyPrediction(data, payload);
     } catch (e: unknown) {
       const message =
         e instanceof Error
@@ -99,6 +193,27 @@ export default function FakeDetectionPage() {
       setError(message);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleExplain = async () => {
+    if (!lastPayload || isExplaining) {
+      return;
+    }
+
+    setError(null);
+    setIsExplaining(true);
+    try {
+      const data = await runPrediction(lastPayload, "force");
+      applyPrediction(data, lastPayload);
+    } catch (e: unknown) {
+      const message =
+        e instanceof Error
+          ? e.message
+          : "Failed to generate explanation. Please try again.";
+      setError(message);
+    } finally {
+      setIsExplaining(false);
     }
   };
 
@@ -141,7 +256,7 @@ export default function FakeDetectionPage() {
               </div>
               <div className="flex items-start gap-3">
                 <span className="mt-1 h-2 w-2 rounded-full bg-amber-500/70" />
-                <p>Generate an explanation map to highlight key phrases.</p>
+                <p>Generate explanation only when needed for faster feedback.</p>
               </div>
             </div>
           </div>
@@ -151,10 +266,12 @@ export default function FakeDetectionPage() {
           <FakeDetectionForm
             articleText={articleText}
             sourceUrl={sourceUrl}
+            inputMode={inputMode}
             isLoading={isLoading}
             error={error}
             onArticleChange={setArticleText}
             onSourceUrlChange={setSourceUrl}
+            onInputModeChange={setInputMode}
             onAnalyze={analyze}
           />
 
@@ -162,10 +279,20 @@ export default function FakeDetectionPage() {
             level={resultLevel}
             label={resultLabel}
             details={resultDetails}
+            riskLevel={riskLevel}
             steps={steps}
             explanation={explanation}
             analyzedText={analyzedText}
             explanationClass={explanationClass}
+            uncertainty={uncertainty}
+            parseMetadata={parseMetadata}
+            modelOutputs={modelOutputs}
+            conflict={conflict}
+            fetchMetadata={fetchMetadata}
+            limeModel={limeModel}
+            canExplain={Boolean(lastPayload)}
+            isExplaining={isExplaining}
+            onExplain={handleExplain}
           />
         </section>
 

@@ -1,17 +1,22 @@
 from __future__ import annotations
 
+import re
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from lime.lime_text import LimeTextExplainer
 from pydantic import BaseModel
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
 from app.article_extractor import ExtractionError, fetch_and_extract
 from app.model_loader import HybridModelLoader, get_hybrid_model
 
 
 INPUT_TEXT_MIN_LEN = 10
+LIME_MAX_FEATURES = 20
+LIME_RAW_FEATURES = 40
+NEGATION_WORDS = {"no", "not", "nor", "never", "none", "without", "cannot", "can't", "won't", "n't"}
 
 
 app = FastAPI(title="TruthLens Hybrid Backend", version="2.1")
@@ -106,6 +111,22 @@ def _empty_model_outputs(headline_words: int = 0, body_words: int = 0) -> ModelO
         model_a=SingleModelOutput(ran=False, input_word_count=headline_words),
         model_b=SingleModelOutput(ran=False, input_word_count=body_words),
     )
+
+
+def _is_stopword_feature(term: str) -> bool:
+    words = re.findall(r"[a-zA-Z]+'?[a-zA-Z]*", term.lower())
+    if not words:
+        return False
+
+    if any(word in NEGATION_WORDS for word in words):
+        return False
+
+    return all(word in ENGLISH_STOP_WORDS for word in words)
+
+
+def _filter_lime_features(features: list[tuple[str, float]]) -> list[tuple[str, float]]:
+    filtered = [item for item in features if not _is_stopword_feature(item[0])]
+    return filtered[:LIME_MAX_FEATURES]
 
 
 @app.on_event("startup")
@@ -258,10 +279,10 @@ def predict(req: PredictRequest):
             exp = explainer.explain_instance(
                 lime_input_text,
                 predictor,
-                num_features=20,
+                num_features=LIME_RAW_FEATURES,
                 num_samples=100,
             )
-            explanation_list = exp.as_list()
+            explanation_list = _filter_lime_features(exp.as_list())
             explanation_html = exp.as_html()
         except Exception as exc:
             print(f"LIME Error: {exc}")

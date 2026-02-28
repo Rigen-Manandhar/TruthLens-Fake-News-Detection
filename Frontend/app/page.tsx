@@ -15,8 +15,11 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-gray-50 via-white to-gray-100 pt-20">
-      <main className="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+    <div className="relative min-h-screen pt-24 ambient-grid overflow-hidden">
+      <div className="pointer-events-none absolute -top-10 -left-12 h-52 w-52 rounded-full bg-[rgba(232,176,116,0.26)] blur-3xl" />
+      <div className="pointer-events-none absolute top-[7.5rem] -right-14 h-60 w-60 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
+
+      <main className="relative max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         <HeroSection
           searchInput={searchInput}
           onSearchInputChange={setSearchInput}
@@ -25,26 +28,23 @@ export default function Home() {
           onCategoryChange={setSelectedCategory}
         />
 
-        <section className="space-y-8">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <section className="space-y-8 section-reveal delay-1">
+          <div>
             <div>
-              <p className="text-[11px] font-semibold tracking-[0.25em] text-gray-400 uppercase">
-                Top headlines
+              <p className="text-[11px] font-semibold tracking-[0.25em] text-[var(--muted-foreground)] uppercase">
+                Curated stream
               </p>
-              <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mt-2">
-                Today&apos;s briefings
+              <h2 className="display-title text-3xl sm:text-[2.65rem] font-bold text-[#17130f] mt-2 leading-tight">
+                Today&apos;s credibility briefings
               </h2>
-              <p className="text-sm text-gray-600 mt-2 max-w-xl">
-                Fresh stories curated from trusted sources, updated throughout the day.
+              <p className="text-sm text-[var(--muted-foreground)] mt-2 max-w-xl">
+                Fresh stories with confidence signals from your detection pipeline.
+                Scan fast, verify deeper when it matters.
               </p>
-            </div>
-            <div className="hidden sm:flex items-center gap-2 text-xs text-gray-500">
-              <span className="h-2 w-2 rounded-full bg-emerald-500/70" />
-              Live updates every hour
             </div>
           </div>
 
-          <div className="border-b border-gray-200/70" />
+          <div className="border-b border-[var(--line)]" />
 
           <div>
             <NewsGrid

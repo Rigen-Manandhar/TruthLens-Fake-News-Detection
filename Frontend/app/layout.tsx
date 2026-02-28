@@ -1,23 +1,25 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Manrope, Syne } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
 import ToastProvider from "./components/ToastProvider";
 import AuthSessionProvider from "./components/Auth/SessionProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const bodyFont = Manrope({
+  variable: "--font-body",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const displayFont = Syne({
+  variable: "--font-display",
   subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
-  title: "TruthLens - Fake Media Detection",
-  description: "Detect and analyze fake news and media content with AI-powered verification",
+  title: "TruthLens - AI News Credibility",
+  description: "Verify headlines faster with AI-assisted fake news detection and live signal scoring.",
 };
 
 export default function RootLayout({
@@ -27,9 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${bodyFont.variable} ${displayFont.variable} antialiased`}>
         <AuthSessionProvider>
           <Header />
           {children}

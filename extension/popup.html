@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TruthLens</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="popup-shell" aria-label="TruthLens analyzer popup">
+      <header class="topbar" aria-label="TruthLens header">
+        <div class="brand-wrap">
+          <h1 class="brand-title">TruthLens</h1>
+        </div>
+      </header>
+
+      <section class="content-scroll" id="content-scroll">
+        <section class="hero" aria-labelledby="analyze-heading">
+          <p class="hero-kicker">Hybrid Credibility Analyzer</p>
+          <h2 id="analyze-heading">Analyze Content</h2>
+          <p id="hero-subtitle" class="hero-subtitle">Paste text or URL to detect misinformation</p>
+
+          <div id="hero-result-summary" class="hero-result-summary" hidden aria-live="polite">
+            <div class="summary-row">
+              <span id="hero-summary-chip" class="summary-chip tone-warn">Needs Review</span>
+              <span id="hero-risk-chip" class="risk-chip">Risk: Needs Review</span>
+            </div>
+            <p id="hero-reason" class="hero-reason">Analysis summary will appear here.</p>
+          </div>
+        </section>
+
+        <section id="editing-pane" class="pane is-active" aria-label="Analysis form">
+          <form id="analysis-form" class="card input-card" novalidate>
+            <div class="card-glow" aria-hidden="true"></div>
+
+            <div class="field">
+              <label for="input-mode" class="field-label">Analysis Mode</label>
+              <div class="select-wrap">
+                <select id="input-mode" name="input_mode" aria-label="Analysis mode">
+                  <option value="auto" selected>Auto-Detect</option>
+                  <option value="headline_only">Headline only</option>
+                  <option value="full_article">Full article</option>
+                  <option value="headline_plus_article">Headline + article</option>
+                </select>
+                <span class="select-caret" aria-hidden="true">v</span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="article-text" class="field-label">Article Text</label>
+              <textarea
+                id="article-text"
+                name="text"
+                placeholder="Paste the content you want to verify here..."
+                rows="8"
+              ></textarea>
+            </div>
+
+            <div class="field">
+              <label for="source-url" class="field-label">Source URL (Optional)</label>
+              <div class="input-with-icon">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M10.95 13.05 13.05 10.95m-3.85 5.6-1.75 1.75a3.5 3.5 0 1 1-4.95-4.95l3.5-3.5a3.5 3.5 0 0 1 4.95 0m3.85-3.85 1.75-1.75a3.5 3.5 0 1 1 4.95 4.95l-3.5 3.5a3.5 3.5 0 0 1-4.95 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <input id="source-url" name="url" type="url" placeholder="https://example.com/article..." />
+              </div>
+            </div>
+
+            <div class="form-tools">
+              <button id="clear-btn" type="button" class="clear-btn">Clear fields</button>
+            </div>
+
+            <p id="form-error" class="form-error" role="alert" aria-live="assertive">&nbsp;</p>
+          </form>
+        </section>
+
+        <section id="loading-pane" class="pane" hidden aria-label="Loading state">
+          <article class="card state-card">
+            <div class="spinner" aria-hidden="true"></div>
+            <h3>Analyzing content</h3>
+            <p>Scanning source credibility and language signals. This usually takes a few seconds.</p>
+          </article>
+        </section>
+
+        <section id="result-pane" class="pane" hidden aria-label="Result state" aria-live="polite">
+          <article class="card state-card result-card">
+            <div class="result-header">
+              <span id="result-badge" class="result-badge tone-warn">Needs Review</span>
+              <span id="result-risk" class="risk-chip">Risk: Needs Review</span>
+            </div>
+            <h3 id="result-title">Analysis complete</h3>
+            <p id="result-message" class="result-message">Hybrid model completed analysis for the submitted content.</p>
+
+            <details id="checks-details" class="result-details">
+              <summary>What we checked</summary>
+              <p id="result-checks">No detailed checks were returned.</p>
+            </details>
+
+            <details id="why-details" class="result-details">
+              <summary>Why this verdict</summary>
+              <p id="result-why">Additional model reasoning will appear here when available.</p>
+            </details>
+
+            <div class="result-actions">
+              <button id="analyze-again-btn" type="button" class="ghost-btn">Analyze another</button>
+              <button id="edit-btn-result" type="button" class="ghost-btn">Edit input</button>
+            </div>
+          </article>
+        </section>
+
+        <section id="error-pane" class="pane" hidden aria-label="Error state">
+          <article class="card state-card error-card">
+            <h3>Unable to analyze content</h3>
+            <p id="error-message">Please check your connection or API settings, then try again.</p>
+            <div class="error-actions">
+              <button id="retry-btn" type="button" class="mini-btn primary">Retry</button>
+              <button id="edit-btn" type="button" class="mini-btn">Back to form</button>
+            </div>
+          </article>
+        </section>
+      </section>
+
+      <footer class="action-rail">
+        <button id="analyze-btn" type="submit" form="analysis-form" class="analyze-btn">
+          <span class="btn-spinner" aria-hidden="true"></span>
+          <span class="btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="m5 19 4.4-1.2L21 6.2 17.8 3 6.2 14.6 5 19Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+              <path d="m14.2 6.6 3.2 3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span id="analyze-btn-text">Analyze Content</span>
+        </button>
+        <p class="rail-helper">
+          <span class="footer-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8" />
+              <path d="M12 5.5v1.8M12 16.7v1.8M5.5 12h1.8M16.7 12h1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </span>
+          Results powered by Hybrid Deep Learning
+        </p>
+      </footer>
+    </main>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

@@ -69,9 +69,9 @@ interface FakeDetectionResultProps {
 }
 
 const levelStyles: Record<CredibilityLevel, string> = {
-  high: "bg-emerald-50 text-emerald-800 border-emerald-100",
-  mixed: "bg-amber-50 text-amber-800 border-amber-100",
-  low: "bg-red-50 text-red-800 border-red-100",
+  high: "bg-emerald-50 text-emerald-900 border-emerald-200",
+  mixed: "bg-amber-50 text-amber-900 border-amber-200",
+  low: "bg-red-50 text-red-900 border-red-200",
 };
 
 const reasonLabelMap: Record<string, string> = {
@@ -157,7 +157,7 @@ export default function FakeDetectionResult({
     return (
       <div className="text-sm leading-relaxed mb-6 font-serif">
         <div className="flex items-center justify-between gap-3 mb-2">
-          <h4 className="font-semibold text-gray-800 text-xs uppercase tracking-wide font-sans">
+          <h4 className="font-semibold text-[#3f382f] text-xs uppercase tracking-wide font-sans">
             Deep Learning Analysis (LIME{limeModel ? ` - Model ${limeModel}` : ""})
           </h4>
           {onExplain && (
@@ -165,13 +165,13 @@ export default function FakeDetectionResult({
               type="button"
               onClick={onExplain}
               disabled={isExplaining}
-              className="inline-flex h-7 items-center rounded-full border border-gray-200 bg-white px-3 text-[11px] font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="inline-flex h-7 items-center rounded-full border border-[var(--line)] bg-[#fffdf8] px-3 text-[11px] font-semibold text-[#5f5548] hover:bg-[#f4eee2] disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isExplaining ? "Explaining..." : "Explain"}
             </button>
           )}
         </div>
-        <div className="p-3 bg-gray-50/50 rounded-xl border border-dotted border-gray-300">
+        <div className="p-3 bg-[#f7f1e6] rounded-xl border border-dotted border-[var(--line)]">
           {tokens.map((token, idx) => {
             const cleanWord = token.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
             const weight = weightMap.get(cleanWord);
@@ -232,8 +232,8 @@ export default function FakeDetectionResult({
   };
 
   return (
-    <section className="relative flex flex-col rounded-3xl bg-white/90 backdrop-blur border border-white/60 shadow-[0_30px_80px_-60px_rgba(15,23,42,0.6)] px-6 sm:px-8 py-6 sm:py-7 h-[600px] overflow-hidden">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-red-500 via-amber-500 to-emerald-500" />
+    <section className="relative flex flex-col rounded-3xl border border-[var(--line)] bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-6 sm:px-8 py-6 sm:py-7 h-[600px] overflow-hidden">
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#e8b074] via-[var(--accent)] to-[#12100d]" />
 
       <div className="relative flex flex-col h-full">
         <div className="flex flex-wrap items-center gap-3">
@@ -243,15 +243,15 @@ export default function FakeDetectionResult({
             {hasResult ? `Result: ${label}` : label}
           </div>
           {riskLevel && (
-            <span className="inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700">
+            <span className="inline-flex items-center rounded-full border border-[var(--line)] bg-[#fffdf8] px-3 py-1 text-xs font-semibold text-[#5f5548]">
               Risk: {riskLevel}
             </span>
           )}
-          <span className="text-xs text-gray-400">Hybrid credibility analysis</span>
+          <span className="text-xs text-[#8a7d6d]">Hybrid credibility analysis</span>
         </div>
 
         {hasResult && (
-          <p className="mt-4 text-sm text-gray-700 leading-relaxed font-medium">
+          <p className="mt-4 text-sm text-[#4f473c] leading-relaxed font-medium">
             {level === "high" &&
               "The hybrid model analysis indicates this content is likely credible and authentic."}
             {level === "low" &&
@@ -261,7 +261,7 @@ export default function FakeDetectionResult({
           </p>
         )}
 
-        <div className="mt-6 flex-1 min-h-0 rounded-2xl bg-gray-50/70 border border-dashed border-gray-200 px-4 py-4 text-sm text-gray-600 overflow-y-auto">
+        <div className="mt-6 flex-1 min-h-0 rounded-2xl bg-[#f7f1e6] border border-dashed border-[var(--line)] px-4 py-4 text-sm text-[#5f5548] overflow-y-auto">
           {uncertaintyReason && (
             <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900">
               <p className="font-semibold uppercase tracking-wide">
@@ -274,23 +274,23 @@ export default function FakeDetectionResult({
           )}
 
           {details && !uncertainty?.reason_message && (
-            <div className="whitespace-pre-wrap mb-4 text-xs text-gray-600">{details}</div>
+            <div className="whitespace-pre-wrap mb-4 text-xs text-[#5f5548]">{details}</div>
           )}
 
           {visibleSteps.length > 0 && (
             <div className="space-y-3 mb-6">
-              <h4 className="font-semibold text-gray-800 text-xs uppercase tracking-wide">
+              <h4 className="font-semibold text-[#3f382f] text-xs uppercase tracking-wide">
                 What we checked
               </h4>
               {visibleSteps.map((stepItem, index) => (
                 <div
                   key={`${stepItem.step}-${index}`}
-                  className="rounded-xl border border-gray-200 bg-white/80 px-3 py-3"
+                  className="rounded-xl border border-[var(--line)] bg-[#fffdf8] px-3 py-3"
                 >
-                  <div className="text-xs font-semibold text-gray-700">
+                  <div className="text-xs font-semibold text-[#4c4439]">
                     {stepItem.step}
                   </div>
-                  <p className="text-xs text-gray-600 mt-2">
+                  <p className="text-xs text-[#5f5548] mt-2">
                     {toFriendlyStepMessage(stepItem)}
                   </p>
                 </div>
@@ -299,16 +299,16 @@ export default function FakeDetectionResult({
           )}
 
           {!explanation?.length && canExplain && onExplain && (
-            <div className="mb-4 rounded-xl border border-sky-200 bg-sky-50 px-3 py-3 text-xs text-sky-900">
+            <div className="mb-4 rounded-xl border border-[var(--line)] bg-[var(--accent-soft)] px-3 py-3 text-xs text-[#0b4f43]">
               <p className="font-semibold uppercase tracking-wide">Explanation on demand</p>
-              <p className="mt-1 text-sky-800">
+              <p className="mt-1 text-[#0a5f50]">
                 LIME was skipped for speed. Click Explain to generate token-level highlights.
               </p>
               <button
                 type="button"
                 onClick={onExplain}
                 disabled={isExplaining}
-                className="mt-3 inline-flex h-8 items-center rounded-full bg-sky-700 px-4 text-[11px] font-semibold text-white hover:bg-sky-800 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="mt-3 inline-flex h-8 items-center rounded-full bg-[#12100d] px-4 text-[11px] font-semibold text-[#f7f1e6] hover:bg-[var(--accent)] disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {isExplaining ? "Explaining..." : "Explain"}
               </button>
@@ -318,7 +318,7 @@ export default function FakeDetectionResult({
           {renderHighlightedText()}
         </div>
 
-        <p className="mt-4 text-[11px] text-gray-500 shrink-0">
+        <p className="mt-4 text-[11px] text-[#7f7364] shrink-0">
           Results powered by Hybrid Deep Learning Analysis.
         </p>
       </div>

@@ -1,28 +1,80 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #efe9dc;
+  --background-soft: #f9f7f2;
+  --surface: #ffffff;
+  --surface-strong: #f8f3ea;
+  --foreground: #12100d;
+  --muted-foreground: #5f5548;
+  --line: rgba(74, 58, 38, 0.14);
+  --accent: #0e7c66;
+  --accent-strong: #0a6453;
+  --accent-soft: rgba(14, 124, 102, 0.12);
+  --warm: #e8b074;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-body);
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(70rem 40rem at 8% -10%, rgba(232, 176, 116, 0.28), transparent 60%),
+    radial-gradient(60rem 38rem at 100% 0%, rgba(14, 124, 102, 0.18), transparent 68%),
+    linear-gradient(180deg, #f6f0e3 0%, var(--background-soft) 58%, #f1ebdf 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), "Segoe UI", sans-serif;
+  min-height: 100vh;
+}
+
+.display-title {
+  font-family: var(--font-display), "Segoe UI", sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.ambient-grid {
+  position: relative;
+}
+
+.ambient-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(74, 58, 38, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 58, 38, 0.04) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.45), transparent 70%);
+}
+
+.glass-panel {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.78),
+    rgba(255, 255, 255, 0.6)
+  );
+  border: 1px solid var(--line);
+  box-shadow:
+    0 16px 40px rgba(25, 17, 6, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+}
+
+.section-reveal {
+  animation: fadeUp 0.72s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.delay-1 {
+  animation-delay: 0.12s;
+}
+
+.delay-2 {
+  animation-delay: 0.24s;
 }
 
 @keyframes authFadeUp {
@@ -43,4 +95,15 @@ body {
 .auth-appear-delay {
   animation: authFadeUp 0.85s ease-out both;
   animation-delay: 0.12s;
+}
+
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }

@@ -32,31 +32,32 @@ export default function HeroSection({
   };
 
   return (
-    <section className="mb-12 lg:mb-16 relative">
-      <div className="pointer-events-none absolute -top-16 left-0 h-40 w-40 rounded-full bg-sky-100/60 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-0 right-0 h-40 w-40 rounded-full bg-emerald-100/60 blur-3xl" />
+    <section className="mb-12 lg:mb-16 relative section-reveal">
+      <div className="pointer-events-none absolute -top-8 left-0 h-44 w-44 rounded-full bg-[rgba(232,176,116,0.36)] blur-3xl" />
+      <div className="pointer-events-none absolute top-4 right-16 h-36 w-36 rounded-full bg-[rgba(14,124,102,0.28)] blur-3xl" />
 
-      <p className="text-[11px] font-semibold tracking-[0.25em] text-gray-400 uppercase mb-3">
-        Powered by News API
-      </p>
+      <div className="mb-4 flex flex-wrap items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--muted-foreground)]">
+        <span className="rounded-full border border-[var(--line)] bg-[#fffdf8] px-3 py-1.5">
+          Powered by News API
+        </span>
+        <span className="rounded-full border border-[var(--line)] bg-[#fffdf8] px-3 py-1.5">
+          AI credibility signal
+        </span>
+      </div>
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] items-center">
-        <div>
-          <h1 className="text-3xl sm:text-[2.7rem] lg:text-[3.1rem] font-semibold sm:font-bold text-gray-900 leading-tight tracking-tight mb-4">
-            Stay informed with a
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.26fr)_minmax(0,1fr)] items-center glass-panel rounded-[2rem] p-6 sm:p-8 lg:p-10">
+        <div className="section-reveal delay-1">
+          <h1 className="display-title text-4xl sm:text-[3.35rem] lg:text-[3.8rem] font-bold leading-[0.96] text-[#17130f] mb-5">
+            Read the day.
             <br />
-            clean modern news
+            Verify the signal.
             <br />
-            experience
+            Decide with clarity.
           </h1>
-          <p className="text-sm sm:text-base text-gray-600 mb-4 max-w-xl">
-            Curated headlines and deep dives across technology, business and
-            world affairs, sports and culture, updated in real time.
+          <p className="text-sm sm:text-base text-[var(--muted-foreground)] mb-8 max-w-xl">
+            TruthLens blends real-time headlines with AI-assisted credibility cues,
+            so your brief stays fast, clean, and grounded in context.
           </p>
-          <div className="flex items-center gap-3 text-xs text-gray-500 mb-7">
-            <span className="h-2 w-2 rounded-full bg-emerald-500/70" />
-            Today&apos;s brief: 20+ stories refreshed hourly.
-          </div>
 
           <form
             onSubmit={handleSubmit}
@@ -66,18 +67,18 @@ export default function HeroSection({
               type="text"
               value={searchInput}
               onChange={(e) => onSearchInputChange(e.target.value)}
-              placeholder="Search stories, topics and publishers..."
-              className="flex-1 px-5 py-3 rounded-full border border-gray-200/70 bg-white/80 shadow-sm text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 focus:border-transparent placeholder:text-gray-400"
+              placeholder="Search a headline, publisher, topic..."
+              className="flex-1 px-5 py-3 rounded-full border border-[var(--line)] bg-[#fffdf8] shadow-[0_10px_24px_rgba(20,14,7,0.08)] text-sm text-[#16120e] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/45 placeholder:text-[#8d7f6f]"
             />
             <button
               type="submit"
-              className="shrink-0 px-6 py-3 rounded-full bg-gray-900 text-white text-sm font-semibold hover:bg-black transition-colors shadow-sm"
+              className="shrink-0 px-7 py-3 rounded-full bg-[#12100d] text-[#f7f1e6] text-sm font-semibold transition-colors shadow-[0_12px_24px_rgba(26,18,8,0.2)] hover:bg-[var(--accent)]"
             >
-              Search
+              Search Feed
             </button>
           </form>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5">
             {quickTopics.map((topic) => {
               const isActive = selectedCategory === topic.value;
               return (
@@ -85,10 +86,10 @@ export default function HeroSection({
                   key={topic.value}
                   type="button"
                   onClick={() => onCategoryChange(isActive ? "" : topic.value)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all duration-150 ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
                     isActive
-                      ? "bg-gray-900 text-white border-gray-900 shadow-sm"
-                      : "bg-white/80 text-gray-700 border-gray-200 hover:bg-gray-50 hover:-translate-y-0.5"
+                      ? "bg-[#12100d] text-[#f6f1e6] border-[#12100d] shadow-[0_8px_20px_rgba(22,16,8,0.18)]"
+                      : "bg-[#fffdf8] text-[var(--muted-foreground)] border-[var(--line)] hover:bg-[#f4eee2]"
                   }`}
                 >
                   {topic.label}
@@ -98,13 +99,13 @@ export default function HeroSection({
           </div>
         </div>
 
-        <div className="hidden lg:flex items-center justify-center">
+        <div className="hidden lg:flex items-center justify-center section-reveal delay-2">
           <div className="w-full max-w-md">
             <div className="overflow-visible bg-transparent">
               <Image
                 src={HeroImage}
-                alt="Illustration of a modern news experience"
-                className="w-full h-auto drop-shadow-[0_30px_70px_rgba(15,23,42,0.25)]"
+                alt="Illustration of a modern news verification workflow"
+                className="w-full h-auto drop-shadow-[0_24px_50px_rgba(14,18,16,0.35)]"
                 priority
               />
             </div>

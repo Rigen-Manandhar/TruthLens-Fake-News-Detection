@@ -12,13 +12,13 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    "w-full h-12 rounded-full font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500/70 disabled:opacity-50 disabled:cursor-not-allowed";
+    "w-full h-12 rounded-full font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--accent)]/50 disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variantStyles = {
     primary:
-      "bg-gradient-to-r from-blue-600 via-sky-600 to-cyan-600 text-white shadow-sm shadow-blue-600/25 hover:from-blue-700 hover:via-sky-700 hover:to-cyan-700",
+      "bg-[#12100d] text-[#f7f1e6] shadow-[0_12px_24px_rgba(24,16,8,0.2)] hover:bg-[var(--accent)]",
     secondary:
-      "border border-gray-200 bg-white/80 text-gray-700 shadow-sm hover:border-gray-300 hover:bg-white",
+      "border border-[var(--line)] bg-[#fffdf8] text-[var(--muted-foreground)] shadow-[0_8px_20px_rgba(24,16,8,0.08)] hover:bg-[#f5efe4]",
   };
 
   return (

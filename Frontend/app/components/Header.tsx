@@ -78,37 +78,39 @@ export default function Header() {
   const avatarInitial = rawInitial.toUpperCase();
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 border-b border-gray-100 bg-white/80 backdrop-blur-md">
+    <header className="fixed top-0 inset-x-0 z-50 border-b border-[var(--line)] bg-[#f7f1e6]/75 backdrop-blur-xl">
       <div className="max-w-6xl xl:max-w-7xl mx-auto flex items-center justify-between gap-6 px-4 sm:px-6 py-3.5">
         <div className="flex items-center gap-3">
           <Logo />
         </div>
 
-        {/* Center navigation */}
-        <nav className="hidden md:flex items-center justify-center gap-8 text-sm text-gray-600">
+        <nav className="hidden md:flex items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white/60 p-1 text-sm text-[var(--muted-foreground)] shadow-[0_10px_30px_rgba(22,16,8,0.06)]">
           <Link
             href="/"
-            className={`transition-colors ${
-              isNews ? "font-semibold text-gray-900" : "hover:text-gray-900"
+            className={`rounded-full px-4 py-1.5 transition-all ${
+              isNews
+                ? "bg-[#12100d] text-[#f7f1e6] font-semibold"
+                : "hover:text-[#12100d]"
             }`}
           >
             News
           </Link>
           <Link
             href="/fake-detection"
-            className={`transition-colors ${
-              isFake ? "font-semibold text-gray-900" : "hover:text-gray-900"
+            className={`rounded-full px-4 py-1.5 transition-all ${
+              isFake
+                ? "bg-[#12100d] text-[#f7f1e6] font-semibold"
+                : "hover:text-[#12100d]"
             }`}
           >
             Fake News Detection
           </Link>
         </nav>
 
-        {/* Auth actions */}
         <nav className="flex items-center gap-2 sm:gap-3">
           {isLoadingUser ? (
             <div
-              className="h-9 w-9 rounded-full bg-gray-100 animate-pulse"
+              className="h-9 w-9 rounded-full bg-[#e7dece] animate-pulse"
               aria-hidden="true"
             />
           ) : user ? (
@@ -116,7 +118,7 @@ export default function Header() {
               <button
                 type="button"
                 onClick={() => setIsMenuOpen((prev) => !prev)}
-                className="h-9 w-9 rounded-full bg-gray-900 text-white text-sm font-semibold flex items-center justify-center shadow-sm hover:bg-black transition-colors"
+                className="h-9 w-9 rounded-full bg-[#12100d] text-[#f7f1e6] text-sm font-semibold flex items-center justify-center shadow-[0_10px_22px_rgba(23,17,10,0.25)] transition-colors hover:bg-[#0e7c66]"
                 aria-haspopup="menu"
                 aria-expanded={isMenuOpen}
                 title="Account settings"
@@ -124,10 +126,10 @@ export default function Header() {
                 {avatarInitial}
               </button>
               {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-40 rounded-xl border border-gray-100 bg-white shadow-lg py-2 text-sm">
+                <div className="absolute right-0 mt-2 w-44 rounded-2xl border border-[var(--line)] bg-[#fffdf8] shadow-[0_20px_40px_rgba(20,16,8,0.14)] py-2 text-sm">
                   <Link
                     href="/settings"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-50"
+                    className="block px-4 py-2 text-[var(--muted-foreground)] hover:bg-[#f4eee2]"
                   >
                     Settings
                   </Link>
@@ -137,8 +139,8 @@ export default function Header() {
                     disabled={isLoggingOut}
                     className={`block w-full px-4 py-2 text-left transition-colors ${
                       isLoggingOut
-                        ? "cursor-not-allowed text-gray-400"
-                        : "text-gray-700 hover:bg-gray-50"
+                        ? "cursor-not-allowed text-[#9f9382]"
+                        : "text-[var(--muted-foreground)] hover:bg-[#f4eee2]"
                     }`}
                   >
                     {isLoggingOut ? "Logging out..." : "Log out"}
@@ -150,13 +152,13 @@ export default function Header() {
             <>
               <Link
                 href="/login"
-                className="hidden sm:inline-flex items-center px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                className="hidden sm:inline-flex items-center px-4 py-2 rounded-full text-xs sm:text-sm font-semibold text-[var(--muted-foreground)] hover:text-[#12100d] hover:bg-[#f4eee2] transition-colors"
               >
                 Log in
               </Link>
               <Link
                 href="/signup"
-                className="inline-flex items-center px-4 sm:px-5 py-2 rounded-full bg-gray-900 text-white text-xs sm:text-sm font-semibold hover:bg-black transition-colors shadow-sm"
+                className="inline-flex items-center px-4 sm:px-5 py-2 rounded-full bg-[#12100d] text-[#f7f1e6] text-xs sm:text-sm font-semibold hover:bg-[var(--accent)] transition-colors shadow-[0_12px_24px_rgba(26,18,8,0.22)]"
               >
                 Get started
               </Link>

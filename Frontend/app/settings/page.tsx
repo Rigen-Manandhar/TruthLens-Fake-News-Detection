@@ -161,57 +161,57 @@ export default function SettingsPage() {
   const authLabel = profile?.hasPassword ? "Password login" : "Google connected";
 
   return (
-    <div className="min-h-screen pt-20 bg-[radial-gradient(120%_120%_at_0%_0%,#f8fafc_0%,#ffffff_55%,#f1f5f9_100%)] relative overflow-hidden">
-      <div className="pointer-events-none absolute -top-28 -left-20 h-72 w-72 rounded-full bg-gradient-to-br from-sky-100 via-white to-emerald-100 blur-3xl opacity-80" />
-      <div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full bg-gradient-to-tr from-amber-100 via-white to-sky-100 blur-3xl opacity-70" />
+    <div className="relative min-h-screen pt-24 ambient-grid overflow-hidden">
+      <div className="pointer-events-none absolute -top-16 -left-16 h-72 w-72 rounded-full bg-[rgba(232,176,116,0.28)] blur-3xl" />
+      <div className="pointer-events-none absolute top-[8rem] -right-14 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
       <main className="relative max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14 space-y-8">
         <header className="space-y-3">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/70 px-3 py-1 text-[11px] font-semibold tracking-[0.25em] text-gray-500 uppercase shadow-sm">
-            <span className="h-2 w-2 rounded-full bg-emerald-500/70" />
+          <div className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[#fffdf8] px-3 py-1 text-[11px] font-semibold tracking-[0.25em] text-[var(--muted-foreground)] uppercase shadow-[0_8px_20px_rgba(20,16,8,0.06)]">
+            <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
             Account
           </div>
-          <h1 className="text-3xl sm:text-[2.3rem] font-semibold text-gray-900 leading-tight tracking-tight">
+          <h1 className="display-title text-4xl sm:text-[2.8rem] font-bold text-[#17130f] leading-tight tracking-tight">
             Settings
           </h1>
-          <p className="text-sm sm:text-base text-gray-600 max-w-2xl">
+          <p className="text-sm sm:text-base text-[var(--muted-foreground)] max-w-2xl">
             Manage your profile details and security preferences.
           </p>
         </header>
 
         {isLoading ? (
-          <section className="rounded-3xl bg-white/80 border border-white/70 shadow-sm p-8">
-            <div className="h-5 w-40 bg-gray-200 rounded-full animate-pulse" />
-            <div className="mt-6 h-10 w-full bg-gray-200 rounded-xl animate-pulse" />
-            <div className="mt-4 h-10 w-full bg-gray-200 rounded-xl animate-pulse" />
+          <section className="rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] shadow-[0_16px_30px_rgba(24,16,8,0.09)] p-8">
+            <div className="h-5 w-40 bg-[#e6dccb] rounded-full animate-pulse" />
+            <div className="mt-6 h-10 w-full bg-[#e6dccb] rounded-xl animate-pulse" />
+            <div className="mt-4 h-10 w-full bg-[#e6dccb] rounded-xl animate-pulse" />
           </section>
         ) : (
           <section className="space-y-6">
-            <div className="rounded-3xl bg-white/90 border border-white/70 shadow-sm p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] shadow-[0_16px_30px_rgba(24,16,8,0.09)] p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-full bg-gray-900/10 text-gray-700 flex items-center justify-center text-sm font-semibold">
+                <div className="h-12 w-12 rounded-full bg-[#12100d]/10 text-[#4f473c] flex items-center justify-center text-sm font-semibold">
                   {profile?.name?.[0]?.toUpperCase() ?? "U"}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">
+                  <p className="text-sm font-semibold text-[#17130f]">
                     {profile?.name || "Your account"}
                   </p>
-                  <p className="text-xs text-gray-500">{profile?.email}</p>
+                  <p className="text-xs text-[var(--muted-foreground)]">{profile?.email}</p>
                 </div>
               </div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1 text-[11px] font-semibold text-gray-600">
-                <span className="h-2 w-2 rounded-full bg-emerald-500/70" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[#fffdf8] px-3 py-1 text-[11px] font-semibold text-[var(--muted-foreground)]">
+                <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
                 {authLabel}
               </div>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
-              <div className="rounded-3xl bg-white/90 border border-white/70 shadow-sm p-6 sm:p-8 space-y-6">
+              <div className="rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] shadow-[0_16px_30px_rgba(24,16,8,0.09)] p-6 sm:p-8 space-y-6">
                 <div>
-                  <p className="text-[11px] font-semibold tracking-[0.25em] text-gray-400 uppercase">
+                  <p className="text-[11px] font-semibold tracking-[0.25em] text-[#857969] uppercase">
                     Profile
                   </p>
-                  <h2 className="text-xl font-semibold text-gray-900 mt-2">
+                  <h2 className="display-title text-2xl font-bold text-[#17130f] mt-2">
                     Personal details
                   </h2>
                 </div>
@@ -232,26 +232,26 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="flex items-center justify-between gap-4">
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-[var(--muted-foreground)]">
                     Updates are reflected across your account and sessions.
                   </p>
                   <Button
                     type="button"
                     onClick={handleProfileSave}
                     disabled={isSaving}
-                    className="w-auto px-6 bg-gray-900 text-white hover:bg-black"
+                    className="w-auto px-6"
                   >
                     {isSaving ? "Saving..." : "Save changes"}
                   </Button>
                 </div>
               </div>
 
-              <div className="rounded-3xl bg-white/90 border border-white/70 shadow-sm p-6 sm:p-8 space-y-5">
+              <div className="rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] shadow-[0_16px_30px_rgba(24,16,8,0.09)] p-6 sm:p-8 space-y-5">
                 <div>
-                  <p className="text-[11px] font-semibold tracking-[0.25em] text-gray-400 uppercase">
+                  <p className="text-[11px] font-semibold tracking-[0.25em] text-[#857969] uppercase">
                     Security
                   </p>
-                  <h2 className="text-xl font-semibold text-gray-900 mt-2">
+                  <h2 className="display-title text-2xl font-bold text-[#17130f] mt-2">
                     Password
                   </h2>
                 </div>
@@ -283,23 +283,23 @@ export default function SettingsPage() {
                       type="button"
                       onClick={handlePasswordUpdate}
                       disabled={isUpdatingPassword}
-                      className="w-auto px-6 bg-gray-900 text-white hover:bg-black"
+                      className="w-auto px-6"
                     >
                       {isUpdatingPassword ? "Updating..." : "Update password"}
                     </Button>
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-[var(--muted-foreground)]">
                     This account uses Google sign-in. Password changes are not
                     available.
                   </p>
                 )}
 
-                <div className="border-t border-gray-100 pt-5">
-                  <h3 className="text-sm font-semibold text-gray-900">
+                <div className="border-t border-[var(--line)] pt-5">
+                  <h3 className="text-sm font-semibold text-[#17130f]">
                     Sign out
                   </h3>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-[var(--muted-foreground)] mt-2">
                     Sign out of your account on this device.
                   </p>
                   <Button

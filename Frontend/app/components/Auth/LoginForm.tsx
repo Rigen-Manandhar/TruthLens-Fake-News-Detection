@@ -45,20 +45,20 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="relative w-full max-w-md rounded-3xl bg-white/90 backdrop-blur border border-white/60 shadow-[0_30px_80px_-60px_rgba(15,23,42,0.6)] p-8 sm:p-9 overflow-hidden auth-appear-delay">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-sky-500 to-emerald-500" />
-      <div className="absolute -top-16 -right-10 h-32 w-32 rounded-full bg-blue-100/70 blur-3xl" />
-      <div className="absolute -bottom-16 -left-10 h-32 w-32 rounded-full bg-emerald-100/60 blur-3xl" />
+    <div className="relative w-full max-w-md rounded-3xl border border-[var(--line)] bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] p-8 sm:p-9 overflow-hidden auth-appear-delay">
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#12100d] via-[var(--accent)] to-[#e8b074]" />
+      <div className="absolute -top-16 -right-10 h-32 w-32 rounded-full bg-[rgba(14,124,102,0.14)] blur-3xl" />
+      <div className="absolute -bottom-16 -left-10 h-32 w-32 rounded-full bg-[rgba(232,176,116,0.2)] blur-3xl" />
 
       <div className="relative">
         <div className="mb-6">
-          <p className="text-[11px] font-semibold tracking-[0.25em] text-gray-400 uppercase">
+          <p className="text-[11px] font-semibold tracking-[0.25em] text-[#847868] uppercase">
             Secure access
           </p>
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+          <h1 className="display-title text-3xl font-bold text-[#17130f] mb-2">
             Welcome back
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-[var(--muted-foreground)]">
             Sign in to continue your TruthLens experience.
           </p>
         </div>
@@ -83,7 +83,7 @@ export default function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-[var(--muted-foreground)]">
             Use your account password or continue with Google.
           </p>
 
@@ -91,10 +91,10 @@ export default function LoginForm() {
             {isLoading ? "Logging in..." : "Continue"}
           </Button>
 
-          <div className="flex items-center gap-3 text-xs text-gray-400">
-            <div className="h-px flex-1 bg-gray-200" />
+          <div className="flex items-center gap-3 text-xs text-[#8a7d6d]">
+            <div className="h-px flex-1 bg-[var(--line)]" />
             <span>or</span>
-            <div className="h-px flex-1 bg-gray-200" />
+            <div className="h-px flex-1 bg-[var(--line)]" />
           </div>
 
           <Button
@@ -128,11 +128,11 @@ export default function LoginForm() {
             Continue with Google
           </Button>
 
-          <p className="text-center text-sm text-gray-600 mt-3">
+          <p className="text-center text-sm text-[var(--muted-foreground)] mt-3">
             Don&apos;t have an account?{" "}
             <Link
               href="/signup"
-              className="text-gray-900 font-medium hover:underline"
+              className="text-[#17130f] font-semibold hover:text-[var(--accent)]"
             >
               Create one
             </Link>

@@ -105,7 +105,7 @@ export default function NewsCard({ article, analysis }: NewsCardProps) {
             {getAnalysisText(analysis)}
           </span>
         </div>
-        <h3 className="display-title text-lg sm:text-[1.3rem] font-bold leading-tight text-[#17130f] mb-2 line-clamp-2">
+        <h3 className="display-title text-lg sm:text-[1.3rem] font-bold text-[#17130f] mb-2 line-clamp-2">
           {article.title}
         </h3>
         {article.description && (

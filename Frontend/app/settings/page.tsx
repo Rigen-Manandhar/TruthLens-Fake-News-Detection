@@ -171,7 +171,7 @@ export default function SettingsPage() {
             <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
             Account
           </div>
-          <h1 className="display-title text-4xl sm:text-[2.8rem] font-bold text-[#17130f] leading-tight tracking-tight">
+          <h1 className="display-title text-4xl sm:text-[2.8rem] font-bold text-[#17130f] tracking-tight">
             Settings
           </h1>
           <p className="text-sm sm:text-base text-[var(--muted-foreground)] max-w-2xl">

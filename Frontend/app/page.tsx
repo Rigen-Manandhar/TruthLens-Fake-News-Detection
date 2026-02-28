@@ -34,7 +34,7 @@ export default function Home() {
               <p className="text-[11px] font-semibold tracking-[0.25em] text-[var(--muted-foreground)] uppercase">
                 Curated stream
               </p>
-              <h2 className="display-title text-3xl sm:text-[2.65rem] font-bold text-[#17130f] mt-2 leading-tight">
+              <h2 className="display-title text-3xl sm:text-[2.65rem] font-bold text-[#17130f] mt-2">
                 Today&apos;s credibility briefings
               </h2>
               <p className="text-sm text-[var(--muted-foreground)] mt-2 max-w-xl">

@@ -45,6 +45,8 @@ interface NewsGridProps {
 
 const ANALYSIS_CONCURRENCY = 3;
 const ANALYSIS_PRIORITY_COUNT = 6;
+const REQUEST_PAGE_SIZE = "30";
+const MAX_DISPLAY_ARTICLES = 19;
 
 type AnalysisMap = Record<string, NewsAnalysis>;
 
@@ -282,7 +284,7 @@ export default function NewsGrid({
       try {
         const params = new URLSearchParams({
           country,
-          pageSize: "20",
+          pageSize: REQUEST_PAGE_SIZE,
         });
 
         if (category) {
@@ -300,7 +302,8 @@ export default function NewsGrid({
           throw new Error(data.error || data.status || "Failed to fetch news");
         }
 
-        const articles = data.articles || [];
+        const fetchedArticles = data.articles || [];
+        const articles = uniqueByUrl(fetchedArticles).slice(0, MAX_DISPLAY_ARTICLES);
 
         if (runIdRef.current !== runId || controller.signal.aborted) {
           return;
@@ -389,6 +392,9 @@ export default function NewsGrid({
 
   const [featured, ...rest] = news;
   const featuredAnalysis = featured ? analysisByUrl[featured.url] : undefined;
+  const fillerArticle = rest.length > 0 && rest.length % 3 === 2
+    ? rest[rest.length - 1]
+    : null;
 
   return (
     <div className="space-y-8">
@@ -409,7 +415,7 @@ export default function NewsGrid({
               <p className="text-[11px] font-semibold tracking-[0.3em] uppercase">
                 Top story
               </p>
-              <h3 className="display-title text-xl sm:text-3xl font-bold leading-tight mt-2 line-clamp-2">
+              <h3 className="display-title text-xl sm:text-3xl font-bold mt-2 line-clamp-2">
                 {featured.title}
               </h3>
             </div>
@@ -454,6 +460,16 @@ export default function NewsGrid({
             analysis={analysisByUrl[article.url]}
           />
         ))}
+
+        {fillerArticle && (
+          <div className="hidden lg:block">
+            <NewsCard
+              key={`filler-${fillerArticle.url}`}
+              article={fillerArticle}
+              analysis={analysisByUrl[fillerArticle.url]}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

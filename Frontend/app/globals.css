@@ -34,6 +34,9 @@ body {
 .display-title {
   font-family: var(--font-display), "Segoe UI", sans-serif;
   letter-spacing: -0.03em;
+  line-height: 1.26;
+  padding-bottom: 0.12em;
+  text-rendering: geometricPrecision;
 }
 
 .ambient-grid {

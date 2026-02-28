@@ -1,20 +1,18 @@
 import type { Metadata } from "next";
-import { Manrope, Syne } from "next/font/google";
+import { Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
 import ToastProvider from "./components/ToastProvider";
 import AuthSessionProvider from "./components/Auth/SessionProvider";
 
-const bodyFont = Manrope({
+const bodyFont = Instrument_Sans({
   variable: "--font-body",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
 });
 
-const displayFont = Syne({
+const displayFont = Instrument_Sans({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {

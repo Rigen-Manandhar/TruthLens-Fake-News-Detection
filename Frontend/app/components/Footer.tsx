@@ -4,9 +4,6 @@ export default function Footer() {
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="display-title text-xl font-bold text-[#17130f]">TruthLens</div>
-          <p className="mt-1 text-xs text-[#716658]">
-            AI-assisted newsroom intelligence for everyday readers.
-          </p>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-[#736759]">
           <span className="cursor-default transition-colors hover:text-[#12100d]">About</span>
@@ -21,4 +18,3 @@ export default function Footer() {
     </footer>
   );
 }
-

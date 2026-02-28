@@ -13,7 +13,7 @@ export default function LoginPage() {
               <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
               Secure sign-in
             </div>
-            <h1 className="display-title text-4xl sm:text-[2.9rem] font-bold text-[#17130f] leading-tight tracking-tight">
+            <h1 className="display-title text-4xl sm:text-[2.9rem] font-bold text-[#17130f] tracking-tight">
               Sign in to TruthLens
             </h1>
             <p className="text-sm sm:text-base text-[var(--muted-foreground)] max-w-md">

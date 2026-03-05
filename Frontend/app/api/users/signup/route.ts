@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import clientPromise from "@/lib/mongodb-client";
+import { DEFAULT_USER_PREFERENCES } from "@/lib/shared/settings";
+import { validatePasswordStrength } from "@/lib/server/password-policy";
 
 export const runtime = "nodejs";
 
@@ -15,11 +17,13 @@ export async function POST(req: Request) {
       );
     }
 
-    if (typeof password !== "string" || password.length < 8) {
-      return NextResponse.json(
-        { error: "Password must be at least 8 characters." },
-        { status: 400 }
-      );
+    if (typeof password !== "string") {
+      return NextResponse.json({ error: "Password is required." }, { status: 400 });
+    }
+
+    const passwordError = validatePasswordStrength(password);
+    if (passwordError) {
+      return NextResponse.json({ error: passwordError }, { status: 400 });
     }
 
     const normalizedEmail = String(email).trim().toLowerCase();
@@ -46,6 +50,18 @@ export async function POST(req: Request) {
       fullName: normalizedName,
       email: normalizedEmail,
       passwordHash,
+      preferences: DEFAULT_USER_PREFERENCES,
+      security: {
+        hasPassword: true,
+        lastPasswordChangedAt: new Date(),
+        sessionVersion: 1,
+        reauthUntil: null,
+      },
+      privacy: {
+        deletionRequestedAt: null,
+        scheduledDeletionAt: null,
+        deletedAt: null,
+      },
       emailVerified: null,
       image: null,
       createdAt: new Date(),

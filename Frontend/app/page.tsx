@@ -1,14 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NewsGrid from "./components/news/NewsGrid";
 import HeroSection from "./components/news/HeroSection";
 import Footer from "./components/Footer";
+import { normalizePreferences } from "@/lib/shared/settings";
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [country, setCountry] = useState("us");
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadPreferences = async () => {
+      try {
+        const res = await fetch("/api/users/me", { cache: "no-store" });
+        if (!res.ok) {
+          return;
+        }
+
+        const data = (await res.json()) as {
+          user?: { preferences?: unknown };
+        };
+
+        const prefs = normalizePreferences(data.user?.preferences);
+        if (!mounted) {
+          return;
+        }
+
+        setCountry(prefs.newsCountry);
+        setSelectedCategory(prefs.newsCategories[0] ?? "");
+      } catch {
+        // Ignore preference loading failures for unauthenticated users.
+      }
+    };
+
+    void loadPreferences();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleSearchSubmit = () => {
     setSearchQuery(searchInput.trim());
@@ -48,7 +83,7 @@ export default function Home() {
 
           <div>
             <NewsGrid
-              country="us"
+              country={country}
               category={selectedCategory}
               query={searchQuery}
             />

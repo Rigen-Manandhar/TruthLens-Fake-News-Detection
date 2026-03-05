@@ -1,11 +1,13 @@
 import jwt from "jsonwebtoken";
 import type { NextResponse } from "next/server";
 
-const AUTH_SECRET = process.env.AUTH_SECRET;
-
-if (!AUTH_SECRET) {
-  throw new Error("AUTH_SECRET is not defined");
-}
+const AUTH_SECRET = (() => {
+  const value = process.env.AUTH_SECRET;
+  if (!value) {
+    throw new Error("AUTH_SECRET is not defined");
+  }
+  return value;
+})();
 
 export type AuthPayload = {
   sub: string;

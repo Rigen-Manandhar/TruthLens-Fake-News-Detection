@@ -45,7 +45,7 @@ export default function HeroSection({
         </span>
       </div>
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.26fr)_minmax(0,1fr)] items-center glass-panel rounded-[2rem] p-6 sm:p-8 lg:p-10">
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.26fr)_minmax(0,1fr)] items-center py-6 sm:py-8 lg:py-10">
         <div className="section-reveal delay-1">
           <h1 className="display-title text-4xl sm:text-[3.35rem] lg:text-[3.8rem] font-bold text-[#17130f] mb-5">
             Read the day.

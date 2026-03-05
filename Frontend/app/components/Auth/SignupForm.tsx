@@ -20,8 +20,8 @@ export default function SignupForm() {
     e.preventDefault();
 
     // Basic validation
-    if (password.length < 8) {
-      toast.error("Password must be at least 8 characters.");
+    if (password.length < 10) {
+      toast.error("Password must be at least 10 characters.");
       return;
     }
 
@@ -119,7 +119,7 @@ export default function SignupForm() {
           label="Password"
           id="password"
           type="password"
-          placeholder="Minimum 8 characters"
+          placeholder="Minimum 10 characters"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -135,7 +135,7 @@ export default function SignupForm() {
           required
         />
           <p className="text-xs text-[var(--muted-foreground)]">
-            Use at least 8 characters. You can also sign up with Google.
+            Use at least 10 characters. You can also sign up with Google.
           </p>
 
           <Button type="submit" disabled={isLoading} className="mt-2">

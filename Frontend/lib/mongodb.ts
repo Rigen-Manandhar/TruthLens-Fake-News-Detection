@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
 
-const MONGO_URL = process.env.MONGO_URL;
-
-if (!MONGO_URL) {
-  throw new Error("MONGO_URL is not defined");
-}
+const MONGO_URL = (() => {
+  const value = process.env.MONGO_URL;
+  if (!value) {
+    throw new Error("MONGO_URL is not defined");
+  }
+  return value;
+})();
 
 type MongooseCache = {
   conn: typeof mongoose | null;
@@ -12,7 +14,6 @@ type MongooseCache = {
 };
 
 declare global {
-  // eslint-disable-next-line no-var
   var mongoose: MongooseCache | undefined;
 }
 

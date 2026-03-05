@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FakeDetectionForm from "../components/fakeDetection/FakeDetectionForm";
 import FakeDetectionResult from "../components/fakeDetection/FakeDetectionResult";
 import Footer from "../components/Footer";
+import { normalizePreferences } from "@/lib/shared/settings";
 
 type CredibilityLevel = "high" | "mixed" | "low";
 type InputMode = "auto" | "headline_only" | "full_article" | "headline_plus_article";
@@ -92,6 +93,8 @@ export default function FakeDetectionPage() {
   const [articleText, setArticleText] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
   const [inputMode, setInputMode] = useState<InputMode>("auto");
+  const [preferredExplanationMode, setPreferredExplanationMode] =
+    useState<"auto" | "none">("auto");
   const [isLoading, setIsLoading] = useState(false);
   const [isExplaining, setIsExplaining] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -113,6 +116,39 @@ export default function FakeDetectionPage() {
   const [fetchMetadata, setFetchMetadata] = useState<FetchMetadata | undefined>(undefined);
   const [limeModel, setLimeModel] = useState<"A" | "B" | null | undefined>(undefined);
   const [lastPayload, setLastPayload] = useState<PredictPayload | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadPreferences = async () => {
+      try {
+        const res = await fetch("/api/users/me", { cache: "no-store" });
+        if (!res.ok) {
+          return;
+        }
+
+        const data = (await res.json()) as {
+          user?: { preferences?: unknown };
+        };
+        const prefs = normalizePreferences(data.user?.preferences);
+
+        if (!mounted) {
+          return;
+        }
+
+        setInputMode(prefs.detectionInputMode);
+        setPreferredExplanationMode(prefs.detectionExplanationMode);
+      } catch {
+        // Ignore for unauthenticated users.
+      }
+    };
+
+    void loadPreferences();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const applyPrediction = (data: PredictResponse, payload: PredictPayload) => {
     const level = mapVerdictToLevel(data.verdict);
@@ -183,7 +219,7 @@ export default function FakeDetectionPage() {
     setLimeModel(undefined);
 
     try {
-      const data = await runPrediction(payload, "auto");
+      const data = await runPrediction(payload, preferredExplanationMode);
       applyPrediction(data, payload);
     } catch (e: unknown) {
       const message =
@@ -225,10 +261,6 @@ export default function FakeDetectionPage() {
       <main className="relative max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14 space-y-10">
         <header className="space-y-4 max-w-2xl">
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[#fffdf8] px-3 py-1 text-[11px] font-semibold tracking-[0.25em] text-[var(--muted-foreground)] uppercase shadow-[0_8px_20px_rgba(20,16,8,0.06)]">
-              <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
-              Analysis tools
-            </div>
             <h1 className="display-title text-4xl sm:text-[2.9rem] font-bold text-[#17130f] tracking-tight">
               Fake News Detection
             </h1>

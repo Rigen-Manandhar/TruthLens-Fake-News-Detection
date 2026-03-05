@@ -10,7 +10,7 @@ import { getUserContext } from "@/lib/server/user-context";
 
 export const runtime = "nodejs";
 
-export async function PATCH(req: Request) {
+export async function POST(req: Request) {
   const context = await getUserContext(req);
   if (!context) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -20,7 +20,7 @@ export async function PATCH(req: Request) {
 
   const ip = getClientIp(req);
   const rate = checkRateLimit({
-    key: `password-change:${context.userId}:${ip}`,
+    key: `password-setup:${context.userId}:${ip}`,
     limit: 5,
     windowMs: 15 * 60 * 1000,
   });
@@ -33,48 +33,24 @@ export async function PATCH(req: Request) {
 
   if (!hasRecentReauth(context.user)) {
     return NextResponse.json(
-      { error: "Please re-authenticate before changing your password." },
+      { error: "Please re-authenticate before setting a password." },
       { status: 403 }
     );
   }
 
-  const payload = (await req.json().catch(() => ({}))) as Record<string, unknown>;
-  const currentPassword =
-    typeof payload.currentPassword === "string" ? payload.currentPassword : "";
-  const newPassword = typeof payload.newPassword === "string" ? payload.newPassword : "";
-
-  if (!currentPassword || !newPassword) {
+  if (typeof context.user.passwordHash === "string" && context.user.passwordHash) {
     return NextResponse.json(
-      { error: "Current password and new password are required." },
+      { error: "Password already exists for this account." },
       { status: 400 }
     );
   }
 
-  if (newPassword === currentPassword) {
-    return NextResponse.json({ error: "New password must be different." }, { status: 400 });
-  }
+  const payload = (await req.json().catch(() => ({}))) as Record<string, unknown>;
+  const newPassword = typeof payload.newPassword === "string" ? payload.newPassword : "";
 
   const passwordError = validatePasswordStrength(newPassword);
   if (passwordError) {
     return NextResponse.json({ error: passwordError }, { status: 400 });
-  }
-
-  const user = context.user;
-
-  if (typeof user.passwordHash !== "string" || !user.passwordHash) {
-    return NextResponse.json(
-      { error: "Password is not set for this account." },
-      { status: 400 }
-    );
-  }
-
-  const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
-
-  if (!isValid) {
-    return NextResponse.json(
-      { error: "Current password is incorrect." },
-      { status: 401 }
-    );
   }
 
   const passwordHash = await bcrypt.hash(newPassword, 12);
@@ -90,7 +66,7 @@ export async function PATCH(req: Request) {
 
   await logAuditEvent(context.db, {
     userId: context.userId,
-    eventType: "password.changed",
+    eventType: "password.setup",
     metadata: { ip },
   });
 

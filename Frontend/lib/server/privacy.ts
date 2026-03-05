@@ -5,8 +5,13 @@ import { normalizePreferences } from "@/lib/shared/settings";
 export type PrivacyJobStatus = "pending" | "processing" | "completed" | "failed" | "cancelled";
 
 export const EXPORT_URL_TTL_MS = 24 * 60 * 60 * 1000;
-const EXPORT_SIGNING_SECRET =
-  process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET ?? "truthlens-export-dev-secret";
+const EXPORT_SIGNING_SECRET = (() => {
+  const secret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
+  if (!secret || !secret.trim()) {
+    throw new Error("AUTH_SECRET or NEXTAUTH_SECRET is required for privacy export signing.");
+  }
+  return secret;
+})();
 
 const toIso = (value: unknown): string | null => {
   if (value instanceof Date) {

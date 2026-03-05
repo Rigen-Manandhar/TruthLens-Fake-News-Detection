@@ -164,7 +164,3 @@ The popup defaults to calling `http://localhost:3000/api/predict` via the fronte
 - Never commit real `.env` files or credentials.
 - `AUTH_SECRET` or `NEXTAUTH_SECRET` must be set for secure export URL signing.
 - Keep `MAINTENANCE_API_KEY` private; it protects account deletion processing route.
-
-## License
-
-This project is licensed under the MIT License. See [LICENSE](LICENSE).

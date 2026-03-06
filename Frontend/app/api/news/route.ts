@@ -6,9 +6,14 @@ export async function GET(request: Request) {
   const category = searchParams.get("category") || "";
   const pageSize = searchParams.get("pageSize") || "20";
   const query = searchParams.get("q") || "";
+  const apiKey = process.env.NEWS_API_KEY?.trim();
 
-  
-  const apiKey = process.env.NEWS_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json(
+      { error: "NEWS_API_KEY is not configured." },
+      { status: 503 }
+    );
+  }
 
   try {
     // NewsAPI URL

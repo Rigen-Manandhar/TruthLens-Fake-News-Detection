@@ -76,7 +76,7 @@ export default function SignupForm() {
   };
 
   return (
-    <div className="relative w-full max-w-md rounded-3xl border border-[var(--line)] bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] p-8 sm:p-9 overflow-hidden auth-appear-delay">
+    <div className="relative w-full max-w-md rounded-3xl border border-[var(--line)] bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] p-6 sm:p-8 overflow-hidden auth-appear-delay">
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#12100d] via-[var(--accent)] to-[#e8b074]" />
       <div className="absolute -top-16 -right-10 h-32 w-32 rounded-full bg-[rgba(14,124,102,0.14)] blur-3xl" />
       <div className="absolute -bottom-16 -left-10 h-32 w-32 rounded-full bg-[rgba(232,176,116,0.2)] blur-3xl" />
@@ -86,7 +86,7 @@ export default function SignupForm() {
           <p className="text-[11px] font-semibold tracking-[0.25em] text-[#847868] uppercase">
             Start smart
           </p>
-          <h1 className="display-title text-3xl font-bold text-[#17130f] mb-2">
+          <h1 className="page-title display-title text-3xl font-bold text-[#17130f] mb-2">
             Create your account
           </h1>
           <p className="text-sm text-[var(--muted-foreground)]">

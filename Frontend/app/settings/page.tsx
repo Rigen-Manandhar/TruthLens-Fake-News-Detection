@@ -258,16 +258,16 @@ export default function SettingsPage() {
     try { await signOut({ callbackUrl: "/login" }); } finally { setSigningOut(false); }
   };
 
-  if (loading) return <div className="min-h-screen pt-24 px-6">Loading settings...</div>;
+  if (loading) return <div className="page-shell px-6">Loading settings...</div>;
   const deleting = Boolean(profile?.deletionStatus.scheduledDeletionAt);
 
   return (
-    <div className="relative min-h-screen pt-24 ambient-grid overflow-hidden">
-      <main className="relative max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14 space-y-6">
-        <header><h1 className="display-title text-4xl font-bold text-[#17130f]">Settings</h1><p className="text-sm text-[var(--muted-foreground)] mt-2">Profile, security, privacy and product defaults.</p></header>
+    <div className="page-shell ambient-grid">
+      <main className="page-main space-y-6">
+        <header><h1 className="page-title display-title text-4xl font-bold text-[#17130f]">Settings</h1><p className="text-sm text-[var(--muted-foreground)] mt-2">Profile, security, privacy and product defaults.</p></header>
 
-        <section className="rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-6">
-          <p className="text-sm font-semibold text-[#17130f]">{profile?.name}</p><p className="text-xs text-[var(--muted-foreground)]">{profile?.email}</p>
+        <section className="rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-5 sm:p-6 break-words">
+          <p className="text-sm font-semibold text-[#17130f] break-words">{profile?.name}</p><p className="text-xs text-[var(--muted-foreground)] break-all">{profile?.email}</p>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {(profile?.providerInfo.providers ?? []).map((provider) => (
               <span
@@ -282,15 +282,15 @@ export default function SettingsPage() {
           <div className="mt-3 text-xs text-[var(--muted-foreground)]">{reauthLabel}</div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-6 space-y-4">
+        <section className="grid gap-6 xl:grid-cols-2">
+          <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-5 sm:p-6 space-y-4">
             <h2 className="display-title text-2xl text-[#17130f]">Profile</h2>
             <Input label="Full name" id="name" value={name} onChange={(e) => setName(e.target.value)} />
             <Input label="Email" id="email" value={profile?.email ?? ""} disabled />
             <Button type="button" onClick={saveProfile} disabled={savingProfile} className="w-auto px-6">{savingProfile ? "Saving..." : "Save profile"}</Button>
           </div>
 
-          <div className="rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-6 space-y-4">
+          <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-5 sm:p-6 space-y-4">
             <h2 className="display-title text-2xl text-[#17130f]">Re-authentication</h2>
             {profile?.providerInfo.passwordLogin ? (
               <>
@@ -306,8 +306,8 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-6 space-y-4">
+        <section className="grid gap-6 xl:grid-cols-2">
+          <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-5 sm:p-6 space-y-4">
             <h2 className="display-title text-2xl text-[#17130f]">{profile?.hasPassword ? "Change password" : "Set backup password"}</h2>
             {profile?.hasPassword ? (
               <>
@@ -325,7 +325,7 @@ export default function SettingsPage() {
             )}
           </div>
 
-          <div className="rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-6 space-y-4">
+          <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-5 sm:p-6 space-y-4">
             <h2 className="display-title text-2xl text-[#17130f]">Preferences</h2>
             <Input label="Default country (2-letter)" id="newsCountry" value={prefs.newsCountry} onChange={(e) => setPrefs((p) => ({ ...p, newsCountry: e.target.value.toLowerCase().slice(0, 2) }))} />
             <div className="flex flex-wrap gap-2">{NEWS_CATEGORY_OPTIONS.map((c) => <button key={c} type="button" onClick={() => setPrefs((p) => ({ ...p, newsCategories: p.newsCategories.includes(c) ? p.newsCategories.filter((x) => x !== c) : [...p.newsCategories, c] }))} className={`px-3 py-1.5 rounded-full text-xs font-semibold border ${prefs.newsCategories.includes(c) ? "bg-[#12100d] text-[#f7f1e6] border-[#12100d]" : "bg-[#fffdf8] text-[var(--muted-foreground)] border-[var(--line)]"}`}>{c}</button>)}</div>
@@ -339,36 +339,38 @@ export default function SettingsPage() {
           <ExtensionTokenCard />
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-6 space-y-3">
+        <section className="grid gap-6 xl:grid-cols-2">
+          <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-5 sm:p-6 space-y-3">
             <h2 className="display-title text-2xl text-[#17130f]">Active sessions</h2>
             {sessions.map((s) => (
-              <div key={s.sessionId} className="rounded-xl border border-[var(--line)] bg-[#fffdf8] px-3 py-2 flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold text-[#17130f]">{s.deviceLabel}{s.isCurrent ? " (Current)" : ""}</p>
-                  <p className="text-xs text-[var(--muted-foreground)]">{s.ipPreview}</p>
-                  <p className="text-xs text-[var(--muted-foreground)]">Created: {formatDate(s.createdAt)} | Last seen: {formatDate(s.lastSeenAt)}</p>
+              <div key={s.sessionId} className="rounded-xl border border-[var(--line)] bg-[#fffdf8] px-3 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-[#17130f] break-words">{s.deviceLabel}{s.isCurrent ? " (Current)" : ""}</p>
+                  <p className="text-xs text-[var(--muted-foreground)] break-all">{s.ipPreview}</p>
+                  <p className="text-xs text-[var(--muted-foreground)] break-words">Created: {formatDate(s.createdAt)} | Last seen: {formatDate(s.lastSeenAt)}</p>
                 </div>
-                <Button type="button" variant="secondary" onClick={() => revokeSession(s.sessionId)} disabled={s.isCurrent || revokingSessionId === s.sessionId} className="w-auto px-4 h-9">{revokingSessionId === s.sessionId ? "..." : "Revoke"}</Button>
+                <Button type="button" variant="secondary" onClick={() => revokeSession(s.sessionId)} disabled={s.isCurrent || revokingSessionId === s.sessionId} className="w-full sm:w-auto px-4 h-9">{revokingSessionId === s.sessionId ? "..." : "Revoke"}</Button>
               </div>
             ))}
-            <Button type="button" variant="secondary" onClick={revokeOthers} disabled={revokingOthers || profile?.securitySummary.reauthRequired} className="w-auto px-5">{revokingOthers ? "Revoking..." : "Revoke all other sessions"}</Button>
+            <Button type="button" variant="secondary" onClick={revokeOthers} disabled={revokingOthers || profile?.securitySummary.reauthRequired} className="w-full sm:w-auto px-5">{revokingOthers ? "Revoking..." : "Revoke all other sessions"}</Button>
           </div>
 
-          <div className="rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-6 space-y-3">
+          <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-5 sm:p-6 space-y-3">
             <h2 className="display-title text-2xl text-[#17130f]">Privacy & data</h2>
             <div className="rounded-xl border border-[var(--line)] bg-[#fffdf8] px-3 py-3">
               <p className="text-sm font-semibold text-[#17130f]">Export my data</p>
-              <Button type="button" onClick={requestExport} disabled={requestingExport} className="w-auto px-5 h-9 mt-2">{requestingExport ? "Preparing..." : "Request export"}</Button>
-              {exportJob?.downloadUrl && <a href={exportJob.downloadUrl} className="ml-3 text-xs font-semibold text-[#17130f] hover:text-[var(--accent)]">Download JSON</a>}
+              <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <Button type="button" onClick={requestExport} disabled={requestingExport} className="w-full sm:w-auto px-5 h-9">{requestingExport ? "Preparing..." : "Request export"}</Button>
+                {exportJob?.downloadUrl && <a href={exportJob.downloadUrl} className="text-xs font-semibold text-[#17130f] hover:text-[var(--accent)] break-all">Download JSON</a>}
+              </div>
               {exportJob && <p className="text-xs text-[var(--muted-foreground)] mt-2">Status: {exportJob.status}{exportJob.expiresAt ? ` - Expires ${formatDate(exportJob.expiresAt)}` : ""}</p>}
               <p className="text-xs text-[var(--muted-foreground)] mt-2">Deletion requests are soft-deleted first, then permanently removed after 30 days.</p>
             </div>
             <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-3">
               <p className="text-sm font-semibold text-red-800">Danger zone</p>
-              {deleting ? <><p className="text-xs text-red-700 mt-1">Scheduled for {formatDate(profile?.deletionStatus.scheduledDeletionAt ?? null)}</p><Button type="button" variant="secondary" onClick={cancelDeletion} disabled={cancelingDelete} className="w-auto px-4 h-9 mt-2">{cancelingDelete ? "Cancelling..." : "Cancel deletion request"}</Button></> : <Button type="button" onClick={() => setDeleteModal(true)} disabled={requestingDelete} className="w-auto px-4 h-9 mt-2 bg-red-700 text-white hover:bg-red-800">Request account deletion</Button>}
+              {deleting ? <><p className="text-xs text-red-700 mt-1 break-words">Scheduled for {formatDate(profile?.deletionStatus.scheduledDeletionAt ?? null)}</p><Button type="button" variant="secondary" onClick={cancelDeletion} disabled={cancelingDelete} className="w-full sm:w-auto px-4 h-9 mt-2">{cancelingDelete ? "Cancelling..." : "Cancel deletion request"}</Button></> : <Button type="button" onClick={() => setDeleteModal(true)} disabled={requestingDelete} className="w-full sm:w-auto px-4 h-9 mt-2 bg-red-700 text-white hover:bg-red-800">Request account deletion</Button>}
             </div>
-            <div className="text-xs font-semibold text-[var(--muted-foreground)] flex flex-wrap gap-3"><a href="/privacy" className="hover:text-[#17130f]">Privacy</a><a href="/terms" className="hover:text-[#17130f]">Terms</a><a href="mailto:support@truthlens.app" className="hover:text-[#17130f]">Contact</a><a href="mailto:support@truthlens.app?subject=TruthLens%20Issue%20Report" className="hover:text-[#17130f]">Report issue</a></div>
+            <div className="text-xs font-semibold text-[var(--muted-foreground)] flex flex-wrap gap-3"><a href="/privacy" className="hover:text-[#17130f]">Privacy</a><a href="/terms" className="hover:text-[#17130f]">Terms</a><a href="mailto:support@truthlens.app" className="hover:text-[#17130f] break-all">Contact</a><a href="mailto:support@truthlens.app?subject=TruthLens%20Issue%20Report" className="hover:text-[#17130f] break-all">Report issue</a></div>
           </div>
         </section>
 
@@ -376,13 +378,13 @@ export default function SettingsPage() {
         <ConfirmDialog open={logoutOpen} title="Sign out" message="Are you sure you want to sign out?" confirmLabel="Sign out" cancelLabel="Cancel" isLoading={signingOut} onConfirm={async () => { await handleSignOut(); }} onCancel={() => setLogoutOpen(false)} />
 
         {deleteModal && (
-          <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/45 backdrop-blur px-4">
-            <div className="w-full max-w-md rounded-2xl border border-[var(--line)] bg-[#fffdf8] p-6">
+          <div className="fixed inset-0 z-60 flex items-end sm:items-center justify-center overflow-y-auto bg-black/45 backdrop-blur px-4 py-4">
+            <div className="w-full max-w-md max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-[var(--line)] bg-[#fffdf8] p-5 sm:p-6">
               <h3 className="text-lg font-semibold text-[#17130f]">Confirm account deletion</h3>
               <p className="text-sm text-[var(--muted-foreground)] mt-1">Type DELETE to confirm.</p>
               <Input label='Type "DELETE"' id="deleteConfirm" value={deleteConfirm} onChange={(e) => setDeleteConfirm(e.target.value)} />
               <div className="mt-3"><label htmlFor="deleteReason" className="text-sm font-semibold text-[#17130f]">Reason (optional)</label><textarea id="deleteReason" value={deleteReason} onChange={(e) => setDeleteReason(e.target.value)} className="mt-1 min-h-20 w-full rounded-xl border border-[var(--line)] bg-[#fffdf8] px-3 py-2 text-sm" /></div>
-              <div className="mt-4 flex justify-end gap-3"><Button type="button" variant="secondary" onClick={() => setDeleteModal(false)} className="w-auto px-4">Cancel</Button><Button type="button" onClick={requestDeletion} disabled={requestingDelete} className="w-auto px-4 bg-red-700 text-white hover:bg-red-800">{requestingDelete ? "Submitting..." : "Request deletion"}</Button></div>
+              <div className="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end"><Button type="button" variant="secondary" onClick={() => setDeleteModal(false)} className="w-full sm:w-auto px-4">Cancel</Button><Button type="button" onClick={requestDeletion} disabled={requestingDelete} className="w-full sm:w-auto px-4 bg-red-700 text-white hover:bg-red-800">{requestingDelete ? "Submitting..." : "Request deletion"}</Button></div>
             </div>
           </div>
         )}

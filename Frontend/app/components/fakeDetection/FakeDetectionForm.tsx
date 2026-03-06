@@ -36,7 +36,7 @@ export default function FakeDetectionForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="relative flex flex-col rounded-3xl border border-[var(--line)] bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-6 sm:px-8 py-6 sm:py-7 h-[600px] overflow-hidden"
+      className="relative flex h-full flex-col rounded-3xl border border-[var(--line)] bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-[36rem]"
     >
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#12100d] via-[var(--accent)] to-[#e8b074]" />
 
@@ -56,13 +56,13 @@ export default function FakeDetectionForm({
           </p>
         </div>
 
-        <div className="mb-4 flex-1">
+        <div className="mb-4 lg:flex-1">
           <textarea
             id="articleText"
             value={articleText}
             onChange={(e) => onArticleChange(e.target.value)}
             placeholder="Paste article text here..."
-            className="h-full w-full resize-none rounded-2xl border border-[var(--line)] bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#958878] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/45"
+            className="min-h-[14rem] sm:min-h-[18rem] lg:h-full w-full resize-y lg:resize-none rounded-2xl border border-[var(--line)] bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#958878] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/45"
           />
         </div>
 
@@ -123,7 +123,7 @@ export default function FakeDetectionForm({
           </p>
         )}
 
-        <div className="mt-auto flex items-center justify-between gap-3">
+        <div className="mt-auto flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
           <button
             type="button"
             onClick={handleClear}
@@ -135,7 +135,7 @@ export default function FakeDetectionForm({
           <button
             type="submit"
             disabled={isLoading}
-            className="inline-flex h-11 items-center justify-center rounded-full bg-[#12100d] px-8 text-sm font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(24,16,8,0.22)] transition-all hover:bg-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-60 shrink-0"
+            className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-full bg-[#12100d] px-8 text-sm font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(24,16,8,0.22)] transition-all hover:bg-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-60 shrink-0"
           >
             {isLoading ? "Analyzing..." : "Analyze"}
           </button>

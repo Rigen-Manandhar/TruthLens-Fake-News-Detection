@@ -400,7 +400,7 @@ export default function NewsGrid({
     <div className="space-y-8">
       {featured && (
         <article className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] items-center rounded-[2rem] border border-[var(--line)] bg-[#fffdfa]/90 shadow-[0_18px_36px_rgba(24,16,8,0.1)] overflow-hidden">
-          <div className="relative h-64 sm:h-80 lg:h-full">
+          <div className="relative h-56 sm:h-72 lg:h-full">
             <div className="absolute inset-0 bg-gradient-to-br from-[#e8dfcf] via-[#f7f3ea] to-[#e7dcc6]" />
             {featured.urlToImage && (
               // eslint-disable-next-line @next/next/no-img-element
@@ -415,14 +415,14 @@ export default function NewsGrid({
               <p className="text-[11px] font-semibold tracking-[0.3em] uppercase">
                 Top story
               </p>
-              <h3 className="display-title text-xl sm:text-3xl font-bold mt-2 line-clamp-2">
+              <h3 className="page-title display-title text-xl sm:text-3xl font-bold mt-2 line-clamp-2">
                 {featured.title}
               </h3>
             </div>
           </div>
-          <div className="p-6 sm:p-7">
-            <div className="flex items-center justify-between text-xs text-[#6f6457]">
-              <span className="inline-flex items-center rounded-full border border-[var(--line)] bg-[#f6efe3] px-3 py-1 text-[11px] font-semibold text-[#4f473c]">
+          <div className="min-w-0 p-5 sm:p-7">
+            <div className="flex flex-col gap-2 text-xs text-[#6f6457] sm:flex-row sm:items-center sm:justify-between">
+              <span className="inline-flex max-w-full self-start items-center rounded-full border border-[var(--line)] bg-[#f6efe3] px-3 py-1 text-[11px] font-semibold text-[#4f473c]">
                 {featured.source.name}
               </span>
               <span>{formatDate(featured.publishedAt)}</span>

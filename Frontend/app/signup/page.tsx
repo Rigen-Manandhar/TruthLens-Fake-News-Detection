@@ -3,14 +3,14 @@ import Footer from "../components/Footer";
 
 export default function SignupPage() {
   return (
-    <div className="relative min-h-screen pt-24 ambient-grid overflow-hidden flex flex-col">
+    <div className="page-shell ambient-grid flex flex-col">
       <div className="pointer-events-none absolute -top-16 -right-16 h-72 w-72 rounded-full bg-[rgba(232,176,116,0.28)] blur-3xl" />
       <div className="pointer-events-none absolute top-[8rem] -left-14 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
-      <main className="relative max-w-6xl w-full mx-auto px-4 sm:px-6 py-10 sm:py-14 flex-1 flex flex-col">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-center">
+      <main className="page-main flex-1 flex flex-col">
+        <div className="grid gap-8 lg:gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-start lg:items-center">
           <section className="space-y-6 auth-appear">
-            <h1 className="display-title text-4xl sm:text-[2.9rem] font-bold text-[#17130f] tracking-tight">
+            <h1 className="page-title display-title text-4xl sm:text-[2.9rem] font-bold text-[#17130f] tracking-tight">
               Create your TruthLens account
             </h1>
             <p className="text-sm sm:text-base text-[var(--muted-foreground)] max-w-md">
@@ -46,7 +46,7 @@ export default function SignupPage() {
           <SignupForm />
         </div>
 
-        <div className="mt-auto">
+        <div className="mt-10 sm:mt-auto">
           <Footer />
         </div>
       </main>

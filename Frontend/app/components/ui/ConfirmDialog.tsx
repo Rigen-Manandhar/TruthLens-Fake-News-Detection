@@ -46,7 +46,7 @@ export default function ConfirmDialog({
 
   const dialog = (
     <div
-      className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/45 backdrop-blur-md px-4"
+      className="fixed inset-0 z-60 flex items-end justify-center overflow-y-auto bg-gray-900/45 backdrop-blur-md px-4 py-4 sm:items-center"
       onClick={() => {
         if (!isLoading) {
           onCancel();
@@ -56,7 +56,7 @@ export default function ConfirmDialog({
       <div
         role="dialog"
         aria-modal="true"
-        className="relative w-full max-w-sm rounded-2xl border border-white/80 bg-white/95 shadow-[0_25px_60px_-35px_rgba(15,23,42,0.45)] p-6"
+        className="relative w-full max-w-sm max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-white/80 bg-white/95 p-5 shadow-[0_25px_60px_-35px_rgba(15,23,42,0.45)] sm:p-6"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center gap-3">
@@ -68,13 +68,13 @@ export default function ConfirmDialog({
             <p className="text-sm text-gray-600 mt-1">{message}</p>
           </div>
         </div>
-        <div className="mt-6 flex items-center justify-end gap-3">
+        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
           <Button
             type="button"
             variant="secondary"
             onClick={onCancel}
             disabled={isLoading}
-            className="w-auto px-4"
+            className="w-full sm:w-auto px-4"
           >
             {cancelLabel}
           </Button>
@@ -82,7 +82,7 @@ export default function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
-            className="w-auto px-4 bg-gray-900 text-white hover:bg-black"
+            className="w-full sm:w-auto px-4 bg-gray-900 text-white hover:bg-black"
           >
             {isLoading ? "Working..." : confirmLabel}
           </Button>

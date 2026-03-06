@@ -83,7 +83,7 @@ export default function ExtensionTokenCard() {
   };
 
   return (
-    <div className="rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-6 space-y-4">
+    <div className="rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-5 sm:p-6 space-y-4">
       <div>
         <h2 className="display-title text-2xl text-[#17130f]">Extension feedback token</h2>
         <p className="text-sm text-[var(--muted-foreground)] mt-2">
@@ -92,12 +92,12 @@ export default function ExtensionTokenCard() {
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <Button
           type="button"
           onClick={loadToken}
           disabled={isLoading || isRegenerating}
-          className="w-auto px-6"
+          className="w-full sm:w-auto px-6"
         >
           {tokenData ? (isLoading ? "Refreshing..." : "Refresh token") : isLoading ? "Issuing..." : "Issue token"}
         </Button>
@@ -106,7 +106,7 @@ export default function ExtensionTokenCard() {
           variant="secondary"
           onClick={regenerateToken}
           disabled={isRegenerating}
-          className="w-auto px-6"
+          className="w-full sm:w-auto px-6"
         >
           {isRegenerating ? "Regenerating..." : "Regenerate token"}
         </Button>
@@ -123,17 +123,17 @@ export default function ExtensionTokenCard() {
               value={tokenData.token}
               className="mt-3 min-h-28 w-full rounded-xl border border-[var(--line)] bg-[#f7f1e6] px-3 py-3 text-xs text-[#17130f] focus:outline-none"
             />
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-[var(--muted-foreground)]">
+            <div className="mt-3 flex flex-col gap-3 text-xs text-[var(--muted-foreground)] sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
               <span>Version: {tokenData.version}</span>
-              <span>Last rotation: {formatDateTime(tokenData.rotatedAt)}</span>
+              <span className="break-words">Last rotation: {formatDateTime(tokenData.rotatedAt)}</span>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
             <p className="text-xs text-[var(--muted-foreground)]">
               Regenerating invalidates the previously copied token.
             </p>
-            <Button type="button" variant="secondary" onClick={copyToken} className="w-auto px-6">
+            <Button type="button" variant="secondary" onClick={copyToken} className="w-full sm:w-auto px-6">
               Copy token
             </Button>
           </div>

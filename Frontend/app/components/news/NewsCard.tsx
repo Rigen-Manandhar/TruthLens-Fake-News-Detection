@@ -87,9 +87,9 @@ export default function NewsCard({ article, analysis }: NewsCardProps) {
         )}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#1d1712]/55 via-transparent to-transparent" />
       </div>
-      <div className="p-4 md:p-5 flex flex-col grow">
-        <div className="flex items-center justify-between mb-3">
-          <span className="inline-flex items-center rounded-full border border-[var(--line)] bg-[#f6efe3] px-3 py-1 text-[11px] font-semibold text-[#4f473c]">
+      <div className="p-4 md:p-5 flex flex-col grow min-w-0">
+        <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <span className="inline-flex max-w-full self-start items-center rounded-full border border-[var(--line)] bg-[#f6efe3] px-3 py-1 text-[11px] font-semibold text-[#4f473c]">
             {article.source.name}
           </span>
           <span className="text-xs text-[#766b5e]">
@@ -105,7 +105,7 @@ export default function NewsCard({ article, analysis }: NewsCardProps) {
             {getAnalysisText(analysis)}
           </span>
         </div>
-        <h3 className="display-title text-lg sm:text-[1.3rem] font-bold text-[#17130f] mb-2 line-clamp-2">
+        <h3 className="page-title display-title text-lg sm:text-[1.3rem] font-bold text-[#17130f] mb-2 line-clamp-2">
           {article.title}
         </h3>
         {article.description && (

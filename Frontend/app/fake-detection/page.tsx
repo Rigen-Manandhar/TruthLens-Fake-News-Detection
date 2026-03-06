@@ -279,14 +279,14 @@ export default function FakeDetectionPage() {
   };
 
   return (
-    <div className="relative min-h-screen pt-24 ambient-grid overflow-hidden">
+    <div className="page-shell ambient-grid">
       <div className="pointer-events-none absolute -top-14 -left-16 h-64 w-64 rounded-full bg-[rgba(232,176,116,0.28)] blur-3xl" />
       <div className="pointer-events-none absolute top-[8rem] -right-12 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
-      <main className="relative max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14 space-y-10">
+      <main className="page-main space-y-8 sm:space-y-10">
         <header className="space-y-4 max-w-2xl">
           <div className="space-y-4">
-            <h1 className="display-title text-4xl sm:text-[2.9rem] font-bold text-[#17130f] tracking-tight">
+            <h1 className="page-title display-title text-4xl sm:text-[2.9rem] font-bold text-[#17130f] tracking-tight">
               Fake News Detection
             </h1>
             <p className="text-sm sm:text-base text-[var(--muted-foreground)] max-w-xl">
@@ -299,7 +299,7 @@ export default function FakeDetectionPage() {
           </div>
         </header>
 
-        <section className="grid gap-6 lg:grid-cols-2 items-start">
+        <section className="grid items-start gap-6 xl:grid-cols-2 xl:items-stretch">
           <FakeDetectionForm
             articleText={articleText}
             sourceUrl={sourceUrl}
@@ -312,7 +312,7 @@ export default function FakeDetectionPage() {
             onAnalyze={analyze}
           />
 
-          <div className="space-y-6">
+          <div className="space-y-6 xl:flex xl:h-full xl:flex-col">
             <FakeDetectionResult
               level={resultLevel}
               label={resultLabel}

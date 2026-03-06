@@ -116,8 +116,8 @@ export default function FakeDetectionResult({
     const tokens = analyzedText.split(/(\s+)/);
 
     return (
-      <div className="text-sm leading-relaxed mb-6 font-serif">
-        <div className="flex items-center justify-between gap-3 mb-2">
+      <div className="mb-6 font-serif text-sm leading-relaxed">
+        <div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h4 className="font-semibold text-[#3f382f] text-xs uppercase tracking-wide font-sans">
             Deep Learning Analysis (LIME{limeModel ? ` - Model ${limeModel}` : ""})
           </h4>
@@ -132,7 +132,7 @@ export default function FakeDetectionResult({
             </button>
           )}
         </div>
-        <div className="p-3 bg-[#f7f1e6] rounded-xl border border-dotted border-[var(--line)]">
+        <div className="break-words rounded-xl border border-dotted border-[var(--line)] bg-[#f7f1e6] p-3">
           {tokens.map((token, idx) => {
             const cleanWord = token.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
             const weight = weightMap.get(cleanWord);
@@ -193,7 +193,7 @@ export default function FakeDetectionResult({
   };
 
   return (
-    <section className="relative flex flex-col rounded-3xl border border-[var(--line)] bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-6 sm:px-8 py-6 sm:py-7 h-[600px] overflow-hidden">
+    <section className="relative flex h-full flex-col rounded-3xl border border-[var(--line)] bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-[36rem]">
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#e8b074] via-[var(--accent)] to-[#12100d]" />
 
       <div className="relative flex flex-col h-full">
@@ -222,20 +222,20 @@ export default function FakeDetectionResult({
           </p>
         )}
 
-        <div className="mt-6 flex-1 min-h-0 rounded-2xl bg-[#f7f1e6] border border-dashed border-[var(--line)] px-4 py-4 text-sm text-[#5f5548] overflow-y-auto">
+        <div className="mt-6 rounded-2xl border border-dashed border-[var(--line)] bg-[#f7f1e6] px-4 py-4 text-sm text-[#5f5548] break-words lg:flex-1 lg:min-h-0 lg:max-h-[36rem] lg:overflow-y-auto">
           {uncertaintyReason && (
             <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900">
               <p className="font-semibold uppercase tracking-wide">
                 Reason: {uncertaintyReason}
               </p>
               {uncertainty?.reason_message && (
-                <p className="mt-1 text-amber-800">{uncertainty.reason_message}</p>
+                <p className="mt-1 break-words text-amber-800">{uncertainty.reason_message}</p>
               )}
             </div>
           )}
 
           {details && !uncertainty?.reason_message && (
-            <div className="whitespace-pre-wrap mb-4 text-xs text-[#5f5548]">{details}</div>
+            <div className="mb-4 whitespace-pre-wrap break-words text-xs text-[#5f5548]">{details}</div>
           )}
 
           {visibleSteps.length > 0 && (

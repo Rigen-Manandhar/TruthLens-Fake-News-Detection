@@ -27,7 +27,7 @@ export default function DetectionFeedbackCard({
   onSubmit,
 }: DetectionFeedbackCardProps) {
   return (
-    <section className="rounded-3xl border border-[var(--line)] bg-[#fffdfa]/90 px-6 sm:px-8 py-6 shadow-[0_22px_46px_rgba(24,16,8,0.1)]">
+    <section className="rounded-3xl border border-[var(--line)] bg-[#fffdfa]/90 px-5 sm:px-8 py-6 shadow-[0_22px_46px_rgba(24,16,8,0.1)]">
       <div className="space-y-2">
         <p className="text-[11px] font-semibold tracking-[0.25em] text-[#867a6a] uppercase">
           Feedback
@@ -96,7 +96,7 @@ export default function DetectionFeedbackCard({
         </p>
       )}
 
-      <div className="mt-5 flex items-center justify-between gap-3">
+      <div className="mt-5 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-[#7f7364]">
           Your feedback will be stored with your account.
         </p>
@@ -104,7 +104,7 @@ export default function DetectionFeedbackCard({
           type="button"
           onClick={onSubmit}
           disabled={isSubmitting || isSubmitted || selectedValue === null}
-          className="w-auto px-6"
+          className="w-full sm:w-auto px-6"
         >
           {isSubmitted ? "Feedback sent" : isSubmitting ? "Sending..." : "Send feedback"}
         </Button>

@@ -1,52 +1,13 @@
+import type {
+  ConflictInfo,
+  FetchMetadata,
+  ModelOutputs,
+  ParseMetadata,
+  Step,
+  UncertaintyInfo,
+} from "@/lib/shared/detection-feedback";
+
 type CredibilityLevel = "high" | "mixed" | "low";
-
-interface Step {
-  step: string;
-  score_impact: number;
-  details: string;
-  sentence_preview?: string;
-  input_preview?: string;
-}
-
-type UncertaintyInfo = {
-  reason_code?: "CONFLICT" | "LOW_CONFIDENCE" | "INSUFFICIENT_TEXT" | "FETCH_FAILED" | null;
-  reason_message?: string | null;
-};
-
-type ParseMetadata = {
-  used_mode: string;
-  detected_shape: string;
-  headline_word_count: number;
-  body_word_count: number;
-  headline_source?: string | null;
-};
-
-type SingleModelOutput = {
-  ran: boolean;
-  label?: string | null;
-  confidence?: number | null;
-  score_impact?: number;
-  input_word_count?: number;
-};
-
-type ModelOutputs = {
-  model_a: SingleModelOutput;
-  model_b: SingleModelOutput;
-};
-
-type ConflictInfo = {
-  is_conflict: boolean;
-  threshold?: number | null;
-  raw_score_before_override?: number | null;
-};
-
-type FetchMetadata = {
-  attempted: boolean;
-  success?: boolean | null;
-  status_code?: number | null;
-  error_type?: string | null;
-  resolved_url?: string | null;
-};
 
 interface FakeDetectionResultProps {
   level: CredibilityLevel;

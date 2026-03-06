@@ -12,6 +12,10 @@ const els = {
   inputMode: document.getElementById("input-mode"),
   articleText: document.getElementById("article-text"),
   sourceUrl: document.getElementById("source-url"),
+  apiBaseUrl: document.getElementById("api-base-url"),
+  bearerToken: document.getElementById("bearer-token"),
+  saveConfigBtn: document.getElementById("save-config-btn"),
+  configStatus: document.getElementById("config-status"),
   clearBtn: document.getElementById("clear-btn"),
   formError: document.getElementById("form-error"),
   analyzeBtn: document.getElementById("analyze-btn"),
@@ -33,6 +37,14 @@ const els = {
   resultWhy: document.getElementById("result-why"),
   checksDetails: document.getElementById("checks-details"),
   whyDetails: document.getElementById("why-details"),
+  feedbackSection: document.getElementById("feedback-section"),
+  feedbackTokenNotice: document.getElementById("feedback-token-notice"),
+  feedbackForm: document.getElementById("feedback-form"),
+  feedbackCorrectBtn: document.getElementById("feedback-correct-btn"),
+  feedbackWrongBtn: document.getElementById("feedback-wrong-btn"),
+  feedbackComment: document.getElementById("feedback-comment"),
+  feedbackStatus: document.getElementById("feedback-status"),
+  feedbackSubmitBtn: document.getElementById("feedback-submit-btn"),
   errorMessage: document.getElementById("error-message"),
   retryBtn: document.getElementById("retry-btn"),
   editBtn: document.getElementById("edit-btn"),
@@ -47,6 +59,10 @@ const state = {
   bearerToken: "",
   lastPayload: null,
   lastNormalized: null,
+  lastRaw: null,
+  feedbackSelection: null,
+  feedbackSubmitted: false,
+  feedbackSubmitting: false,
 };
 
 const REQUIRED_ELEMENT_KEYS = [
@@ -54,6 +70,10 @@ const REQUIRED_ELEMENT_KEYS = [
   "inputMode",
   "articleText",
   "sourceUrl",
+  "apiBaseUrl",
+  "bearerToken",
+  "saveConfigBtn",
+  "configStatus",
   "clearBtn",
   "formError",
   "analyzeBtn",
@@ -75,6 +95,14 @@ const REQUIRED_ELEMENT_KEYS = [
   "resultWhy",
   "checksDetails",
   "whyDetails",
+  "feedbackSection",
+  "feedbackTokenNotice",
+  "feedbackForm",
+  "feedbackCorrectBtn",
+  "feedbackWrongBtn",
+  "feedbackComment",
+  "feedbackStatus",
+  "feedbackSubmitBtn",
   "errorMessage",
   "retryBtn",
   "editBtn",
@@ -86,7 +114,10 @@ const REQUIRED_ELEMENT_KEYS = [
 function hasRequiredElements() {
   const missing = REQUIRED_ELEMENT_KEYS.filter((key) => !els[key]);
   if (missing.length) {
-    console.error("TruthLens popup: missing required DOM elements:", missing.join(", "));
+    console.error(
+      "TruthLens popup: missing required DOM elements:",
+      missing.join(", ")
+    );
     return false;
   }
   return true;
@@ -117,16 +148,46 @@ function readChromeStorage(keys) {
   });
 }
 
-async function loadRuntimeConfig() {
-  const cfg = await readChromeStorage(["truthlensApiBaseUrl", "truthlensBearerToken"]);
+function writeChromeStorage(values) {
+  return new Promise((resolve) => {
+    const extChrome = getExtensionChrome();
+    if (!extChrome || !extChrome.storage || !extChrome.storage.sync) {
+      resolve(false);
+      return;
+    }
 
-  if (typeof cfg.truthlensApiBaseUrl === "string" && cfg.truthlensApiBaseUrl.trim()) {
+    extChrome.storage.sync.set(values, () => {
+      resolve(!extChrome.runtime || !extChrome.runtime.lastError);
+    });
+  });
+}
+
+async function loadRuntimeConfig() {
+  const cfg = await readChromeStorage([
+    "truthlensApiBaseUrl",
+    "truthlensBearerToken",
+  ]);
+
+  if (
+    typeof cfg.truthlensApiBaseUrl === "string" &&
+    cfg.truthlensApiBaseUrl.trim()
+  ) {
     state.apiBaseUrl = cfg.truthlensApiBaseUrl.trim();
   }
 
-  if (typeof cfg.truthlensBearerToken === "string" && cfg.truthlensBearerToken.trim()) {
+  if (
+    typeof cfg.truthlensBearerToken === "string" &&
+    cfg.truthlensBearerToken.trim()
+  ) {
     state.bearerToken = cfg.truthlensBearerToken.trim();
   }
+
+  syncConfigInputs();
+}
+
+function syncConfigInputs() {
+  els.apiBaseUrl.value = state.apiBaseUrl;
+  els.bearerToken.value = state.bearerToken;
 }
 
 function endpointFor(pathname) {
@@ -147,7 +208,9 @@ function setAnalyzeRail(mode) {
   els.analyzeBtn.hidden = !isEditing && !isLoading;
   els.analyzeBtn.disabled = isLoading;
   els.analyzeBtn.classList.toggle("loading", isLoading);
-  els.analyzeBtnText.textContent = isLoading ? "Analyzing..." : "Analyze Content";
+  els.analyzeBtnText.textContent = isLoading
+    ? "Analyzing..."
+    : "Analyze Content";
 }
 
 function setSummaryVisibility(showSummary) {
@@ -166,6 +229,28 @@ function setUiMode(mode) {
 
   if (mode === UI_MODES.RESULT) {
     setSummaryVisibility(true);
+  }
+}
+
+function setConfigStatus(message, tone) {
+  els.configStatus.textContent = message || "\u00A0";
+  els.configStatus.classList.remove("is-success", "is-error");
+
+  if (tone === "success") {
+    els.configStatus.classList.add("is-success");
+  } else if (tone === "error") {
+    els.configStatus.classList.add("is-error");
+  }
+}
+
+function setFeedbackStatus(message, tone) {
+  els.feedbackStatus.textContent = message || "\u00A0";
+  els.feedbackStatus.classList.remove("is-success", "is-error");
+
+  if (tone === "success") {
+    els.feedbackStatus.classList.add("is-success");
+  } else if (tone === "error") {
+    els.feedbackStatus.classList.add("is-error");
   }
 }
 
@@ -192,7 +277,10 @@ function titleCase(raw) {
 }
 
 function getReasonText(raw) {
-  if (raw?.uncertainty?.reason_message && typeof raw.uncertainty.reason_message === "string") {
+  if (
+    raw?.uncertainty?.reason_message &&
+    typeof raw.uncertainty.reason_message === "string"
+  ) {
     return raw.uncertainty.reason_message.trim();
   }
 
@@ -210,8 +298,14 @@ function buildChecksSummary(raw) {
 
   return raw.steps
     .map((step, idx) => {
-      const stepName = typeof step?.step === "string" && step.step.trim() ? step.step.trim() : `Check ${idx + 1}`;
-      const stepDetail = typeof step?.details === "string" && step.details.trim() ? `: ${step.details.trim()}` : "";
+      const stepName =
+        typeof step?.step === "string" && step.step.trim()
+          ? step.step.trim()
+          : `Check ${idx + 1}`;
+      const stepDetail =
+        typeof step?.details === "string" && step.details.trim()
+          ? `: ${step.details.trim()}`
+          : "";
       return `${idx + 1}. ${stepName}${stepDetail}`;
     })
     .join("\n");
@@ -225,8 +319,13 @@ function buildWhyText(raw, normalized) {
   }
 
   if (typeof raw?.parse_metadata?.headline_word_count === "number") {
-    const bodyCount = typeof raw?.parse_metadata?.body_word_count === "number" ? raw.parse_metadata.body_word_count : 0;
-    parts.push(`Processed approximately ${raw.parse_metadata.headline_word_count + bodyCount} words.`);
+    const bodyCount =
+      typeof raw?.parse_metadata?.body_word_count === "number"
+        ? raw.parse_metadata.body_word_count
+        : 0;
+    parts.push(
+      `Processed approximately ${raw.parse_metadata.headline_word_count + bodyCount} words.`
+    );
   }
 
   const modelA = raw?.model_outputs?.model_a;
@@ -249,7 +348,9 @@ function buildWhyText(raw, normalized) {
   }
 
   if (parts.length === 0) {
-    parts.push(`Verdict is ${normalized.verdictLabel} based on source, text pattern, and model signals.`);
+    parts.push(
+      `Verdict is ${normalized.verdictLabel} based on source, text pattern, and model signals.`
+    );
   }
 
   return parts.join(" ");
@@ -272,7 +373,10 @@ function normalizePredictResponse(raw) {
     verdictTone = "warn";
   }
 
-  const riskLabel = typeof raw?.risk_level === "string" && raw.risk_level.trim() ? raw.risk_level.trim() : "Needs Review";
+  const riskLabel =
+    typeof raw?.risk_level === "string" && raw.risk_level.trim()
+      ? raw.risk_level.trim()
+      : "Needs Review";
   const reasonText = getReasonText(raw);
   const checksCount = Array.isArray(raw?.steps) ? raw.steps.length : 0;
   const checksSummary = buildChecksSummary(raw);
@@ -307,6 +411,66 @@ function showFormError(message) {
 function clearFormError() {
   els.formError.textContent = "\u00A0";
   els.formError.classList.remove("is-visible");
+}
+
+function buildPredictionSnapshot(raw) {
+  return {
+    verdict: raw?.verdict,
+    riskLevel: raw?.risk_level,
+    finalScore: raw?.final_score,
+    uncertainty: raw?.uncertainty,
+    parseMetadata: raw?.parse_metadata,
+    modelOutputs: raw?.model_outputs,
+    conflict: raw?.conflict,
+    fetchMetadata: raw?.fetch_metadata,
+    limeModel: raw?.lime_model === "A" || raw?.lime_model === "B" ? raw.lime_model : null,
+  };
+}
+
+function resetFeedbackState() {
+  state.feedbackSelection = null;
+  state.feedbackSubmitted = false;
+  state.feedbackSubmitting = false;
+  els.feedbackComment.value = "";
+  setFeedbackStatus("", "");
+  syncFeedbackControls();
+}
+
+function syncFeedbackControls() {
+  const disabled =
+    !state.bearerToken || state.feedbackSubmitting || state.feedbackSubmitted;
+
+  els.feedbackCorrectBtn.classList.toggle(
+    "is-selected",
+    state.feedbackSelection === true
+  );
+  els.feedbackWrongBtn.classList.toggle(
+    "is-selected",
+    state.feedbackSelection === false
+  );
+
+  els.feedbackCorrectBtn.disabled = disabled;
+  els.feedbackWrongBtn.disabled = disabled;
+  els.feedbackComment.disabled = disabled;
+  els.feedbackSubmitBtn.disabled = disabled || state.feedbackSelection === null;
+  els.feedbackSubmitBtn.textContent = state.feedbackSubmitted
+    ? "Feedback sent"
+    : state.feedbackSubmitting
+      ? "Sending..."
+      : "Send feedback";
+}
+
+function renderFeedbackSection() {
+  const hasPrediction = Boolean(state.lastPayload && state.lastRaw);
+  els.feedbackSection.hidden = !hasPrediction;
+  if (!hasPrediction) {
+    return;
+  }
+
+  const hasToken = Boolean(state.bearerToken);
+  els.feedbackTokenNotice.hidden = hasToken;
+  els.feedbackForm.hidden = !hasToken;
+  syncFeedbackControls();
 }
 
 function triggerInvalidShake() {
@@ -351,11 +515,78 @@ async function callPredict(payload) {
   const json = await response.json().catch(() => null);
 
   if (!response.ok) {
-    const detail = typeof json?.detail === "string" && json.detail.trim() ? json.detail.trim() : "Prediction request failed.";
+    const detail =
+      typeof json?.detail === "string" && json.detail.trim()
+        ? json.detail.trim()
+        : "Prediction request failed.";
     throw new Error(detail);
   }
 
   return json || {};
+}
+
+async function submitFeedback() {
+  if (!state.lastPayload || !state.lastRaw) {
+    return;
+  }
+
+  if (!state.bearerToken) {
+    setFeedbackStatus(
+      "Configure your feedback token before submitting feedback.",
+      "error"
+    );
+    renderFeedbackSection();
+    return;
+  }
+
+  if (state.feedbackSelection === null) {
+    setFeedbackStatus("Choose whether the prediction was right or wrong.", "error");
+    syncFeedbackControls();
+    return;
+  }
+
+  state.feedbackSubmitting = true;
+  setFeedbackStatus("", "");
+  syncFeedbackControls();
+
+  try {
+    const response = await fetch(endpointFor("/api/feedback/detections"), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${state.bearerToken}`,
+      },
+      body: JSON.stringify({
+        source: "extension",
+        input: state.lastPayload,
+        prediction: buildPredictionSnapshot(state.lastRaw),
+        feedback: {
+          isCorrect: state.feedbackSelection,
+          comment: els.feedbackComment.value.trim(),
+        },
+      }),
+    });
+
+    const json = await response.json().catch(() => null);
+    if (!response.ok) {
+      const errorMessage =
+        typeof json?.error === "string" && json.error.trim()
+          ? json.error.trim()
+          : "Failed to submit feedback.";
+      throw new Error(errorMessage);
+    }
+
+    state.feedbackSubmitted = true;
+    setFeedbackStatus("Feedback saved to your account.", "success");
+  } catch (error) {
+    setFeedbackStatus(
+      error instanceof Error ? error.message : "Failed to submit feedback.",
+      "error"
+    );
+  } finally {
+    state.feedbackSubmitting = false;
+    syncFeedbackControls();
+  }
 }
 
 function renderResult(normalized) {
@@ -381,6 +612,7 @@ function renderResult(normalized) {
 
   const shouldShowWhy = Boolean(normalized.whyText && normalized.whyText.trim());
   els.whyDetails.hidden = !shouldShowWhy;
+  renderFeedbackSection();
 }
 
 function renderError(message) {
@@ -389,6 +621,8 @@ function renderError(message) {
 
 async function analyzeWithPayload(payload) {
   state.lastPayload = payload;
+  state.lastRaw = null;
+  resetFeedbackState();
 
   clearFormError();
   setFormLocked(true);
@@ -396,11 +630,14 @@ async function analyzeWithPayload(payload) {
 
   try {
     const raw = await callPredict(payload);
+    state.lastRaw = raw;
     const normalized = normalizePredictResponse(raw);
     renderResult(normalized);
     setUiMode(UI_MODES.RESULT);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to analyze content.";
+    state.lastRaw = null;
+    const message =
+      error instanceof Error ? error.message : "Unable to analyze content.";
     renderError(message);
     setUiMode(UI_MODES.ERROR);
   } finally {
@@ -438,6 +675,26 @@ function onClearFields() {
   clearFormError();
 }
 
+async function onSaveConfig() {
+  const nextApiBaseUrl = els.apiBaseUrl.value.trim() || DEFAULT_API_BASE_URL;
+  const nextBearerToken = els.bearerToken.value.trim();
+
+  const saved = await writeChromeStorage({
+    truthlensApiBaseUrl: nextApiBaseUrl,
+    truthlensBearerToken: nextBearerToken,
+  });
+
+  if (!saved) {
+    setConfigStatus("Failed to save settings.", "error");
+    return;
+  }
+
+  state.apiBaseUrl = nextApiBaseUrl;
+  state.bearerToken = nextBearerToken;
+  setConfigStatus("Settings saved.", "success");
+  renderFeedbackSection();
+}
+
 function onRetry() {
   if (!state.lastPayload) {
     setUiMode(UI_MODES.EDITING);
@@ -452,13 +709,27 @@ function onBackToForm() {
   clearFormError();
 }
 
+function onFeedbackChoice(value) {
+  if (!state.bearerToken || state.feedbackSubmitting || state.feedbackSubmitted) {
+    return;
+  }
+
+  state.feedbackSelection = value;
+  setFeedbackStatus("", "");
+  syncFeedbackControls();
+}
+
 function bindEvents() {
   bindIfPresent(els.form, "submit", onSubmit);
   bindIfPresent(els.clearBtn, "click", onClearFields);
+  bindIfPresent(els.saveConfigBtn, "click", onSaveConfig);
   bindIfPresent(els.retryBtn, "click", onRetry);
   bindIfPresent(els.editBtn, "click", onBackToForm);
   bindIfPresent(els.editBtnResult, "click", onBackToForm);
   bindIfPresent(els.analyzeAgainBtn, "click", onBackToForm);
+  bindIfPresent(els.feedbackCorrectBtn, "click", () => onFeedbackChoice(true));
+  bindIfPresent(els.feedbackWrongBtn, "click", () => onFeedbackChoice(false));
+  bindIfPresent(els.feedbackSubmitBtn, "click", submitFeedback);
   bindIfPresent(els.articleText, "input", clearFormError);
   bindIfPresent(els.sourceUrl, "input", clearFormError);
 }
@@ -467,9 +738,13 @@ async function init() {
   if (!hasRequiredElements()) {
     return;
   }
+
   await loadRuntimeConfig();
   bindEvents();
   clearFormError();
+  resetFeedbackState();
+  renderFeedbackSection();
+  setConfigStatus("", "");
   setFormLocked(false);
   setUiMode(UI_MODES.EDITING);
 }

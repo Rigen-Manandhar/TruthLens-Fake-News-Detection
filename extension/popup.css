@@ -280,6 +280,58 @@ select {
   margin-top: var(--s-3);
 }
 
+.config-details {
+  margin-top: var(--s-3);
+  border: 1px solid #dbe5f4;
+  border-radius: 12px;
+  background: #f8fbff;
+  padding: var(--s-2) var(--s-3);
+}
+
+.config-details summary {
+  cursor: pointer;
+  color: #274064;
+  font-size: 12px;
+  font-weight: 700;
+  list-style: none;
+}
+
+.config-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.config-details summary::after {
+  content: "+";
+  float: right;
+  color: #6f82a3;
+}
+
+.config-details[open] summary::after {
+  content: "-";
+}
+
+.config-actions {
+  margin-top: var(--s-3);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.config-status {
+  margin: 0;
+  min-height: 18px;
+  font-size: 11px;
+  color: var(--ink-body);
+}
+
+.config-status.is-success {
+  color: var(--ok-ink);
+}
+
+.config-status.is-error {
+  color: var(--bad-ink);
+}
+
 .clear-btn {
   border: 0;
   background: transparent;
@@ -459,6 +511,76 @@ select {
   margin-top: var(--s-4);
   display: flex;
   gap: var(--s-2);
+}
+
+.feedback-section {
+  margin-top: var(--s-4);
+  border: 1px solid #dbe5f4;
+  border-radius: 12px;
+  background: #f8fbff;
+  padding: var(--s-3);
+}
+
+.feedback-header h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #102349;
+}
+
+.feedback-header p {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--ink-body);
+}
+
+.feedback-token-notice {
+  margin: var(--s-3) 0 0;
+  border-radius: 10px;
+  border: 1px solid #fed7aa;
+  background: var(--warn-bg);
+  color: var(--warn-ink);
+  padding: 10px 11px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.feedback-form {
+  margin-top: var(--s-3);
+}
+
+.feedback-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.feedback-choices .ghost-btn.is-selected {
+  border-color: #255ed8;
+  background: #eaf1ff;
+  color: #1f4cc0;
+}
+
+.feedback-field {
+  margin-top: var(--s-3);
+}
+
+.feedback-status {
+  margin: var(--s-3) 0 0;
+  min-height: 18px;
+  font-size: 11px;
+  color: var(--ink-body);
+}
+
+.feedback-status.is-success {
+  color: var(--ok-ink);
+}
+
+.feedback-status.is-error {
+  color: var(--bad-ink);
+}
+
+.feedback-submit-btn {
+  margin-top: var(--s-2);
 }
 
 .ghost-btn,

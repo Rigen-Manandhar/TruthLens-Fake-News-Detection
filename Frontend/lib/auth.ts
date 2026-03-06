@@ -2,9 +2,9 @@ import jwt from "jsonwebtoken";
 import type { NextResponse } from "next/server";
 
 const AUTH_SECRET = (() => {
-  const value = process.env.AUTH_SECRET;
+  const value = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
   if (!value) {
-    throw new Error("AUTH_SECRET is not defined");
+    throw new Error("AUTH_SECRET or NEXTAUTH_SECRET is not defined");
   }
   return value;
 })();
@@ -12,6 +12,11 @@ const AUTH_SECRET = (() => {
 export type AuthPayload = {
   sub: string;
   email: string;
+};
+
+export type ExtensionFeedbackTokenPayload = AuthPayload & {
+  type: "extension_feedback";
+  version: number;
 };
 
 export function signAuthToken(payload: AuthPayload) {
@@ -33,6 +38,55 @@ export function verifyAuthToken(token: string): AuthPayload | null {
     }
 
     return { sub: payload.sub, email: payload.email };
+  } catch {
+    return null;
+  }
+}
+
+export function signExtensionFeedbackToken(payload: {
+  sub: string;
+  email: string;
+  version: number;
+}) {
+  return jwt.sign(
+    {
+      sub: payload.sub,
+      email: payload.email,
+      type: "extension_feedback",
+      version: payload.version,
+    },
+    AUTH_SECRET,
+    { expiresIn: "30d" }
+  );
+}
+
+export function verifyExtensionFeedbackToken(
+  token: string
+): ExtensionFeedbackTokenPayload | null {
+  try {
+    const decoded = jwt.verify(token, AUTH_SECRET);
+
+    if (typeof decoded === "string" || !decoded) {
+      return null;
+    }
+
+    const payload = decoded as jwt.JwtPayload;
+
+    if (
+      payload.type !== "extension_feedback" ||
+      typeof payload.sub !== "string" ||
+      typeof payload.email !== "string" ||
+      typeof payload.version !== "number"
+    ) {
+      return null;
+    }
+
+    return {
+      sub: payload.sub,
+      email: payload.email,
+      type: "extension_feedback",
+      version: payload.version,
+    };
   } catch {
     return null;
   }

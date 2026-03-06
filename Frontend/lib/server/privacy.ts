@@ -41,6 +41,11 @@ export async function buildUserExportPayload(db: Db, user: Record<string, unknow
     .sort({ createdAt: -1 })
     .limit(50)
     .toArray();
+  const feedback = await db
+    .collection("prediction_feedback")
+    .find({ userId })
+    .sort({ createdAt: -1 })
+    .toArray();
 
   const privacy =
     user.privacy && typeof user.privacy === "object"
@@ -66,6 +71,13 @@ export async function buildUserExportPayload(db: Db, user: Record<string, unknow
       hasPassword: Boolean(user.passwordHash),
       lastPasswordChangedAt: toIso(security.lastPasswordChangedAt),
       reauthUntil: toIso(security.reauthUntil),
+      extensionFeedbackToken: {
+        version:
+          typeof security.extensionTokenVersion === "number"
+            ? security.extensionTokenVersion
+            : 1,
+        rotatedAt: toIso(security.extensionTokenRotatedAt),
+      },
     },
     privacy: {
       deletionRequestedAt: toIso(privacy.deletionRequestedAt),
@@ -73,6 +85,14 @@ export async function buildUserExportPayload(db: Db, user: Record<string, unknow
       deletedAt: toIso(privacy.deletedAt),
     },
     activeArtifacts: {
+      feedback: feedback.map((entry) => ({
+        source: entry.source ?? null,
+        input: entry.input ?? null,
+        prediction: entry.prediction ?? null,
+        feedback: entry.feedback ?? null,
+        createdAt: toIso(entry.createdAt),
+        updatedAt: toIso(entry.updatedAt),
+      })),
       sessions: sessions.map((session) => ({
         sessionId: session.sessionId,
         createdAt: toIso(session.createdAt),

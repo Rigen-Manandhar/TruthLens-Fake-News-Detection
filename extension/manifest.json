@@ -9,8 +9,8 @@
   },
   "permissions": ["storage"],
   "host_permissions": [
-    "http://localhost:3000/*",
-    "https://localhost:3000/*"
+    "http://*/*",
+    "https://*/*"
   ],
   "icons": {
     "16": "assets/icon16.png",

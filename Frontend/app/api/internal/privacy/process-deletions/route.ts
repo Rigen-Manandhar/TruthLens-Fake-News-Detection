@@ -50,6 +50,7 @@ export async function POST(req: Request) {
       .collection("sessions")
       .deleteMany({ $or: [{ userId: objectId }, { userId }] });
     await db.collection("user_sessions").deleteMany({ userId });
+    await db.collection("prediction_feedback").deleteMany({ userId });
     await db.collection("privacy_jobs").updateMany(
       { userId, type: "delete", status: { $in: ["pending", "processing"] } },
       {

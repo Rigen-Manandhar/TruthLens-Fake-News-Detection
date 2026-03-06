@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import Footer from "../components/Footer";
+import ExtensionTokenCard from "../components/settings/ExtensionTokenCard";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
@@ -332,6 +333,10 @@ export default function SettingsPage() {
             <select value={prefs.detectionExplanationMode} onChange={(e) => setPrefs((p) => ({ ...p, detectionExplanationMode: e.target.value as DetectionExplanationMode }))} className="w-full px-4 py-3 border border-[var(--line)] rounded-xl bg-[#fffdf8] text-[#17130f]"><option value="auto">Auto explanation</option><option value="none">No explanation</option></select>
             <Button type="button" onClick={savePrefs} disabled={savingPrefs} className="w-auto px-6">{savingPrefs ? "Saving..." : "Save preferences"}</Button>
           </div>
+        </section>
+
+        <section>
+          <ExtensionTokenCard />
         </section>
 
         <section className="grid gap-6 lg:grid-cols-2">

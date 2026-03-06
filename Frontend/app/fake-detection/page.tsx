@@ -1,86 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import DetectionFeedbackCard from "../components/fakeDetection/DetectionFeedbackCard";
 import FakeDetectionForm from "../components/fakeDetection/FakeDetectionForm";
 import FakeDetectionResult from "../components/fakeDetection/FakeDetectionResult";
 import Footer from "../components/Footer";
 import { normalizePreferences } from "@/lib/shared/settings";
+import {
+  MAX_FEEDBACK_COMMENT_LENGTH,
+  type ConflictInfo,
+  type DetectionInputMode,
+  type FetchMetadata,
+  type ModelOutputs,
+  type ParseMetadata,
+  type DetectionPredictionInput,
+  type DetectionPredictionSnapshot,
+  type PredictResponse,
+  type Step,
+  type UncertaintyInfo,
+} from "@/lib/shared/detection-feedback";
 
 type CredibilityLevel = "high" | "mixed" | "low";
-type InputMode = "auto" | "headline_only" | "full_article" | "headline_plus_article";
 type ExplanationMode = "none" | "auto" | "force";
-
-type Step = {
-  step: string;
-  score_impact: number;
-  details: string;
-  sentence_preview?: string;
-  input_preview?: string;
-  metadata?: Record<string, unknown>;
-};
-
-type UncertaintyInfo = {
-  reason_code?: "CONFLICT" | "LOW_CONFIDENCE" | "INSUFFICIENT_TEXT" | "FETCH_FAILED" | null;
-  reason_message?: string | null;
-};
-
-type ParseMetadata = {
-  used_mode: string;
-  detected_shape: string;
-  headline_word_count: number;
-  body_word_count: number;
-  headline_source?: string | null;
-};
-
-type SingleModelOutput = {
-  ran: boolean;
-  label?: string | null;
-  confidence?: number | null;
-  score_impact?: number;
-  input_word_count?: number;
-};
-
-type ModelOutputs = {
-  model_a: SingleModelOutput;
-  model_b: SingleModelOutput;
-};
-
-type ConflictInfo = {
-  is_conflict: boolean;
-  threshold?: number | null;
-  raw_score_before_override?: number | null;
-};
-
-type FetchMetadata = {
-  attempted: boolean;
-  success?: boolean | null;
-  status_code?: number | null;
-  error_type?: string | null;
-  resolved_url?: string | null;
-};
-
-type PredictResponse = {
-  final_score: number;
-  verdict: string;
-  risk_level: string;
-  steps: Step[];
-  explanation?: [string, number][];
-  explanation_html?: string;
-  article_class?: string;
-  uncertainty?: UncertaintyInfo;
-  parse_metadata?: ParseMetadata;
-  model_outputs?: ModelOutputs;
-  conflict?: ConflictInfo;
-  fetch_metadata?: FetchMetadata;
-  lime_model?: "A" | "B" | null;
-  lime_input_text?: string | null;
-};
-
-type PredictPayload = {
-  text: string;
-  url: string;
-  input_mode: InputMode;
-};
+type FeedbackStatus = { type: "success" | "error"; message: string } | null;
+type PredictPayload = DetectionPredictionInput;
 
 const mapVerdictToLevel = (verdict: string): CredibilityLevel => {
   const v = verdict.toUpperCase();
@@ -89,10 +32,24 @@ const mapVerdictToLevel = (verdict: string): CredibilityLevel => {
   return "mixed";
 };
 
+const buildPredictionSnapshot = (
+  data: PredictResponse
+): DetectionPredictionSnapshot => ({
+  verdict: data.verdict,
+  riskLevel: data.risk_level ?? "Needs Review",
+  finalScore: data.final_score,
+  uncertainty: data.uncertainty,
+  parseMetadata: data.parse_metadata,
+  modelOutputs: data.model_outputs,
+  conflict: data.conflict,
+  fetchMetadata: data.fetch_metadata,
+  limeModel: data.lime_model ?? null,
+});
+
 export default function FakeDetectionPage() {
   const [articleText, setArticleText] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
-  const [inputMode, setInputMode] = useState<InputMode>("auto");
+  const [inputMode, setInputMode] = useState<DetectionInputMode>("auto");
   const [preferredExplanationMode, setPreferredExplanationMode] =
     useState<"auto" | "none">("auto");
   const [isLoading, setIsLoading] = useState(false);
@@ -116,6 +73,13 @@ export default function FakeDetectionPage() {
   const [fetchMetadata, setFetchMetadata] = useState<FetchMetadata | undefined>(undefined);
   const [limeModel, setLimeModel] = useState<"A" | "B" | null | undefined>(undefined);
   const [lastPayload, setLastPayload] = useState<PredictPayload | null>(null);
+  const [predictionSnapshot, setPredictionSnapshot] =
+    useState<DetectionPredictionSnapshot | null>(null);
+  const [feedbackSelection, setFeedbackSelection] = useState<boolean | null>(null);
+  const [feedbackComment, setFeedbackComment] = useState("");
+  const [feedbackStatus, setFeedbackStatus] = useState<FeedbackStatus>(null);
+  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -168,6 +132,7 @@ export default function FakeDetectionPage() {
     setFetchMetadata(data.fetch_metadata);
     setLimeModel(data.lime_model);
     setLastPayload(payload);
+    setPredictionSnapshot(buildPredictionSnapshot(data));
   };
 
   const runPrediction = async (payload: PredictPayload, explanationMode: ExplanationMode) => {
@@ -217,6 +182,12 @@ export default function FakeDetectionPage() {
     setConflict(undefined);
     setFetchMetadata(undefined);
     setLimeModel(undefined);
+    setLastPayload(null);
+    setPredictionSnapshot(null);
+    setFeedbackSelection(null);
+    setFeedbackComment("");
+    setFeedbackStatus(null);
+    setFeedbackSubmitted(false);
 
     try {
       const data = await runPrediction(payload, preferredExplanationMode);
@@ -250,6 +221,60 @@ export default function FakeDetectionPage() {
       setError(message);
     } finally {
       setIsExplaining(false);
+    }
+  };
+
+  const submitFeedback = async () => {
+    if (!lastPayload || !predictionSnapshot) {
+      return;
+    }
+
+    if (feedbackSelection === null) {
+      setFeedbackStatus({
+        type: "error",
+        message: "Choose whether the prediction was right or wrong before sending feedback.",
+      });
+      return;
+    }
+
+    setIsSubmittingFeedback(true);
+    setFeedbackStatus(null);
+
+    try {
+      const res = await fetch("/api/feedback/detections", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source: "web",
+          input: lastPayload,
+          prediction: predictionSnapshot,
+          feedback: {
+            isCorrect: feedbackSelection,
+            comment: feedbackComment.slice(0, MAX_FEEDBACK_COMMENT_LENGTH),
+          },
+        }),
+      });
+
+      const json = (await res.json().catch(() => null)) as { error?: string } | null;
+      if (!res.ok) {
+        throw new Error(json?.error ?? "Failed to submit feedback.");
+      }
+
+      setFeedbackSubmitted(true);
+      setFeedbackStatus({
+        type: "success",
+        message: "Thanks. Your feedback was saved.",
+      });
+    } catch (submitError) {
+      setFeedbackStatus({
+        type: "error",
+        message:
+          submitError instanceof Error
+            ? submitError.message
+            : "Failed to submit feedback.",
+      });
+    } finally {
+      setIsSubmittingFeedback(false);
     }
   };
 
@@ -287,25 +312,40 @@ export default function FakeDetectionPage() {
             onAnalyze={analyze}
           />
 
-          <FakeDetectionResult
-            level={resultLevel}
-            label={resultLabel}
-            details={resultDetails}
-            riskLevel={riskLevel}
-            steps={steps}
-            explanation={explanation}
-            analyzedText={analyzedText}
-            explanationClass={explanationClass}
-            uncertainty={uncertainty}
-            parseMetadata={parseMetadata}
-            modelOutputs={modelOutputs}
-            conflict={conflict}
-            fetchMetadata={fetchMetadata}
-            limeModel={limeModel}
-            canExplain={Boolean(lastPayload)}
-            isExplaining={isExplaining}
-            onExplain={handleExplain}
-          />
+          <div className="space-y-6">
+            <FakeDetectionResult
+              level={resultLevel}
+              label={resultLabel}
+              details={resultDetails}
+              riskLevel={riskLevel}
+              steps={steps}
+              explanation={explanation}
+              analyzedText={analyzedText}
+              explanationClass={explanationClass}
+              uncertainty={uncertainty}
+              parseMetadata={parseMetadata}
+              modelOutputs={modelOutputs}
+              conflict={conflict}
+              fetchMetadata={fetchMetadata}
+              limeModel={limeModel}
+              canExplain={Boolean(lastPayload)}
+              isExplaining={isExplaining}
+              onExplain={handleExplain}
+            />
+
+            {lastPayload && predictionSnapshot && !isLoading && (
+              <DetectionFeedbackCard
+                selectedValue={feedbackSelection}
+                comment={feedbackComment}
+                isSubmitting={isSubmittingFeedback}
+                isSubmitted={feedbackSubmitted}
+                status={feedbackStatus}
+                onSelect={setFeedbackSelection}
+                onCommentChange={setFeedbackComment}
+                onSubmit={submitFeedback}
+              />
+            )}
+          </div>
         </section>
 
         <Footer />

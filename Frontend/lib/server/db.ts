@@ -18,8 +18,10 @@ export async function ensureSettingsIndexes(db: Db) {
   await db.collection("audit_events").createIndex({ userId: 1, createdAt: -1 });
   await db.collection("audit_events").createIndex({ eventType: 1, createdAt: -1 });
 
+  await db.collection("prediction_feedback").createIndex({ userId: 1, createdAt: -1 });
+  await db.collection("prediction_feedback").createIndex({ source: 1, createdAt: -1 });
+
   await db.collection("users").createIndex({ email: 1 }, { unique: true });
 
   ensured = true;
 }
-

@@ -70,6 +70,26 @@
               <button id="clear-btn" type="button" class="clear-btn">Clear fields</button>
             </div>
 
+            <details class="config-details">
+              <summary>Connection settings</summary>
+              <div class="field">
+                <label for="api-base-url" class="field-label">API Base URL</label>
+                <input id="api-base-url" type="url" placeholder="http://localhost:3000" />
+              </div>
+              <div class="field">
+                <label for="bearer-token" class="field-label">Feedback Bearer Token</label>
+                <textarea
+                  id="bearer-token"
+                  placeholder="Paste the extension token issued from TruthLens settings..."
+                  rows="4"
+                ></textarea>
+              </div>
+              <div class="config-actions">
+                <button id="save-config-btn" type="button" class="mini-btn primary">Save settings</button>
+                <p id="config-status" class="config-status" aria-live="polite">&nbsp;</p>
+              </div>
+            </details>
+
             <p id="form-error" class="form-error" role="alert" aria-live="assertive">&nbsp;</p>
           </form>
         </section>
@@ -100,6 +120,39 @@
               <summary>Why this verdict</summary>
               <p id="result-why">Additional model reasoning will appear here when available.</p>
             </details>
+
+            <section id="feedback-section" class="feedback-section" hidden>
+              <div class="feedback-header">
+                <h4>Send feedback</h4>
+                <p>Tell TruthLens whether this result was right or wrong.</p>
+              </div>
+
+              <p id="feedback-token-notice" class="feedback-token-notice" hidden>
+                Configure your feedback bearer token in Connection settings to save account-linked feedback.
+              </p>
+
+              <div id="feedback-form" class="feedback-form" hidden>
+                <div class="feedback-choices">
+                  <button id="feedback-correct-btn" type="button" class="ghost-btn">Prediction was right</button>
+                  <button id="feedback-wrong-btn" type="button" class="ghost-btn">Prediction was wrong</button>
+                </div>
+
+                <div class="field feedback-field">
+                  <label for="feedback-comment" class="field-label">Comment (Optional)</label>
+                  <textarea
+                    id="feedback-comment"
+                    placeholder="Share what can be improved..."
+                    rows="4"
+                  ></textarea>
+                </div>
+
+                <p id="feedback-status" class="feedback-status" aria-live="polite">&nbsp;</p>
+
+                <button id="feedback-submit-btn" type="button" class="mini-btn primary feedback-submit-btn">
+                  Send feedback
+                </button>
+              </div>
+            </section>
 
             <div class="result-actions">
               <button id="analyze-again-btn" type="button" class="ghost-btn">Analyze another</button>

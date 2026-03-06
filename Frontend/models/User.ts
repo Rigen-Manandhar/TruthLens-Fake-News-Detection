@@ -53,6 +53,14 @@ const SecuritySchema = new Schema(
       type: Date,
       default: null,
     },
+    extensionTokenVersion: {
+      type: Number,
+      default: 1,
+    },
+    extensionTokenRotatedAt: {
+      type: Date,
+      default: null,
+    },
   },
   { _id: false }
 );
@@ -120,6 +128,8 @@ const UserSchema = new Schema(
         lastPasswordChangedAt: null,
         sessionVersion: 1,
         reauthUntil: null,
+        extensionTokenVersion: 1,
+        extensionTokenRotatedAt: null,
       }),
     },
     privacy: {

@@ -9,6 +9,43 @@ import { getProviderInfo, getUserContext } from "@/lib/server/user-context";
 
 export const runtime = "nodejs";
 
+const isFreshSessionForGoogleReauth = async (
+  context: NonNullable<Awaited<ReturnType<typeof getUserContext>>>
+) => {
+  if (!context.currentSessionId) {
+    return false;
+  }
+
+  const sessionRecord = await context.db.collection("user_sessions").findOne({
+    sessionId: context.currentSessionId,
+    userId: context.userId,
+    isRevoked: { $ne: true },
+  });
+
+  if (!sessionRecord) {
+    return false;
+  }
+
+  const expiresAt =
+    sessionRecord.expiresAt instanceof Date
+      ? sessionRecord.expiresAt
+      : new Date(String(sessionRecord.expiresAt ?? ""));
+  const createdAt =
+    sessionRecord.createdAt instanceof Date
+      ? sessionRecord.createdAt
+      : new Date(String(sessionRecord.createdAt ?? ""));
+
+  if (Number.isNaN(createdAt.getTime()) || Number.isNaN(expiresAt.getTime())) {
+    return false;
+  }
+
+  if (expiresAt.getTime() <= Date.now()) {
+    return false;
+  }
+
+  return Date.now() - createdAt.getTime() <= REAUTH_WINDOW_MS;
+};
+
 export async function POST(req: Request) {
   const context = await getUserContext(req);
   if (!context) {
@@ -58,6 +95,17 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    const hasFreshSession = await isFreshSessionForGoogleReauth(context);
+    if (!hasFreshSession) {
+      return NextResponse.json(
+        {
+          error:
+            "Google re-auth requires a fresh Google sign-in. Sign out, sign back in with Google, then retry within 10 minutes.",
+        },
+        { status: 403 }
+      );
+    }
   } else {
     return NextResponse.json({ error: "Unsupported re-auth method." }, { status: 400 });
   }
@@ -73,4 +121,3 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ ok: true, reauthUntil: reauthUntil.toISOString() });
 }
-

@@ -298,7 +298,7 @@ export default function SettingsPage() {
               </>
             ) : (
               <>
-                <p className="text-sm text-[var(--muted-foreground)]">Google re-auth confirmation is required for sensitive account actions.</p>
+                <p className="text-sm text-[var(--muted-foreground)]">Google-only accounts must use a fresh Google sign-in for sensitive actions. If verification fails, sign out, sign back in with Google, then retry within 10 minutes.</p>
                 <Button type="button" onClick={() => doReauth("google")} disabled={reauthing} className="w-auto px-6">{reauthing ? "Verifying..." : "Verify with Google"}</Button>
               </>
             )}

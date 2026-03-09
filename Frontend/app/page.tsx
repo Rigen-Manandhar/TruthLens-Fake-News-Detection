@@ -49,6 +49,17 @@ export default function Home() {
     setSearchQuery(searchInput.trim());
   };
 
+  const handleResetFeed = () => {
+    setSearchInput("");
+    setSearchQuery("");
+    setSelectedCategory("");
+  };
+
+  const isFeedFiltered =
+    searchInput.trim().length > 0 ||
+    searchQuery.trim().length > 0 ||
+    selectedCategory.length > 0;
+
   return (
     <div className="page-shell ambient-grid">
       <div className="pointer-events-none absolute -top-10 -left-12 h-52 w-52 rounded-full bg-[rgba(232,176,116,0.26)] blur-3xl" />
@@ -59,8 +70,10 @@ export default function Home() {
           searchInput={searchInput}
           onSearchInputChange={setSearchInput}
           onSearchSubmit={handleSearchSubmit}
+          onResetFeed={handleResetFeed}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
+          isFeedFiltered={isFeedFiltered}
         />
 
         <section className="space-y-8 section-reveal delay-1">

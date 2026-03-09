@@ -6,8 +6,10 @@ interface HeroSectionProps {
   searchInput: string;
   onSearchInputChange: (value: string) => void;
   onSearchSubmit: () => void;
+  onResetFeed: () => void;
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
+  isFeedFiltered: boolean;
 }
 
 const quickTopics = [
@@ -23,8 +25,10 @@ export default function HeroSection({
   searchInput,
   onSearchInputChange,
   onSearchSubmit,
+  onResetFeed,
   selectedCategory,
   onCategoryChange,
+  isFeedFiltered,
 }: HeroSectionProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +71,37 @@ export default function HeroSection({
             >
               Search Feed
             </button>
+            {isFeedFiltered && (
+              <button
+                type="button"
+                onClick={onResetFeed}
+                className="shrink-0 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-[#fffdf8] px-5 py-3 text-sm font-semibold text-[#5f5548] shadow-[0_10px_24px_rgba(20,14,7,0.08)] transition-colors hover:bg-[#f4eee2] sm:w-auto"
+                aria-label="Reset news feed"
+              >
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  className="h-4 w-4"
+                >
+                  <path
+                    d="M16.667 10A6.667 6.667 0 1 1 14.714 5.286"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M16.667 3.333v4.167H12.5"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                Reset Feed
+              </button>
+            )}
           </form>
 
           <div className="flex flex-wrap gap-2.5">

@@ -18,7 +18,9 @@ export default function Footer({ className = "mt-16" }: FooterProps) {
           <Link href="/contact" className="transition-colors hover:text-[#12100d]">
             Contact
           </Link>
-          <span className="cursor-default transition-colors hover:text-[#12100d]">Privacy</span>
+          <Link href="/privacy" className="transition-colors hover:text-[#12100d]">
+            Privacy
+          </Link>
           <span className="cursor-default transition-colors hover:text-[#12100d]">Terms</span>
         </div>
         <div className="text-xs text-[#8a7d6d]">

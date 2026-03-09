@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer className="mt-16 rounded-[2rem] border border-[var(--line)] bg-[#fffdf8]/90 px-6 py-8 shadow-[0_14px_34px_rgba(20,16,8,0.08)]">
@@ -6,7 +8,9 @@ export default function Footer() {
           <div className="display-title text-xl font-bold text-[#17130f]">TruthLens</div>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-[#736759] sm:justify-start">
-          <span className="cursor-default transition-colors hover:text-[#12100d]">About</span>
+          <Link href="/about" className="transition-colors hover:text-[#12100d]">
+            About
+          </Link>
           <span className="cursor-default transition-colors hover:text-[#12100d]">Contact</span>
           <span className="cursor-default transition-colors hover:text-[#12100d]">Privacy</span>
           <span className="cursor-default transition-colors hover:text-[#12100d]">Terms</span>

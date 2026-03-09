@@ -1,8 +1,12 @@
 import Link from "next/link";
 
-export default function Footer() {
+interface FooterProps {
+  className?: string;
+}
+
+export default function Footer({ className = "mt-16" }: FooterProps) {
   return (
-    <footer className="mt-16 rounded-[2rem] border border-[var(--line)] bg-[#fffdf8]/90 px-6 py-8 shadow-[0_14px_34px_rgba(20,16,8,0.08)]">
+    <footer className={`${className} rounded-[2rem] border border-[var(--line)] bg-[#fffdf8]/90 px-6 py-8 shadow-[0_14px_34px_rgba(20,16,8,0.08)]`}>
       <div className="flex flex-col gap-5 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
         <div>
           <div className="display-title text-xl font-bold text-[#17130f]">TruthLens</div>
@@ -11,7 +15,9 @@ export default function Footer() {
           <Link href="/about" className="transition-colors hover:text-[#12100d]">
             About
           </Link>
-          <span className="cursor-default transition-colors hover:text-[#12100d]">Contact</span>
+          <Link href="/contact" className="transition-colors hover:text-[#12100d]">
+            Contact
+          </Link>
           <span className="cursor-default transition-colors hover:text-[#12100d]">Privacy</span>
           <span className="cursor-default transition-colors hover:text-[#12100d]">Terms</span>
         </div>

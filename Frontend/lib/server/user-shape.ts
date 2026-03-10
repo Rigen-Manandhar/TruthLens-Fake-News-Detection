@@ -2,6 +2,7 @@ import type { Db } from "mongodb";
 import { normalizePreferences } from "@/lib/shared/settings";
 import { getProviderInfo } from "./user-context";
 import { getReauthUntil } from "./reauth";
+import { normalizeUserRole } from "./user-role";
 
 const toIso = (value: unknown): string | null => {
   if (value instanceof Date) {
@@ -44,6 +45,7 @@ export async function buildUserSummary(db: Db, user: Record<string, unknown>) {
     name: (user.name as string) ?? (user.fullName as string) ?? "",
     email: (user.email as string) ?? "",
     image: (user.image as string | null) ?? null,
+    role: normalizeUserRole(user.role),
     hasPassword,
     providerInfo: {
       providers: providerInfo.providers,
@@ -66,4 +68,3 @@ export async function buildUserSummary(db: Db, user: Record<string, unknown>) {
     },
   };
 }
-

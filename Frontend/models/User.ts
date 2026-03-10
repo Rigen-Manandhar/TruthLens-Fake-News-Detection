@@ -3,6 +3,7 @@ import {
   DEFAULT_USER_PREFERENCES,
   NEWS_CATEGORY_OPTIONS,
 } from "@/lib/shared/settings";
+import type { UserRole } from "@/lib/shared/admin";
 
 const PreferencesSchema = new Schema(
   {
@@ -101,6 +102,11 @@ const UserSchema = new Schema(
       unique: true,
       lowercase: true,
       trim: true,
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"] as UserRole[],
+      default: "user",
     },
     passwordHash: {
       type: String,

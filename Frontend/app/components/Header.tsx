@@ -12,8 +12,10 @@ export default function Header() {
   const pathname = usePathname();
   const isNews = pathname === "/" || pathname === "";
   const isFake = pathname?.startsWith("/fake-detection");
+  const isAdminPage = pathname?.startsWith("/admin");
   const { data: session, status } = useSession();
   const user = session?.user ?? null;
+  const isAdmin = user?.role === "admin";
   const isLoadingUser = status === "loading";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -131,6 +133,11 @@ export default function Header() {
           <Link href="/fake-detection" className={navLinkClass(Boolean(isFake))}>
             Fake News Detection
           </Link>
+          {isAdmin && (
+            <Link href="/admin" className={navLinkClass(Boolean(isAdminPage))}>
+              Admin
+            </Link>
+          )}
         </nav>
 
         <nav className="flex items-center gap-2 sm:gap-3">
@@ -174,7 +181,31 @@ export default function Header() {
                   >
                     Fake News Detection
                   </Link>
+                  {isAdmin && (
+                    <Link
+                      href="/admin"
+                      className={`${navLinkClass(Boolean(isAdminPage))} text-center`}
+                    >
+                      Admin
+                    </Link>
+                  )}
                 </div>
+                {!isLoadingUser && !user && (
+                  <div className="mt-3 grid gap-2 border-t border-[var(--line)] pt-3">
+                    <Link
+                      href="/login"
+                      className="inline-flex items-center justify-center rounded-full border border-[var(--line)] bg-[#fffdfa] px-4 py-2.5 text-sm font-semibold text-[var(--muted-foreground)] transition-colors hover:bg-[#f4eee2] hover:text-[#12100d]"
+                    >
+                      Log in
+                    </Link>
+                    <Link
+                      href="/signup"
+                      className="inline-flex items-center justify-center rounded-full bg-[#12100d] px-4 py-2.5 text-sm font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(26,18,8,0.22)] transition-colors hover:bg-[var(--accent)]"
+                    >
+                      Get started
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -223,13 +254,13 @@ export default function Header() {
             <>
               <Link
                 href="/login"
-                className="hidden sm:inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold text-[var(--muted-foreground)] transition-colors hover:bg-[#f4eee2] hover:text-[#12100d] sm:text-sm"
+                className="hidden md:inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold text-[var(--muted-foreground)] transition-colors hover:bg-[#f4eee2] hover:text-[#12100d] sm:text-sm"
               >
                 Log in
               </Link>
               <Link
                 href="/signup"
-                className="hidden min-[380px]:inline-flex items-center rounded-full bg-[#12100d] px-4 py-2 text-xs font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(26,18,8,0.22)] transition-colors hover:bg-[var(--accent)] sm:px-5 sm:text-sm"
+                className="hidden md:inline-flex items-center rounded-full bg-[#12100d] px-4 py-2 text-xs font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(26,18,8,0.22)] transition-colors hover:bg-[var(--accent)] sm:px-5 sm:text-sm"
               >
                 Get started
               </Link>

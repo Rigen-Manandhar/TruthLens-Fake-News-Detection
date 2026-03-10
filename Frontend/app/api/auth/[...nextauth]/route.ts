@@ -6,6 +6,10 @@ import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
 import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb-client";
+import {
+  normalizeUserRole,
+  seedAdminRoleIfEligible,
+} from "@/lib/server/user-role";
 
 export const runtime = "nodejs";
 
@@ -66,6 +70,7 @@ export const authOptions: NextAuthOptions = {
       if (typeof token.sessionId !== "string" || !token.sessionId) {
         token.sessionId = randomUUID();
       }
+      token.role = normalizeUserRole(token.role);
       token.blocked = false;
 
       try {
@@ -80,6 +85,8 @@ export const authOptions: NextAuthOptions = {
             token.blocked = true;
             return token;
           }
+
+          token.role = await seedAdminRoleIfEligible(db, dbUser);
 
           const privacy =
             dbUser.privacy && typeof dbUser.privacy === "object"
@@ -148,6 +155,9 @@ export const authOptions: NextAuthOptions = {
       if (token?.id && session.user) {
         (session.user as { id?: string }).id = String(token.id);
       }
+      if (session.user) {
+        (session.user as { role?: "user" | "admin" }).role = normalizeUserRole(token.role);
+      }
       if (session.user && typeof token.sessionId === "string") {
         (session.user as { sessionId?: string }).sessionId = token.sessionId;
       }
@@ -164,6 +174,7 @@ export const authOptions: NextAuthOptions = {
             session.user.name = user.name ?? user.fullName ?? session.user.name ?? "";
             session.user.email = user.email ?? session.user.email ?? "";
             session.user.image = user.image ?? session.user.image ?? null;
+            (session.user as { role?: "user" | "admin" }).role = normalizeUserRole(user.role);
           }
         }
       } catch {
@@ -224,6 +235,7 @@ export const authOptions: NextAuthOptions = {
           id: user._id.toString(),
           name: user.name ?? user.fullName ?? user.email,
           email: user.email,
+          role: normalizeUserRole(user.role),
         };
       },
     }),

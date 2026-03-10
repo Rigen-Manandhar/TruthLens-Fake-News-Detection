@@ -49,6 +49,7 @@ export async function POST(req: Request) {
       name: normalizedName,
       fullName: normalizedName,
       email: normalizedEmail,
+      role: "user",
       passwordHash,
       preferences: DEFAULT_USER_PREFERENCES,
       security: {

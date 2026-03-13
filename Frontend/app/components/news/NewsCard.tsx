@@ -1,17 +1,8 @@
 "use client";
 
 import Link from "next/link";
-
-interface NewsArticle {
-  title: string;
-  description: string;
-  url: string;
-  urlToImage: string | null;
-  publishedAt: string;
-  source: {
-    name: string;
-  };
-}
+import type { NewsArticle } from "./types";
+import { formatNewsDate, getAnalysisStyle, getAnalysisText } from "./utils";
 
 interface NewsCardProps {
   article: NewsArticle;
@@ -25,55 +16,7 @@ export type NewsAnalysis = {
   confidence?: number | null;
 };
 
-const getAnalysisStyle = (analysis?: NewsAnalysis) => {
-  if (!analysis || analysis.status === "loading") {
-    return "border-sky-200/80 bg-sky-50 text-sky-900";
-  }
-
-  if (analysis.status === "error") {
-    return "border-[#d6ccbd] bg-[#efe8da] text-[#6b6257]";
-  }
-
-  const verdict = (analysis.verdict || "").toUpperCase();
-  if (verdict === "LIKELY REAL") {
-    return "border-emerald-200 bg-emerald-50 text-emerald-900";
-  }
-
-  if (verdict === "SUSPICIOUS") {
-    return "border-red-200 bg-red-50 text-red-900";
-  }
-
-  return "border-amber-200 bg-amber-50 text-amber-900";
-};
-
-const getAnalysisText = (analysis?: NewsAnalysis) => {
-  if (!analysis || analysis.status === "loading") {
-    return "Analyzing...";
-  }
-
-  if (analysis.status === "error") {
-    return "Analysis unavailable";
-  }
-
-  const label = analysis.verdict || "UNCERTAIN";
-  const confidence =
-    typeof analysis.confidence === "number"
-      ? `${Math.round(analysis.confidence * 100)}%`
-      : null;
-
-  return confidence ? `${label} ${confidence}` : label;
-};
-
 export default function NewsCard({ article, analysis }: NewsCardProps) {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
   return (
     <article className="group h-full overflow-hidden rounded-[1.65rem] border border-[var(--line)] bg-[#fffdfa]/85 shadow-[0_16px_30px_rgba(24,16,8,0.09)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_40px_rgba(24,16,8,0.16)] flex flex-col">
       <div className="relative w-full h-48 overflow-hidden bg-gradient-to-br from-[#e8dfcf] via-[#f7f3ea] to-[#e7dcc6]">
@@ -93,7 +36,7 @@ export default function NewsCard({ article, analysis }: NewsCardProps) {
             {article.source.name}
           </span>
           <span className="text-xs text-[#766b5e]">
-            {formatDate(article.publishedAt)}
+            {formatNewsDate(article.publishedAt)}
           </span>
         </div>
         <div className="mb-3">

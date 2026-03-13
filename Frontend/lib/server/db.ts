@@ -22,6 +22,11 @@ export async function ensureSettingsIndexes(db: Db) {
   await db.collection("prediction_feedback").createIndex({ source: 1, createdAt: -1 });
 
   await db.collection("users").createIndex({ email: 1 }, { unique: true });
+  await db.collection("password_reset_tokens").createIndex({ tokenHash: 1 }, { unique: true });
+  await db.collection("password_reset_tokens").createIndex({ userId: 1, usedAt: 1 });
+  await db
+    .collection("password_reset_tokens")
+    .createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
   ensured = true;
 }

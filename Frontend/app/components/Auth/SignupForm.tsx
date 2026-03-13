@@ -134,6 +134,14 @@ export default function SignupForm() {
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
+          <div className="flex justify-end">
+            <Link
+              href="/forgot-password"
+              className="text-xs font-semibold text-[#17130f] hover:text-[var(--accent)]"
+            >
+              Forgot password?
+            </Link>
+          </div>
           <p className="text-xs text-[var(--muted-foreground)]">
             Use at least 10 characters. You can also sign up with Google.
           </p>

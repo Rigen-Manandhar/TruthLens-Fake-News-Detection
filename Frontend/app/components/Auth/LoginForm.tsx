@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useEffect, useRef, useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
@@ -8,11 +8,25 @@ import Link from "next/link";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 
-export default function LoginForm() {
+type LoginFormProps = {
+  resetStatus?: string;
+};
+
+export default function LoginForm({ resetStatus = "" }: LoginFormProps) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const hasShownResetSuccess = useRef(false);
+
+  useEffect(() => {
+    if (resetStatus !== "success" || hasShownResetSuccess.current) {
+      return;
+    }
+
+    hasShownResetSuccess.current = true;
+    toast.success("Password updated. You can sign in now.");
+  }, [resetStatus]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -83,6 +97,14 @@ export default function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+          <div className="flex justify-end">
+            <Link
+              href="/forgot-password"
+              className="text-xs font-semibold text-[#17130f] hover:text-[var(--accent)]"
+            >
+              Forgot password?
+            </Link>
+          </div>
           <p className="text-xs text-[var(--muted-foreground)]">
             Use your account password or continue with Google.
           </p>

@@ -1,22 +1,21 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import nodemailer from "nodemailer";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import {
+  createSmtpTransport,
+  EMAIL_REGEX,
+  escapeHtml,
+  formatFromAddress,
+} from "@/lib/server/email";
 
 export const runtime = "nodejs";
 
 const CONTACT_RECIPIENT = "rigenmanandharrm@gmail.com";
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type ContactBody = {
   name?: unknown;
   email?: unknown;
   message?: unknown;
-};
-
-const getRequiredEnv = (name: string) => {
-  const value = process.env[name]?.trim();
-  return value ? value : null;
 };
 
 export async function POST(request: Request) {
@@ -57,47 +56,11 @@ export async function POST(request: Request) {
     );
   }
 
-  const smtpHost = getRequiredEnv("SMTP_HOST");
-  const smtpPortRaw = getRequiredEnv("SMTP_PORT");
-  const smtpUser = getRequiredEnv("SMTP_USER");
-  const smtpPass = getRequiredEnv("SMTP_PASS");
-  const fromEmail =
-    getRequiredEnv("CONTACT_FROM_EMAIL") ?? smtpUser;
-
-  if (!smtpHost || !smtpPortRaw || !smtpUser || !smtpPass || !fromEmail) {
-    console.error("Contact email is not configured correctly.");
-    return NextResponse.json(
-      {
-        error: "Contact form is not configured yet on this environment.",
-      },
-      { status: 500 }
-    );
-  }
-
-  const smtpPort = Number(smtpPortRaw);
-
-  if (!Number.isFinite(smtpPort)) {
-    return NextResponse.json(
-      {
-        error: "SMTP port is invalid.",
-      },
-      { status: 500 }
-    );
-  }
-
-  const transporter = nodemailer.createTransport({
-    host: smtpHost,
-    port: smtpPort,
-    secure: smtpPort === 465,
-    auth: {
-      user: smtpUser,
-      pass: smtpPass,
-    },
-  });
-
   try {
+    const transporter = createSmtpTransport();
+
     await transporter.sendMail({
-      from: `TruthLens Contact <${fromEmail}>`,
+      from: formatFromAddress("TruthLens Contact"),
       to: CONTACT_RECIPIENT,
       replyTo: email,
       subject: `TruthLens contact from ${name}`,
@@ -133,13 +96,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}
-
-function escapeHtml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
 }

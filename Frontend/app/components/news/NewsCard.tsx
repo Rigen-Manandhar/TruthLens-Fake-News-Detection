@@ -14,6 +14,9 @@ export type NewsAnalysis = {
   verdict?: string;
   riskLevel?: string;
   confidence?: number | null;
+  fromCache?: boolean;
+  cachedAt?: string;
+  expiresAt?: string;
 };
 
 export default function NewsCard({ article, analysis }: NewsCardProps) {

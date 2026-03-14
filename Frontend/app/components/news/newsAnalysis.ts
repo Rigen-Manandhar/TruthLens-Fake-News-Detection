@@ -1,34 +1,13 @@
-import type { NewsAnalysis } from "./NewsCard";
-import type { AnalysisMap, NewsArticle, PredictResponse } from "./types";
+import type { AnalysisMap, NewsArticle } from "./types";
+import {
+  getNewsArticleCacheKey,
+  MAX_DISPLAY_ARTICLES,
+  type NewsAnalysisRequestBody,
+  type NewsAnalysisResponseBody,
+} from "@/lib/shared/news-analysis";
 
-export const ANALYSIS_CONCURRENCY = 3;
-export const ANALYSIS_PRIORITY_COUNT = 6;
 export const REQUEST_PAGE_SIZE = "30";
-export const MAX_DISPLAY_ARTICLES = 19;
-
-export const extractPrimaryConfidence = (prediction: PredictResponse): number | null => {
-  const modelB = prediction.model_outputs?.model_b;
-  if (modelB?.ran && typeof modelB.confidence === "number") {
-    return modelB.confidence;
-  }
-
-  const modelA = prediction.model_outputs?.model_a;
-  if (modelA?.ran && typeof modelA.confidence === "number") {
-    return modelA.confidence;
-  }
-
-  return null;
-};
-
-export const toAnalysis = (prediction: PredictResponse): NewsAnalysis => ({
-  status: "done",
-  verdict: prediction.verdict ?? "UNCERTAIN",
-  riskLevel: prediction.risk_level ?? "Needs Review",
-  confidence: extractPrimaryConfidence(prediction),
-});
-
-export const getFallbackText = (article: NewsArticle) =>
-  `${article.title || ""}. ${article.description || ""}`.trim();
+export { MAX_DISPLAY_ARTICLES };
 
 export const uniqueByUrl = (articles: NewsArticle[]) => {
   const seen = new Set<string>();
@@ -36,11 +15,12 @@ export const uniqueByUrl = (articles: NewsArticle[]) => {
 
   for (const article of articles) {
     const url = (article.url || "").trim();
-    if (!url || seen.has(url)) {
+    const cacheKey = getNewsArticleCacheKey(url) ?? url;
+    if (!url || seen.has(cacheKey)) {
       continue;
     }
 
-    seen.add(url);
+    seen.add(cacheKey);
     unique.push(article);
   }
 
@@ -62,60 +42,48 @@ export const buildInitialAnalysisMap = (articles: NewsArticle[]): AnalysisMap =>
   return map;
 };
 
-export const runPredict = async (
-  payload: { text: string; url: string; input_mode: "auto" },
+export const buildErrorAnalysisMap = (articles: NewsArticle[]): AnalysisMap => {
+  const map: AnalysisMap = {};
+
+  for (const article of articles) {
+    const url = (article.url || "").trim();
+    if (!url) {
+      continue;
+    }
+
+    map[url] = { status: "error" };
+  }
+
+  return map;
+};
+
+export const requestNewsAnalysis = async (
+  articles: NewsArticle[],
   signal: AbortSignal
-): Promise<PredictResponse> => {
-  const response = await fetch("/api/predict", {
+): Promise<AnalysisMap> => {
+  const payload: NewsAnalysisRequestBody = {
+    articles: articles.map((article) => ({
+      url: article.url,
+      title: article.title,
+      description: article.description,
+      publishedAt: article.publishedAt,
+    })),
+  };
+
+  const response = await fetch("/api/news/analysis", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      ...payload,
-      explanation_mode: "none",
-    }),
+    body: JSON.stringify(payload),
     signal,
   });
 
-  const json = (await response.json().catch(() => null)) as PredictResponse | null;
+  const json = (await response.json().catch(() => null)) as
+    | (NewsAnalysisResponseBody & { error?: string })
+    | null;
 
   if (!response.ok) {
-    throw new Error(json?.detail || "Prediction failed");
+    throw new Error(json?.error || "Homepage analysis failed");
   }
 
-  return json ?? {};
-};
-
-export const analyzeArticle = async (
-  article: NewsArticle,
-  signal: AbortSignal
-): Promise<NewsAnalysis> => {
-  const fallbackText = getFallbackText(article);
-
-  try {
-    const primary = await runPredict(
-      { text: "", url: article.url, input_mode: "auto" },
-      signal
-    );
-    const primaryAnalysis = toAnalysis(primary);
-
-    if (primaryAnalysis.confidence !== null || fallbackText.length < 10) {
-      return primaryAnalysis;
-    }
-
-    const fallback = await runPredict(
-      { text: fallbackText, url: article.url, input_mode: "auto" },
-      signal
-    );
-    return toAnalysis(fallback);
-  } catch {
-    if (fallbackText.length >= 10) {
-      const fallback = await runPredict(
-        { text: fallbackText, url: article.url, input_mode: "auto" },
-        signal
-      );
-      return toAnalysis(fallback);
-    }
-
-    throw new Error("Analysis failed");
-  }
+  return json?.analysisByUrl ?? {};
 };

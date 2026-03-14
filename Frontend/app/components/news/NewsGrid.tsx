@@ -4,12 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import FeaturedNewsStory from "./FeaturedNewsStory";
 import NewsCard from "./NewsCard";
 import {
-  analyzeArticle,
-  ANALYSIS_CONCURRENCY,
-  ANALYSIS_PRIORITY_COUNT,
+  buildErrorAnalysisMap,
   buildInitialAnalysisMap,
   MAX_DISPLAY_ARTICLES,
   REQUEST_PAGE_SIZE,
+  requestNewsAnalysis,
   uniqueByUrl,
 } from "./newsAnalysis";
 import type { AnalysisMap, NewsArticle, NewsGridProps, NewsResponse } from "./types";
@@ -30,56 +29,25 @@ export default function NewsGrid({
     const runId = ++runIdRef.current;
 
     const analyzeInBackground = async (articles: NewsArticle[]) => {
-      const uniqueArticles = uniqueByUrl(articles);
-      const prioritized = [
-        ...uniqueArticles.slice(0, ANALYSIS_PRIORITY_COUNT),
-        ...uniqueArticles.slice(ANALYSIS_PRIORITY_COUNT),
-      ];
+      try {
+        const analysisByUrl = await requestNewsAnalysis(articles, controller.signal);
 
-      let cursor = 0;
-
-      const worker = async () => {
-        while (cursor < prioritized.length) {
-          const currentIndex = cursor;
-          cursor += 1;
-
-          const article = prioritized[currentIndex];
-          if (!article) {
-            continue;
-          }
-
-          if (controller.signal.aborted || runIdRef.current !== runId) {
-            return;
-          }
-
-          try {
-            const analysis = await analyzeArticle(article, controller.signal);
-
-            if (controller.signal.aborted || runIdRef.current !== runId) {
-              return;
-            }
-
-            setAnalysisByUrl((prev) => ({
-              ...prev,
-              [article.url]: analysis,
-            }));
-          } catch {
-            if (controller.signal.aborted || runIdRef.current !== runId) {
-              return;
-            }
-
-            setAnalysisByUrl((prev) => ({
-              ...prev,
-              [article.url]: {
-                status: "error",
-              },
-            }));
-          }
+        if (controller.signal.aborted || runIdRef.current !== runId) {
+          return;
         }
-      };
 
-      const workerCount = Math.min(ANALYSIS_CONCURRENCY, prioritized.length);
-      await Promise.all(Array.from({ length: workerCount }, () => worker()));
+        setAnalysisByUrl((prev) => ({
+          ...prev,
+          ...analysisByUrl,
+        }));
+      } catch (analysisError) {
+        if (controller.signal.aborted || runIdRef.current !== runId) {
+          return;
+        }
+
+        setAnalysisByUrl(buildErrorAnalysisMap(articles));
+        console.error("Error analyzing news:", analysisError);
+      }
     };
 
     const fetchNews = async () => {

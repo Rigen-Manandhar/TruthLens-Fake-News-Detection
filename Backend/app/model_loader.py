@@ -147,6 +147,9 @@ class HybridModelLoader:
             print(f"Error loading source DB: {exc}")
             return []
 
+    def check_source(self, url: str | None) -> dict:
+        return check_source(url, self.source_db)
+
     def analyze(
         self,
         text: str,

@@ -7,7 +7,7 @@
     "default_title": "TruthLens",
     "default_popup": "popup.html"
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "tabs"],
   "host_permissions": [
     "http://*/*",
     "https://*/*"

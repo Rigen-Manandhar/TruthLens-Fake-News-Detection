@@ -49,8 +49,8 @@ type PreparedArticle = NewsAnalysisRequestArticle & {
 
 type AnalyzedArticle = {
   article: PreparedArticle;
-  record: CacheRecord;
   response: NewsAnalysisSummary;
+  record?: CacheRecord;
 };
 
 function extractPrimaryConfidence(prediction: PredictResponse): number | null {
@@ -109,20 +109,10 @@ function buildSuccessRecord(
   };
 }
 
-function buildErrorRecord(article: PreparedArticle): CacheRecord {
-  const now = new Date();
-  const expiresAt = new Date(now.getTime() + ERROR_TTL_MS);
-
+function buildTransientErrorSummary(): NewsAnalysisSummary {
   return {
-    normalizedUrl: article.cacheKey,
-    sourceUrl: article.url,
     status: "error",
-    analysisSource: "url",
-    cachedAt: now,
-    expiresAt,
-    failureExpiresAt: expiresAt,
-    publishedAt: article.publishedAt ?? null,
-    titleSnapshot: article.title.trim().slice(0, TITLE_SNAPSHOT_LIMIT) || null,
+    fromCache: false,
   };
 }
 
@@ -152,6 +142,7 @@ async function runBackendPredict(payload: {
 
 async function analyzeArticle(article: PreparedArticle): Promise<AnalyzedArticle> {
   const fallbackText = getHomepageFallbackText(article);
+  let encounteredTransientFailure = false;
 
   try {
     const primary = await runBackendPredict({
@@ -164,12 +155,12 @@ async function analyzeArticle(article: PreparedArticle): Promise<AnalyzedArticle
     if (primaryRecord.confidence !== null || fallbackText.length < 10) {
       return {
         article,
-        record: primaryRecord,
         response: toResponseSummary(primaryRecord, false),
+        record: primaryRecord,
       };
     }
   } catch {
-    // Fall through to text fallback when possible.
+    encounteredTransientFailure = true;
   }
 
   if (fallbackText.length >= 10) {
@@ -182,19 +173,39 @@ async function analyzeArticle(article: PreparedArticle): Promise<AnalyzedArticle
       const fallbackRecord = buildSuccessRecord(article, fallback, "fallback_text");
       return {
         article,
-        record: fallbackRecord,
         response: toResponseSummary(fallbackRecord, false),
+        record: fallbackRecord,
       };
     } catch {
-      // Return a short-lived error cache entry below.
+      encounteredTransientFailure = true;
     }
   }
 
-  const errorRecord = buildErrorRecord(article);
+  const now = new Date();
+  const errorExpiresAt = new Date(now.getTime() + ERROR_TTL_MS);
+  const errorRecord: CacheRecord = {
+    normalizedUrl: article.cacheKey,
+    sourceUrl: article.url,
+    status: "error",
+    analysisSource: "url",
+    cachedAt: now,
+    expiresAt: errorExpiresAt,
+    failureExpiresAt: errorExpiresAt,
+    publishedAt: article.publishedAt ?? null,
+    titleSnapshot: article.title.trim().slice(0, TITLE_SNAPSHOT_LIMIT) || null,
+  };
+
+  if (encounteredTransientFailure) {
+    return {
+      article,
+      response: buildTransientErrorSummary(),
+    };
+  }
+
   return {
     article,
-    record: errorRecord,
     response: toResponseSummary(errorRecord, false),
+    record: errorRecord,
   };
 }
 
@@ -306,15 +317,21 @@ export async function analyzeHomepageArticles(
 
   const analyzed = await mapWithConcurrency(misses, ANALYSIS_CONCURRENCY, analyzeArticle);
 
-  await collection.bulkWrite(
-    analyzed.map(({ record }) => ({
+  const cacheableRecords = analyzed.filter(
+    (item): item is AnalyzedArticle & { record: CacheRecord } => Boolean(item.record)
+  );
+
+  if (cacheableRecords.length > 0) {
+    await collection.bulkWrite(
+      cacheableRecords.map(({ record }) => ({
       updateOne: {
         filter: { normalizedUrl: record.normalizedUrl },
         update: { $set: record },
         upsert: true,
       },
-    }))
-  );
+      }))
+    );
+  }
 
   for (const { article, response } of analyzed) {
     analysisByUrl[article.url] = response;

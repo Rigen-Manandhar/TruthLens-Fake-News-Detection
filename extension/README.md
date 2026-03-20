@@ -1,6 +1,6 @@
 # TruthLens Chrome Extension (Popup v1)
 
-TruthLens popup redesigned with a premium editorial UI, finite-state UX flow, and progressive result disclosure while keeping the same API contract.
+TruthLens popup redesigned with a premium editorial UI, finite-state UX flow, progressive result disclosure, and automatic current-tab URL capture while keeping the same API contract.
 
 ## Files
 
@@ -37,11 +37,13 @@ Payload:
 ```json
 {
   "text": "<articleText>",
-  "url": "<sourceUrl>",
+  "url": "<currentActiveTabUrl>",
   "input_mode": "auto|headline_only|full_article|headline_plus_article",
   "explanation_mode": "auto"
 }
 ```
+
+The popup now fills `url` automatically from the active browser tab when the extension opens.
 
 Default base URL in `popup.js`:
 

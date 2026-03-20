@@ -1,3 +1,5 @@
+import { classifyUrlEligibility } from "./url-eligibility.mjs";
+
 const DEFAULT_API_BASE_URL = "http://localhost:3000";
 
 const UI_MODES = {
@@ -12,6 +14,7 @@ const els = {
   inputMode: document.getElementById("input-mode"),
   articleText: document.getElementById("article-text"),
   sourceUrl: document.getElementById("source-url"),
+  sourceUrlStatus: document.getElementById("source-url-status"),
   apiBaseUrl: document.getElementById("api-base-url"),
   bearerToken: document.getElementById("bearer-token"),
   saveConfigBtn: document.getElementById("save-config-btn"),
@@ -57,6 +60,8 @@ const state = {
   uiMode: UI_MODES.EDITING,
   apiBaseUrl: DEFAULT_API_BASE_URL,
   bearerToken: "",
+  activeTabUrl: "",
+  activeTabEligibility: classifyUrlEligibility(""),
   lastPayload: null,
   lastNormalized: null,
   lastRaw: null,
@@ -70,6 +75,7 @@ const REQUIRED_ELEMENT_KEYS = [
   "inputMode",
   "articleText",
   "sourceUrl",
+  "sourceUrlStatus",
   "apiBaseUrl",
   "bearerToken",
   "saveConfigBtn",
@@ -132,6 +138,47 @@ function bindIfPresent(node, eventName, handler) {
 
 function getExtensionChrome() {
   return globalThis.chrome ?? null;
+}
+
+function setActiveTabUrl(url) {
+  state.activeTabEligibility = classifyUrlEligibility(url);
+  state.activeTabUrl = state.activeTabEligibility.normalizedUrl || "";
+  els.sourceUrl.value = state.activeTabUrl;
+  renderSourceUrlStatus();
+}
+
+function getActiveTab() {
+  return new Promise((resolve) => {
+    const extChrome = getExtensionChrome();
+    if (!extChrome?.tabs?.query) {
+      resolve(null);
+      return;
+    }
+
+    extChrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (extChrome.runtime?.lastError) {
+        resolve(null);
+        return;
+      }
+
+      resolve(Array.isArray(tabs) ? tabs[0] ?? null : null);
+    });
+  });
+}
+
+async function syncActiveTabUrl() {
+  const activeTab = await getActiveTab();
+  const nextUrl =
+    activeTab && typeof activeTab.url === "string" ? activeTab.url : "";
+
+  setActiveTabUrl(nextUrl);
+}
+
+function renderSourceUrlStatus() {
+  const { isSupported, reasonMessage } = state.activeTabEligibility;
+  els.sourceUrlStatus.textContent = reasonMessage || "\u00A0";
+  els.sourceUrlStatus.classList.remove("is-success", "is-warning");
+  els.sourceUrlStatus.classList.add(isSupported ? "is-success" : "is-warning");
 }
 
 function readChromeStorage(keys) {
@@ -482,14 +529,17 @@ function triggerInvalidShake() {
 function getPayloadFromForm() {
   return {
     text: els.articleText.value.trim(),
-    url: els.sourceUrl.value.trim(),
+    url: state.activeTabEligibility.isSupported ? state.activeTabUrl : "",
     input_mode: els.inputMode.value,
   };
 }
 
 function validatePayload(payload) {
   if (!payload.text && !payload.url) {
-    return "Please enter article text or a source URL to analyze.";
+    if (!state.activeTabEligibility.isSupported) {
+      return "This page does not look like a supported article page. Paste article text to run text-only analysis.";
+    }
+    return "Please enter article text or open a web page with a valid URL to analyze.";
   }
   return "";
 }
@@ -652,6 +702,7 @@ async function onSubmit(event) {
     return;
   }
 
+  await syncActiveTabUrl();
   const payload = getPayloadFromForm();
   const validationMessage = validatePayload(payload);
 
@@ -671,7 +722,7 @@ function onClearFields() {
   }
 
   els.articleText.value = "";
-  els.sourceUrl.value = "";
+  setActiveTabUrl(state.activeTabUrl);
   clearFormError();
 }
 
@@ -695,13 +746,17 @@ async function onSaveConfig() {
   renderFeedbackSection();
 }
 
-function onRetry() {
-  if (!state.lastPayload) {
+async function onRetry() {
+  await syncActiveTabUrl();
+
+  const payload = getPayloadFromForm();
+  if (!payload.text && !payload.url) {
     setUiMode(UI_MODES.EDITING);
+    showFormError(validatePayload(payload));
     return;
   }
 
-  analyzeWithPayload(state.lastPayload);
+  analyzeWithPayload(payload);
 }
 
 function onBackToForm() {
@@ -740,6 +795,7 @@ async function init() {
   }
 
   await loadRuntimeConfig();
+  await syncActiveTabUrl();
   bindEvents();
   clearFormError();
   resetFeedbackState();

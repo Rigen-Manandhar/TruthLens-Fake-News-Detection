@@ -360,6 +360,22 @@ select {
   color: transparent;
 }
 
+.url-status {
+  margin: 8px 0 0;
+  min-height: 18px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--ink-body);
+}
+
+.url-status.is-success {
+  color: var(--ok-ink);
+}
+
+.url-status.is-warning {
+  color: var(--warn-ink);
+}
+
 .form-error.is-visible {
   border-color: #fecdd3;
   background: #fff1f2;

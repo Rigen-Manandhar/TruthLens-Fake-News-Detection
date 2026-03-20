@@ -11,6 +11,7 @@ from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
 from app.article_extractor import ExtractionError, fetch_and_extract
 from app.model_loader import HybridModelLoader, get_hybrid_model
+from app.url_eligibility import classify_url_eligibility
 
 
 INPUT_TEXT_MIN_LEN = 10
@@ -50,7 +51,7 @@ class StepDetail(BaseModel):
 
 
 class UncertaintyInfo(BaseModel):
-    reason_code: Literal["CONFLICT", "LOW_CONFIDENCE", "INSUFFICIENT_TEXT", "FETCH_FAILED"] | None = None
+    reason_code: Literal["CONFLICT", "LOW_CONFIDENCE", "INSUFFICIENT_TEXT", "FETCH_FAILED", "UNSUPPORTED_URL"] | None = None
     reason_message: str | None = None
 
 
@@ -152,13 +153,82 @@ def predict(req: PredictRequest):
         raise HTTPException(status_code=500, detail="Model not loaded")
 
     text = (req.text or "").strip()
+    original_url = (req.url or "").strip() or None
+    analysis_url = original_url
     title_candidates: list[str] = []
     fetch_metadata = FetchMetadata(attempted=False, success=None)
+    eligibility_step: StepDetail | None = None
 
-    if len(text) < INPUT_TEXT_MIN_LEN and req.url:
+    if original_url:
+        eligibility = classify_url_eligibility(original_url)
+        if eligibility.is_supported:
+            analysis_url = eligibility.normalized_url
+            eligibility_step = StepDetail(
+                step="URL Eligibility",
+                score_impact=0,
+                details=eligibility.reason_message,
+                metadata={"supported": True, "reason_code": eligibility.reason_code},
+            )
+        else:
+            analysis_url = None
+            fetch_metadata = FetchMetadata(
+                attempted=False,
+                success=False,
+                error_type="UNSUPPORTED_PAGE",
+                resolved_url=eligibility.normalized_url or original_url,
+            )
+
+            if len(text) >= INPUT_TEXT_MIN_LEN:
+                eligibility_step = StepDetail(
+                    step="URL Eligibility",
+                    score_impact=0,
+                    details=(
+                        f"{eligibility.reason_message} Text analysis will continue without using the page URL."
+                    ),
+                    metadata={"supported": False, "reason_code": eligibility.reason_code},
+                )
+            else:
+                eligibility_step = StepDetail(
+                    step="URL Eligibility",
+                    score_impact=0,
+                    details=eligibility.reason_message,
+                    metadata={"supported": False, "reason_code": eligibility.reason_code},
+                )
+                return PredictResponse(
+                    final_score=0,
+                    verdict="UNCERTAIN",
+                    risk_level="Needs Review",
+                    steps=[
+                        eligibility_step,
+                        StepDetail(
+                            step="Input Parsing",
+                            score_impact=0,
+                            details="No article text was provided, so URL-only analysis could not continue.",
+                        ),
+                    ],
+                    article_class="UNKNOWN",
+                    uncertainty=UncertaintyInfo(
+                        reason_code="UNSUPPORTED_URL",
+                        reason_message="This page does not look like a supported article page. Paste article text to run text-only analysis.",
+                    ),
+                    parse_metadata=ParseMetadata(
+                        used_mode=req.input_mode,
+                        detected_shape="unsupported_url",
+                        headline_word_count=0,
+                        body_word_count=0,
+                        headline_source=None,
+                    ),
+                    model_outputs=_empty_model_outputs(0, 0),
+                    conflict=ConflictInfo(is_conflict=False, threshold=0.80, raw_score_before_override=0),
+                    fetch_metadata=fetch_metadata,
+                    lime_model=None,
+                    lime_input_text=None,
+                )
+
+    if len(text) < INPUT_TEXT_MIN_LEN and analysis_url:
         fetch_metadata.attempted = True
         try:
-            extracted = fetch_and_extract(req.url)
+            extracted = fetch_and_extract(analysis_url)
             text = extracted.text.strip()
             title_candidates = extracted.title_candidates
             fetch_metadata.success = True
@@ -166,24 +236,27 @@ def predict(req: PredictRequest):
             fetch_metadata.resolved_url = extracted.resolved_url
             fetch_metadata.error_type = None
         except ExtractionError as exc:
-            source_res = model.check_source(req.url)
+            source_res = model.check_source(analysis_url)
             final_score = int(source_res.get("score", 0))
+            steps = [
+                StepDetail(
+                    step="Source Check",
+                    score_impact=final_score,
+                    details=str(source_res.get("reason", "Source check unavailable")),
+                ),
+                StepDetail(
+                    step="URL Extraction",
+                    score_impact=0,
+                    details=exc.message,
+                ),
+            ]
+            if eligibility_step:
+                steps.insert(0, eligibility_step)
             return PredictResponse(
                 final_score=final_score,
                 verdict="UNCERTAIN",
                 risk_level="Needs Review",
-                steps=[
-                    StepDetail(
-                        step="Source Check",
-                        score_impact=final_score,
-                        details=str(source_res.get("reason", "Source check unavailable")),
-                    ),
-                    StepDetail(
-                        step="URL Extraction",
-                        score_impact=0,
-                        details=exc.message,
-                    ),
-                ],
+                steps=steps,
                 article_class="UNKNOWN",
                 uncertainty=UncertaintyInfo(
                     reason_code="FETCH_FAILED",
@@ -212,24 +285,27 @@ def predict(req: PredictRequest):
             )
 
     if len(text) < INPUT_TEXT_MIN_LEN:
-        source_res = model.check_source(req.url)
+        source_res = model.check_source(analysis_url)
         final_score = int(source_res.get("score", 0))
+        steps = [
+            StepDetail(
+                step="Source Check",
+                score_impact=final_score,
+                details=str(source_res.get("reason", "Source check unavailable")),
+            ),
+            StepDetail(
+                step="Input Parsing",
+                score_impact=0,
+                details="Not enough text to perform model analysis.",
+            ),
+        ]
+        if eligibility_step:
+            steps.insert(0, eligibility_step)
         return PredictResponse(
             final_score=final_score,
             verdict="UNCERTAIN",
             risk_level="Needs Review",
-            steps=[
-                StepDetail(
-                    step="Source Check",
-                    score_impact=final_score,
-                    details=str(source_res.get("reason", "Source check unavailable")),
-                ),
-                StepDetail(
-                    step="Input Parsing",
-                    score_impact=0,
-                    details="Not enough text to perform model analysis.",
-                ),
-            ],
+            steps=steps,
             article_class="UNKNOWN",
             uncertainty=UncertaintyInfo(
                 reason_code="INSUFFICIENT_TEXT",
@@ -252,7 +328,7 @@ def predict(req: PredictRequest):
     try:
         report_dict = model.analyze(
             text,
-            req.url,
+            analysis_url,
             input_mode=req.input_mode,
             title_candidates=title_candidates,
         )
@@ -286,6 +362,9 @@ def predict(req: PredictRequest):
             explanation_html = exp.as_html()
         except Exception as exc:
             print(f"LIME Error: {exc}")
+
+    if eligibility_step:
+        report_dict["steps"] = [eligibility_step, *report_dict["steps"]]
 
     return PredictResponse(
         final_score=report_dict["final_score"],

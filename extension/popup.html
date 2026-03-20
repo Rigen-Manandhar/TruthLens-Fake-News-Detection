@@ -18,7 +18,7 @@
         <section class="hero" aria-labelledby="analyze-heading">
           <p class="hero-kicker">Hybrid Credibility Analyzer</p>
           <h2 id="analyze-heading">Analyze Content</h2>
-          <p id="hero-subtitle" class="hero-subtitle">Paste text or URL to detect misinformation</p>
+          <p id="hero-subtitle" class="hero-subtitle">Paste text to analyze the page you are currently viewing</p>
 
           <div id="hero-result-summary" class="hero-result-summary" hidden aria-live="polite">
             <div class="summary-row">
@@ -57,13 +57,20 @@
             </div>
 
             <div class="field">
-              <label for="source-url" class="field-label">Source URL (Optional)</label>
+              <label for="source-url" class="field-label">Current Page URL</label>
               <div class="input-with-icon">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M10.95 13.05 13.05 10.95m-3.85 5.6-1.75 1.75a3.5 3.5 0 1 1-4.95-4.95l3.5-3.5a3.5 3.5 0 0 1 4.95 0m3.85-3.85 1.75-1.75a3.5 3.5 0 1 1 4.95 4.95l-3.5 3.5a3.5 3.5 0 0 1-4.95 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
-                <input id="source-url" name="url" type="url" placeholder="https://example.com/article..." />
+                <input
+                  id="source-url"
+                  name="url"
+                  type="url"
+                  placeholder="Current tab URL will appear here"
+                  readonly
+                />
               </div>
+              <p id="source-url-status" class="url-status" aria-live="polite">&nbsp;</p>
             </div>
 
             <div class="form-tools">
@@ -196,6 +203,6 @@
       </footer>
     </main>
 
-    <script src="popup.js"></script>
+    <script type="module" src="popup.js"></script>
   </body>
 </html>

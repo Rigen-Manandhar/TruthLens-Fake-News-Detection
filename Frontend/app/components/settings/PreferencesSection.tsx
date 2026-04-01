@@ -21,7 +21,7 @@ export default function PreferencesSection({
   onSave,
 }: PreferencesSectionProps) {
   return (
-    <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-5 sm:p-6 space-y-4">
+    <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-(--line) p-5 sm:p-6 space-y-4">
       <h2 className="display-title text-2xl text-[#17130f]">Preferences</h2>
       <Input
         label="Default country (2-letter)"
@@ -50,7 +50,7 @@ export default function PreferencesSection({
             className={`px-3 py-1.5 rounded-full text-xs font-semibold border ${
               prefs.newsCategories.includes(category)
                 ? "bg-[#12100d] text-[#f7f1e6] border-[#12100d]"
-                : "bg-[#fffdf8] text-[var(--muted-foreground)] border-[var(--line)]"
+                : "bg-[#fffdf8] text-(--muted-foreground) border-(--line)"
             }`}
           >
             {category}
@@ -65,7 +65,7 @@ export default function PreferencesSection({
             detectionInputMode: e.target.value as DetectionInputMode,
           })
         }
-        className="w-full px-4 py-3 border border-[var(--line)] rounded-xl bg-[#fffdf8] text-[#17130f]"
+        className="w-full px-4 py-3 border border-(--line) rounded-xl bg-[#fffdf8] text-[#17130f]"
       >
         <option value="auto">Auto</option>
         <option value="headline_only">Headline only</option>
@@ -80,7 +80,7 @@ export default function PreferencesSection({
             detectionExplanationMode: e.target.value as DetectionExplanationMode,
           })
         }
-        className="w-full px-4 py-3 border border-[var(--line)] rounded-xl bg-[#fffdf8] text-[#17130f]"
+        className="w-full px-4 py-3 border border-(--line) rounded-xl bg-[#fffdf8] text-[#17130f]"
       >
         <option value="auto">Auto explanation</option>
         <option value="none">No explanation</option>

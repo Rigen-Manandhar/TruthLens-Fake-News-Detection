@@ -36,9 +36,9 @@ export default function FakeDetectionForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="relative flex h-full flex-col rounded-3xl border border-[var(--line)] bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-[36rem]"
+      className="relative flex h-full flex-col rounded-3xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-[36rem]"
     >
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#12100d] via-[var(--accent)] to-[#e8b074]" />
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#12100d] via-(--accent) to-[#e8b074]" />
 
       <div className="relative flex flex-col h-full">
         <div className="space-y-1.5 mb-4">
@@ -51,7 +51,7 @@ export default function FakeDetectionForm({
           >
             Article Text
           </label>
-          <p className="text-xs text-[var(--muted-foreground)]">
+          <p className="text-xs text-(--muted-foreground)">
             Paste an excerpt or headline you want to analyse.
           </p>
         </div>
@@ -62,7 +62,7 @@ export default function FakeDetectionForm({
             value={articleText}
             onChange={(e) => onArticleChange(e.target.value)}
             placeholder="Paste article text here..."
-            className="min-h-[14rem] sm:min-h-[18rem] lg:h-full w-full resize-y lg:resize-none rounded-2xl border border-[var(--line)] bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#958878] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/45"
+            className="min-h-[14rem] sm:min-h-[18rem] lg:h-full w-full resize-y lg:resize-none rounded-2xl border border-(--line) bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#958878] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
           />
         </div>
 
@@ -85,14 +85,14 @@ export default function FakeDetectionForm({
                   | "headline_plus_article"
               )
             }
-            className="w-full rounded-2xl border border-[var(--line)] bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/45"
+            className="w-full rounded-2xl border border-(--line) bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
           >
             <option value="auto">Auto detect</option>
             <option value="headline_only">Headline only</option>
             <option value="full_article">Full article</option>
             <option value="headline_plus_article">Headline + article</option>
           </select>
-          <p className="text-xs text-[var(--muted-foreground)]">
+          <p className="text-xs text-(--muted-foreground)">
             Auto mode is recommended. Use manual mode if your paste format is unusual.
           </p>
         </div>
@@ -110,9 +110,9 @@ export default function FakeDetectionForm({
             value={sourceUrl}
             onChange={(e) => onSourceUrlChange(e.target.value)}
             placeholder="https://example.com"
-            className="w-full rounded-2xl border border-[var(--line)] bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#958878] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/45"
+            className="w-full rounded-2xl border border-(--line) bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#958878] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
           />
-          <p className="text-xs text-[var(--muted-foreground)]">
+          <p className="text-xs text-(--muted-foreground)">
             Optional: include a URL to boost source credibility scoring.
           </p>
         </div>
@@ -135,7 +135,7 @@ export default function FakeDetectionForm({
           <button
             type="submit"
             disabled={isLoading}
-            className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-full bg-[#12100d] px-8 text-sm font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(24,16,8,0.22)] transition-all hover:bg-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-60 shrink-0"
+            className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-full bg-[#12100d] px-8 text-sm font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(24,16,8,0.22)] transition-all hover:bg-(--accent) disabled:cursor-not-allowed disabled:opacity-60 shrink-0"
           >
             {isLoading ? "Analyzing..." : "Analyze"}
           </button>

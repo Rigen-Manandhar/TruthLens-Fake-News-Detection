@@ -49,7 +49,7 @@ export default function HeroSection({
             <br />
             Decide with clarity.
           </h1>
-          <p className="text-sm sm:text-base text-[var(--muted-foreground)] mb-8 max-w-xl">
+          <p className="text-sm sm:text-base text-(--muted-foreground) mb-8 max-w-xl">
             TruthLens blends real-time headlines with AI-assisted credibility cues,
             so your brief stays fast, clean, and grounded in context.
           </p>
@@ -63,11 +63,11 @@ export default function HeroSection({
               value={searchInput}
               onChange={(e) => onSearchInputChange(e.target.value)}
               placeholder="Search a headline, publisher, topic..."
-              className="flex-1 px-5 py-3 rounded-full border border-[var(--line)] bg-[#fffdf8] shadow-[0_10px_24px_rgba(20,14,7,0.08)] text-sm text-[#16120e] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/45 placeholder:text-[#8d7f6f]"
+              className="flex-1 px-5 py-3 rounded-full border border-(--line) bg-[#fffdf8] shadow-[0_10px_24px_rgba(20,14,7,0.08)] text-sm text-[#16120e] focus:outline-none focus:ring-2 focus:ring-(--accent)/45 placeholder:text-[#8d7f6f]"
             />
             <button
               type="submit"
-              className="shrink-0 w-full sm:w-auto px-7 py-3 rounded-full bg-[#12100d] text-[#f7f1e6] text-sm font-semibold transition-colors shadow-[0_12px_24px_rgba(26,18,8,0.2)] hover:bg-[var(--accent)]"
+              className="shrink-0 w-full sm:w-auto px-7 py-3 rounded-full bg-[#12100d] text-[#f7f1e6] text-sm font-semibold transition-colors shadow-[0_12px_24px_rgba(26,18,8,0.2)] hover:bg-(--accent)"
             >
               Search Feed
             </button>
@@ -75,7 +75,7 @@ export default function HeroSection({
               <button
                 type="button"
                 onClick={onResetFeed}
-                className="shrink-0 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-[#fffdf8] px-5 py-3 text-sm font-semibold text-[#5f5548] shadow-[0_10px_24px_rgba(20,14,7,0.08)] transition-colors hover:bg-[#f4eee2] sm:w-auto"
+                className="shrink-0 inline-flex w-full items-center justify-center gap-2 rounded-full border border-(--line) bg-[#fffdf8] px-5 py-3 text-sm font-semibold text-[#5f5548] shadow-[0_10px_24px_rgba(20,14,7,0.08)] transition-colors hover:bg-[#f4eee2] sm:w-auto"
                 aria-label="Reset news feed"
               >
                 <svg
@@ -115,7 +115,7 @@ export default function HeroSection({
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
                     isActive
                       ? "bg-[#12100d] text-[#f6f1e6] border-[#12100d] shadow-[0_8px_20px_rgba(22,16,8,0.18)]"
-                      : "bg-[#fffdf8] text-[var(--muted-foreground)] border-[var(--line)] hover:bg-[#f4eee2]"
+                      : "bg-[#fffdf8] text-(--muted-foreground) border-(--line) hover:bg-[#f4eee2]"
                   }`}
                 >
                   {topic.label}

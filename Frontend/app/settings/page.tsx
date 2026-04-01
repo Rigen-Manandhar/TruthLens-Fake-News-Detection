@@ -405,7 +405,7 @@ export default function SettingsPage() {
           <h1 className="page-title display-title text-4xl font-bold text-[#17130f]">
             Settings
           </h1>
-          <p className="text-sm text-[var(--muted-foreground)] mt-2">
+          <p className="text-sm text-(--muted-foreground) mt-2">
             Profile, security, privacy and product defaults.
           </p>
         </header>

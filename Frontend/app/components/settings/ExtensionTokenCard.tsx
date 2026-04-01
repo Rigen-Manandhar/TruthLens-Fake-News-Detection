@@ -83,10 +83,10 @@ export default function ExtensionTokenCard() {
   };
 
   return (
-    <div className="rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-5 sm:p-6 space-y-4">
+    <div className="rounded-3xl bg-[#fffdfa]/90 border border-(--line) p-5 sm:p-6 space-y-4">
       <div>
         <h2 className="display-title text-2xl text-[#17130f]">Extension feedback token</h2>
-        <p className="text-sm text-[var(--muted-foreground)] mt-2">
+        <p className="text-sm text-(--muted-foreground) mt-2">
           Use this token in the Chrome extension so feedback submissions are tied to
           your account.
         </p>
@@ -114,23 +114,23 @@ export default function ExtensionTokenCard() {
 
       {tokenData && (
         <>
-          <div className="rounded-2xl border border-[var(--line)] bg-[#fffdf8] p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+          <div className="rounded-2xl border border-(--line) bg-[#fffdf8] p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-(--muted-foreground)">
               Current token
             </p>
             <textarea
               readOnly
               value={tokenData.token}
-              className="mt-3 min-h-28 w-full rounded-xl border border-[var(--line)] bg-[#f7f1e6] px-3 py-3 text-xs text-[#17130f] focus:outline-none"
+              className="mt-3 min-h-28 w-full rounded-xl border border-(--line) bg-[#f7f1e6] px-3 py-3 text-xs text-[#17130f] focus:outline-none"
             />
-            <div className="mt-3 flex flex-col gap-3 text-xs text-[var(--muted-foreground)] sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+            <div className="mt-3 flex flex-col gap-3 text-xs text-(--muted-foreground) sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
               <span>Version: {tokenData.version}</span>
               <span className="break-words">Last rotation: {formatDateTime(tokenData.rotatedAt)}</span>
             </div>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-            <p className="text-xs text-[var(--muted-foreground)]">
+            <p className="text-xs text-(--muted-foreground)">
               Regenerating invalidates the previously copied token.
             </p>
             <Button type="button" variant="secondary" onClick={copyToken} className="w-full sm:w-auto px-6">

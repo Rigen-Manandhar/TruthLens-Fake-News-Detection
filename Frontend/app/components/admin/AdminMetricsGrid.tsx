@@ -14,7 +14,7 @@ export default function AdminMetricsGrid({ metricCards }: AdminMetricsGridProps)
       {metricCards.map((card) => (
         <article
           key={card.label}
-          className={`section-reveal rounded-[1.75rem] border border-[var(--line)] ${card.tone} p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)]`}
+          className={`section-reveal rounded-[1.75rem] border border-(--line) ${card.tone} p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)]`}
         >
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#867a6a]">
             {card.label}

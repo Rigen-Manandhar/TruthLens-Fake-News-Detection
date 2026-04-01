@@ -122,7 +122,7 @@ export default function AdminDashboard() {
       <div className="pointer-events-none absolute top-[9rem] right-0 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
       <main className="page-main space-y-10 sm:space-y-12">
-        <section className="section-reveal rounded-[2rem] border border-[var(--line)] bg-[#fffdfa]/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10">
+        <section className="section-reveal rounded-[2rem] border border-(--line) bg-[#fffdfa]/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)] lg:items-end">
             <div className="space-y-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#867a6a]">
@@ -131,16 +131,16 @@ export default function AdminDashboard() {
               <h1 className="page-title display-title max-w-3xl text-4xl font-bold text-[#17130f] sm:text-[3.2rem]">
                 Review user activity, feedback quality, and export admin data.
               </h1>
-              <p className="max-w-2xl text-sm leading-7 text-[var(--muted-foreground)] sm:text-base">
+              <p className="max-w-2xl text-sm leading-7 text-(--muted-foreground) sm:text-base">
                 This dashboard surfaces account growth, fake-news feedback, and
                 recent platform activity in one place. Use it to review what users
                 are submitting and export a full JSON snapshot when needed.
               </p>
             </div>
 
-            <div className="rounded-[1.75rem] border border-[var(--line)] bg-[linear-gradient(145deg,rgba(255,253,248,0.96),rgba(247,241,230,0.92))] p-5 shadow-[0_16px_32px_rgba(24,16,8,0.08)]">
+            <div className="rounded-[1.75rem] border border-(--line) bg-[linear-gradient(145deg,rgba(255,253,248,0.96),rgba(247,241,230,0.92))] p-5 shadow-[0_16px_32px_rgba(24,16,8,0.08)]">
               <div className="space-y-4">
-                <div className="inline-flex rounded-full border border-[var(--line)] bg-[#f6efe3] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5f5548]">
+                <div className="inline-flex rounded-full border border-(--line) bg-[#f6efe3] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5f5548]">
                   Admin actions
                 </div>
                 <p className="text-sm leading-7 text-[#4f473c]">
@@ -152,14 +152,14 @@ export default function AdminDashboard() {
                     type="button"
                     onClick={handleRequestExport}
                     disabled={exporting}
-                    className="inline-flex h-11 items-center justify-center rounded-full bg-[#12100d] px-6 text-sm font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(24,16,8,0.2)] transition-colors hover:bg-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex h-11 items-center justify-center rounded-full bg-[#12100d] px-6 text-sm font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(24,16,8,0.2)] transition-colors hover:bg-(--accent) disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {exporting ? "Preparing export..." : "Export all admin data"}
                   </button>
                   {exportJob?.downloadUrl && (
                     <a
                       href={exportJob.downloadUrl}
-                      className="text-sm font-semibold text-[#17130f] hover:text-[var(--accent)]"
+                      className="text-sm font-semibold text-[#17130f] hover:text-(--accent)"
                     >
                       Download JSON export
                     </a>
@@ -189,7 +189,7 @@ export default function AdminDashboard() {
             {Array.from({ length: 4 }).map((_, index) => (
               <div
                 key={`metric-skeleton-${index}`}
-                className="rounded-[1.75rem] border border-[var(--line)] bg-[#fffdfa]/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)]"
+                className="rounded-[1.75rem] border border-(--line) bg-[#fffdfa]/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)]"
               >
                 <div className="h-4 w-28 rounded-full bg-[#e6dccb] animate-pulse" />
                 <div className="mt-4 h-10 w-24 rounded-2xl bg-[#e6dccb] animate-pulse" />

@@ -17,7 +17,7 @@ export default function ProfileSection({
   onSave,
 }: ProfileSectionProps) {
   return (
-    <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-5 sm:p-6 space-y-4">
+    <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-(--line) p-5 sm:p-6 space-y-4">
       <h2 className="display-title text-2xl text-[#17130f]">Profile</h2>
       <Input
         label="Full name"

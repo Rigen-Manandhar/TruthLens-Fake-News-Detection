@@ -120,13 +120,13 @@ export default function Header() {
     }`;
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--line)] bg-[#f7f1e6]/75 backdrop-blur-xl">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-(--line) bg-[#f7f1e6]/75 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3.5 sm:px-6 xl:max-w-7xl">
         <div className="min-w-0 flex items-center gap-3">
           <Logo />
         </div>
 
-        <nav className="hidden md:flex items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white/60 p-1 text-sm text-[var(--muted-foreground)] shadow-[0_10px_30px_rgba(22,16,8,0.06)]">
+        <nav className="hidden md:flex items-center justify-center gap-2 rounded-full border border-(--line) bg-white/60 p-1 text-sm text-(--muted-foreground) shadow-[0_10px_30px_rgba(22,16,8,0.06)]">
           <Link href="/" className={navLinkClass(isNews)}>
             News
           </Link>
@@ -145,7 +145,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => setIsMobileNavOpen((prev) => !prev)}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--line)] bg-[#fffdf8] text-[#17130f] shadow-[0_8px_20px_rgba(24,16,8,0.08)] transition-colors hover:bg-[#f4eee2]"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-(--line) bg-[#fffdf8] text-[#17130f] shadow-[0_8px_20px_rgba(24,16,8,0.08)] transition-colors hover:bg-[#f4eee2]"
               aria-expanded={isMobileNavOpen}
               aria-haspopup="menu"
               aria-label="Toggle navigation menu"
@@ -170,8 +170,8 @@ export default function Header() {
             </button>
 
             {isMobileNavOpen && (
-              <div className="absolute right-0 mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-3xl border border-[var(--line)] bg-[#fffdf8] p-3 shadow-[0_20px_40px_rgba(20,16,8,0.14)]">
-                <div className="grid gap-2 text-sm text-[var(--muted-foreground)]">
+              <div className="absolute right-0 mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-3xl border border-(--line) bg-[#fffdf8] p-3 shadow-[0_20px_40px_rgba(20,16,8,0.14)]">
+                <div className="grid gap-2 text-sm text-(--muted-foreground)">
                   <Link href="/" className={`${navLinkClass(isNews)} text-center`}>
                     News
                   </Link>
@@ -191,16 +191,16 @@ export default function Header() {
                   )}
                 </div>
                 {!isLoadingUser && !user && (
-                  <div className="mt-3 grid gap-2 border-t border-[var(--line)] pt-3">
+                  <div className="mt-3 grid gap-2 border-t border-(--line) pt-3">
                     <Link
                       href="/login"
-                      className="inline-flex items-center justify-center rounded-full border border-[var(--line)] bg-[#fffdfa] px-4 py-2.5 text-sm font-semibold text-[var(--muted-foreground)] transition-colors hover:bg-[#f4eee2] hover:text-[#12100d]"
+                      className="inline-flex items-center justify-center rounded-full border border-(--line) bg-[#fffdfa] px-4 py-2.5 text-sm font-semibold text-(--muted-foreground) transition-colors hover:bg-[#f4eee2] hover:text-[#12100d]"
                     >
                       Log in
                     </Link>
                     <Link
                       href="/signup"
-                      className="inline-flex items-center justify-center rounded-full bg-[#12100d] px-4 py-2.5 text-sm font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(26,18,8,0.22)] transition-colors hover:bg-[var(--accent)]"
+                      className="inline-flex items-center justify-center rounded-full bg-[#12100d] px-4 py-2.5 text-sm font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(26,18,8,0.22)] transition-colors hover:bg-(--accent)"
                     >
                       Get started
                     </Link>
@@ -228,10 +228,10 @@ export default function Header() {
                 {avatarInitial}
               </button>
               {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-44 max-w-[calc(100vw-2rem)] rounded-2xl border border-[var(--line)] bg-[#fffdf8] py-2 text-sm shadow-[0_20px_40px_rgba(20,16,8,0.14)]">
+                <div className="absolute right-0 mt-2 w-44 max-w-[calc(100vw-2rem)] rounded-2xl border border-(--line) bg-[#fffdf8] py-2 text-sm shadow-[0_20px_40px_rgba(20,16,8,0.14)]">
                   <Link
                     href="/settings"
-                    className="block px-4 py-2 text-[var(--muted-foreground)] hover:bg-[#f4eee2]"
+                    className="block px-4 py-2 text-(--muted-foreground) hover:bg-[#f4eee2]"
                   >
                     Settings
                   </Link>
@@ -242,7 +242,7 @@ export default function Header() {
                     className={`block w-full px-4 py-2 text-left transition-colors ${
                       isLoggingOut
                         ? "cursor-not-allowed text-[#9f9382]"
-                        : "text-[var(--muted-foreground)] hover:bg-[#f4eee2]"
+                        : "text-(--muted-foreground) hover:bg-[#f4eee2]"
                     }`}
                   >
                     {isLoggingOut ? "Logging out..." : "Log out"}
@@ -254,13 +254,13 @@ export default function Header() {
             <>
               <Link
                 href="/login"
-                className="hidden md:inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold text-[var(--muted-foreground)] transition-colors hover:bg-[#f4eee2] hover:text-[#12100d] sm:text-sm"
+                className="hidden md:inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold text-(--muted-foreground) transition-colors hover:bg-[#f4eee2] hover:text-[#12100d] sm:text-sm"
               >
                 Log in
               </Link>
               <Link
                 href="/signup"
-                className="hidden md:inline-flex items-center rounded-full bg-[#12100d] px-4 py-2 text-xs font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(26,18,8,0.22)] transition-colors hover:bg-[var(--accent)] sm:px-5 sm:text-sm"
+                className="hidden md:inline-flex items-center rounded-full bg-[#12100d] px-4 py-2 text-xs font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(26,18,8,0.22)] transition-colors hover:bg-(--accent) sm:px-5 sm:text-sm"
               >
                 Get started
               </Link>

@@ -20,22 +20,22 @@ export default function SessionsSection({
   onRevokeOthers,
 }: SessionsSectionProps) {
   return (
-    <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-5 sm:p-6 space-y-3">
+    <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-(--line) p-5 sm:p-6 space-y-3">
       <h2 className="display-title text-2xl text-[#17130f]">Active sessions</h2>
       {sessions.map((session) => (
         <div
           key={session.sessionId}
-          className="rounded-xl border border-[var(--line)] bg-[#fffdf8] px-3 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+          className="rounded-xl border border-(--line) bg-[#fffdf8] px-3 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
         >
           <div className="min-w-0">
             <p className="text-sm font-semibold text-[#17130f] break-words">
               {session.deviceLabel}
               {session.isCurrent ? " (Current)" : ""}
             </p>
-            <p className="text-xs text-[var(--muted-foreground)] break-all">
+            <p className="text-xs text-(--muted-foreground) break-all">
               {session.ipPreview}
             </p>
-            <p className="text-xs text-[var(--muted-foreground)] break-words">
+            <p className="text-xs text-(--muted-foreground) break-words">
               Created: {formatDate(session.createdAt)} | Last seen:{" "}
               {formatDate(session.lastSeenAt)}
             </p>

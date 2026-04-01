@@ -113,13 +113,13 @@ export default function NewsGrid({
     return (
       <div className="space-y-8">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-          <div className="rounded-3xl border border-[var(--line)] bg-[#fffdfa]/85 p-6 shadow-[0_16px_30px_rgba(24,16,8,0.09)]">
+          <div className="rounded-3xl border border-(--line) bg-[#fffdfa]/85 p-6 shadow-[0_16px_30px_rgba(24,16,8,0.09)]">
             <div className="h-6 w-24 bg-[#e6dccb] rounded-full animate-pulse" />
             <div className="mt-4 h-8 w-3/4 bg-[#e6dccb] rounded-xl animate-pulse" />
             <div className="mt-3 h-4 w-2/3 bg-[#e6dccb] rounded-xl animate-pulse" />
             <div className="mt-6 h-52 w-full bg-[#e6dccb] rounded-2xl animate-pulse" />
           </div>
-          <div className="rounded-3xl border border-[var(--line)] bg-[#fffdfa]/85 p-6 shadow-[0_16px_30px_rgba(24,16,8,0.09)]">
+          <div className="rounded-3xl border border-(--line) bg-[#fffdfa]/85 p-6 shadow-[0_16px_30px_rgba(24,16,8,0.09)]">
             <div className="h-6 w-20 bg-[#e6dccb] rounded-full animate-pulse" />
             <div className="mt-4 h-4 w-4/5 bg-[#e6dccb] rounded-xl animate-pulse" />
             <div className="mt-3 h-4 w-2/3 bg-[#e6dccb] rounded-xl animate-pulse" />
@@ -130,7 +130,7 @@ export default function NewsGrid({
           {Array.from({ length: 6 }).map((_, idx) => (
             <div
               key={`skeleton-${idx}`}
-              className="h-80 rounded-3xl border border-[var(--line)] bg-[#fffdfa]/85 p-4 shadow-[0_16px_30px_rgba(24,16,8,0.09)]"
+              className="h-80 rounded-3xl border border-(--line) bg-[#fffdfa]/85 p-4 shadow-[0_16px_30px_rgba(24,16,8,0.09)]"
             >
               <div className="h-40 w-full bg-[#e6dccb] rounded-2xl animate-pulse" />
               <div className="mt-4 h-4 w-24 bg-[#e6dccb] rounded-full animate-pulse" />

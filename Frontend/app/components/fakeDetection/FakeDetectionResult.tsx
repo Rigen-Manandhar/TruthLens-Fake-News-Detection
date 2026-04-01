@@ -126,13 +126,13 @@ export default function FakeDetectionResult({
               type="button"
               onClick={onExplain}
               disabled={isExplaining}
-              className="inline-flex h-7 items-center rounded-full border border-[var(--line)] bg-[#fffdf8] px-3 text-[11px] font-semibold text-[#5f5548] hover:bg-[#f4eee2] disabled:opacity-60 disabled:cursor-not-allowed"
+              className="inline-flex h-7 items-center rounded-full border border-(--line) bg-[#fffdf8] px-3 text-[11px] font-semibold text-[#5f5548] hover:bg-[#f4eee2] disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isExplaining ? "Explaining..." : "Explain"}
             </button>
           )}
         </div>
-        <div className="break-words rounded-xl border border-dotted border-[var(--line)] bg-[#f7f1e6] p-3">
+        <div className="break-words rounded-xl border border-dotted border-(--line) bg-[#f7f1e6] p-3">
           {tokens.map((token, idx) => {
             const cleanWord = token.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
             const weight = weightMap.get(cleanWord);
@@ -193,8 +193,8 @@ export default function FakeDetectionResult({
   };
 
   return (
-    <section className="relative flex h-full flex-col rounded-3xl border border-[var(--line)] bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-[36rem]">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#e8b074] via-[var(--accent)] to-[#12100d]" />
+    <section className="relative flex h-full flex-col rounded-3xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-[36rem]">
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#e8b074] via-(--accent) to-[#12100d]" />
 
       <div className="relative flex flex-col h-full">
         <div className="flex flex-wrap items-center gap-3">
@@ -204,7 +204,7 @@ export default function FakeDetectionResult({
             {hasResult ? `Result: ${label}` : label}
           </div>
           {riskLevel && (
-            <span className="inline-flex items-center rounded-full border border-[var(--line)] bg-[#fffdf8] px-3 py-1 text-xs font-semibold text-[#5f5548]">
+            <span className="inline-flex items-center rounded-full border border-(--line) bg-[#fffdf8] px-3 py-1 text-xs font-semibold text-[#5f5548]">
               Risk: {riskLevel}
             </span>
           )}
@@ -222,7 +222,7 @@ export default function FakeDetectionResult({
           </p>
         )}
 
-        <div className="mt-6 rounded-2xl border border-dashed border-[var(--line)] bg-[#f7f1e6] px-4 py-4 text-sm text-[#5f5548] break-words max-h-[60vh] overflow-y-auto overscroll-contain sm:max-h-[32rem] lg:flex-1 lg:min-h-0 lg:max-h-[36rem]">
+        <div className="mt-6 rounded-2xl border border-dashed border-(--line) bg-[#f7f1e6] px-4 py-4 text-sm text-[#5f5548] break-words max-h-[60vh] overflow-y-auto overscroll-contain sm:max-h-[32rem] lg:flex-1 lg:min-h-0 lg:max-h-[36rem]">
           {uncertaintyReason && (
             <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900">
               <p className="font-semibold uppercase tracking-wide">
@@ -246,7 +246,7 @@ export default function FakeDetectionResult({
               {visibleSteps.map((stepItem, index) => (
                 <div
                   key={`${stepItem.step}-${index}`}
-                  className="rounded-xl border border-[var(--line)] bg-[#fffdf8] px-3 py-3"
+                  className="rounded-xl border border-(--line) bg-[#fffdf8] px-3 py-3"
                 >
                   <div className="text-xs font-semibold text-[#4c4439]">
                     {stepItem.step}
@@ -260,7 +260,7 @@ export default function FakeDetectionResult({
           )}
 
           {!explanation?.length && canExplain && onExplain && (
-            <div className="mb-4 rounded-xl border border-[var(--line)] bg-[var(--accent-soft)] px-3 py-3 text-xs text-[#0b4f43]">
+            <div className="mb-4 rounded-xl border border-(--line) bg-(--accent-soft) px-3 py-3 text-xs text-[#0b4f43]">
               <p className="font-semibold uppercase tracking-wide">Explanation on demand</p>
               <p className="mt-1 text-[#0a5f50]">
                 LIME was skipped for speed. Click Explain to generate token-level highlights.
@@ -269,7 +269,7 @@ export default function FakeDetectionResult({
                 type="button"
                 onClick={onExplain}
                 disabled={isExplaining}
-                className="mt-3 inline-flex h-8 items-center rounded-full bg-[#12100d] px-4 text-[11px] font-semibold text-[#f7f1e6] hover:bg-[var(--accent)] disabled:opacity-60 disabled:cursor-not-allowed"
+                className="mt-3 inline-flex h-8 items-center rounded-full bg-[#12100d] px-4 text-[11px] font-semibold text-[#f7f1e6] hover:bg-(--accent) disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {isExplaining ? "Explaining..." : "Explain"}
               </button>

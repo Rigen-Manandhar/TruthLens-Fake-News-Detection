@@ -26,9 +26,9 @@ export default function PrivacySection({
   const deleting = Boolean(profile?.deletionStatus.scheduledDeletionAt);
 
   return (
-    <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-[var(--line)] p-5 sm:p-6 space-y-3">
+    <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-(--line) p-5 sm:p-6 space-y-3">
       <h2 className="display-title text-2xl text-[#17130f]">Privacy & data</h2>
-      <div className="rounded-xl border border-[var(--line)] bg-[#fffdf8] px-3 py-3">
+      <div className="rounded-xl border border-(--line) bg-[#fffdf8] px-3 py-3">
         <p className="text-sm font-semibold text-[#17130f]">Export my data</p>
         <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
           <Button
@@ -42,19 +42,19 @@ export default function PrivacySection({
           {exportJob?.downloadUrl && (
             <a
               href={exportJob.downloadUrl}
-              className="text-xs font-semibold text-[#17130f] hover:text-[var(--accent)] break-all"
+              className="text-xs font-semibold text-[#17130f] hover:text-(--accent) break-all"
             >
               Download JSON
             </a>
           )}
         </div>
         {exportJob && (
-          <p className="text-xs text-[var(--muted-foreground)] mt-2">
+          <p className="text-xs text-(--muted-foreground) mt-2">
             Status: {exportJob.status}
             {exportJob.expiresAt ? ` - Expires ${formatDate(exportJob.expiresAt)}` : ""}
           </p>
         )}
-        <p className="text-xs text-[var(--muted-foreground)] mt-2">
+        <p className="text-xs text-(--muted-foreground) mt-2">
           Deletion requests are soft-deleted first, then permanently removed after
           30 days.
         </p>
@@ -88,7 +88,7 @@ export default function PrivacySection({
           </Button>
         )}
       </div>
-      <div className="text-xs font-semibold text-[var(--muted-foreground)] flex flex-wrap gap-3">
+      <div className="text-xs font-semibold text-(--muted-foreground) flex flex-wrap gap-3">
         <a href="/privacy" className="hover:text-[#17130f]">
           Privacy
         </a>

@@ -289,10 +289,10 @@ export default function FakeDetectionPage() {
             <h1 className="page-title display-title text-4xl sm:text-[2.9rem] font-bold text-[#17130f] tracking-tight">
               Fake News Detection
             </h1>
-            <p className="text-sm sm:text-base text-[var(--muted-foreground)] max-w-xl">
+            <p className="text-sm sm:text-base text-(--muted-foreground) max-w-xl">
               Combine source credibility, headline signals, and deep-learning analysis to assess risk in minutes.
             </p>
-            <div className="flex items-center gap-3 text-xs text-[var(--muted-foreground)]">
+            <div className="flex items-center gap-3 text-xs text-(--muted-foreground)">
               <span className="h-2 w-2 rounded-full bg-[#12100d]/45" />
               Hybrid model + source credibility checks
             </div>

@@ -82,14 +82,14 @@ export default function Home() {
               <h2 className="page-title display-title text-3xl sm:text-[2.65rem] font-bold text-[#17130f]">
                 Today&apos;s credibility briefings
               </h2>
-              <p className="text-sm text-[var(--muted-foreground)] mt-2 max-w-xl">
+              <p className="text-sm text-(--muted-foreground) mt-2 max-w-xl">
                 Fresh stories with confidence signals from your detection pipeline.
                 Scan fast, verify deeper when it matters.
               </p>
             </div>
           </div>
 
-          <div className="border-b border-[var(--line)]" />
+          <div className="border-b border-(--line)" />
 
           <div>
             <NewsGrid

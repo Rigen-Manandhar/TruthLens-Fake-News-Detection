@@ -9,7 +9,7 @@ export default function AdminRecentFeedbackSection({
   recentFeedback,
 }: AdminRecentFeedbackSectionProps) {
   return (
-    <section className="section-reveal delay-1 rounded-[2rem] border border-[var(--line)] bg-[#fffdfa]/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
+    <section className="section-reveal delay-1 rounded-[2rem] border border-(--line) bg-[#fffdfa]/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#867a6a]">
@@ -19,11 +19,11 @@ export default function AdminRecentFeedbackSection({
             Latest fake-news result feedback.
           </h2>
         </div>
-        <p className="text-sm text-[var(--muted-foreground)]">Newest submissions first.</p>
+        <p className="text-sm text-(--muted-foreground)">Newest submissions first.</p>
       </div>
 
       {recentFeedback.length === 0 ? (
-        <p className="mt-6 text-sm text-[var(--muted-foreground)]">
+        <p className="mt-6 text-sm text-(--muted-foreground)">
           No feedback has been submitted yet.
         </p>
       ) : (
@@ -31,7 +31,7 @@ export default function AdminRecentFeedbackSection({
           {recentFeedback.map((feedback) => (
             <article
               key={feedback.id}
-              className="rounded-[1.5rem] border border-[var(--line)] bg-[#fffdf8] p-5"
+              className="rounded-[1.5rem] border border-(--line) bg-[#fffdf8] p-5"
             >
               <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                 <div className="space-y-2">
@@ -49,10 +49,10 @@ export default function AdminRecentFeedbackSection({
                     >
                       {feedback.verdict}
                     </span>
-                    <span className="inline-flex rounded-full border border-[var(--line)] bg-[#f6efe3] px-3 py-1 font-semibold text-[#5f5548]">
+                    <span className="inline-flex rounded-full border border-(--line) bg-[#f6efe3] px-3 py-1 font-semibold text-[#5f5548]">
                       {feedback.isCorrect ? "Marked correct" : "Marked wrong"}
                     </span>
-                    <span className="inline-flex rounded-full border border-[var(--line)] bg-[#fffdfa] px-3 py-1 font-semibold text-[#5f5548]">
+                    <span className="inline-flex rounded-full border border-(--line) bg-[#fffdfa] px-3 py-1 font-semibold text-[#5f5548]">
                       {feedback.source}
                     </span>
                   </div>
@@ -63,10 +63,10 @@ export default function AdminRecentFeedbackSection({
               </div>
 
               <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,0.78fr)]">
-                <div className="rounded-[1.25rem] border border-dashed border-[var(--line)] bg-[#f7f1e6] px-4 py-3 text-sm leading-6 text-[#4f473c]">
+                <div className="rounded-[1.25rem] border border-dashed border-(--line) bg-[#f7f1e6] px-4 py-3 text-sm leading-6 text-[#4f473c]">
                   {feedback.comment || "No comment was provided for this feedback entry."}
                 </div>
-                <div className="rounded-[1.25rem] border border-[var(--line)] bg-[#fffdfa] px-4 py-3 text-sm text-[#5f5548]">
+                <div className="rounded-[1.25rem] border border-(--line) bg-[#fffdfa] px-4 py-3 text-sm text-[#5f5548]">
                   <p>
                     <span className="font-semibold text-[#17130f]">Risk:</span>{" "}
                     {feedback.riskLevel}

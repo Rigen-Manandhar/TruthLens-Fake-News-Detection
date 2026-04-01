@@ -76,8 +76,8 @@ export default function SignupForm() {
   };
 
   return (
-    <div className="relative w-full max-w-md rounded-3xl border border-[var(--line)] bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] p-6 sm:p-8 overflow-hidden auth-appear-delay">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#12100d] via-[var(--accent)] to-[#e8b074]" />
+    <div className="relative w-full max-w-md rounded-3xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] p-6 sm:p-8 overflow-hidden auth-appear-delay">
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#12100d] via-(--accent) to-[#e8b074]" />
       <div className="absolute -top-16 -right-10 h-32 w-32 rounded-full bg-[rgba(14,124,102,0.14)] blur-3xl" />
       <div className="absolute -bottom-16 -left-10 h-32 w-32 rounded-full bg-[rgba(232,176,116,0.2)] blur-3xl" />
 
@@ -89,7 +89,7 @@ export default function SignupForm() {
           <h1 className="page-title display-title text-3xl font-bold text-[#17130f] mb-2">
             Create your account
           </h1>
-          <p className="text-sm text-[var(--muted-foreground)]">
+          <p className="text-sm text-(--muted-foreground)">
             Join TruthLens to personalise your news feed.
           </p>
         </div>
@@ -137,12 +137,12 @@ export default function SignupForm() {
           <div className="flex justify-end">
             <Link
               href="/forgot-password"
-              className="text-xs font-semibold text-[#17130f] hover:text-[var(--accent)]"
+              className="text-xs font-semibold text-[#17130f] hover:text-(--accent)"
             >
               Forgot password?
             </Link>
           </div>
-          <p className="text-xs text-[var(--muted-foreground)]">
+          <p className="text-xs text-(--muted-foreground)">
             Use at least 10 characters. You can also sign up with Google.
           </p>
 
@@ -151,9 +151,9 @@ export default function SignupForm() {
           </Button>
 
           <div className="flex items-center gap-3 text-xs text-[#8a7d6d]">
-            <div className="h-px flex-1 bg-[var(--line)]" />
+            <div className="h-px flex-1 bg-(--line)" />
             <span>or</span>
-            <div className="h-px flex-1 bg-[var(--line)]" />
+            <div className="h-px flex-1 bg-(--line)" />
           </div>
 
           <Button
@@ -187,11 +187,11 @@ export default function SignupForm() {
             Continue with Google
           </Button>
 
-          <p className="text-center text-sm text-[var(--muted-foreground)] mt-3">
+          <p className="text-center text-sm text-(--muted-foreground) mt-3">
             Already have an account?{" "}
             <Link
               href="/login"
-              className="text-[#17130f] font-semibold hover:text-[var(--accent)]"
+              className="text-[#17130f] font-semibold hover:text-(--accent)"
             >
               Log in
             </Link>

@@ -27,7 +27,7 @@ export default function DetectionFeedbackCard({
   onSubmit,
 }: DetectionFeedbackCardProps) {
   return (
-    <section className="rounded-3xl border border-[var(--line)] bg-[#fffdfa]/90 px-5 sm:px-8 py-6 shadow-[0_22px_46px_rgba(24,16,8,0.1)]">
+    <section className="rounded-3xl border border-(--line) bg-[#fffdfa]/90 px-5 sm:px-8 py-6 shadow-[0_22px_46px_rgba(24,16,8,0.1)]">
       <div className="space-y-2">
         <p className="text-[11px] font-semibold tracking-[0.25em] text-[#867a6a] uppercase">
           Feedback
@@ -35,7 +35,7 @@ export default function DetectionFeedbackCard({
         <h3 className="text-xl font-semibold text-[#17130f]">
           Was this prediction right?
         </h3>
-        <p className="text-sm text-[var(--muted-foreground)]">
+        <p className="text-sm text-(--muted-foreground)">
           Tell us whether the result matched your judgment and what should be improved.
         </p>
       </div>
@@ -48,7 +48,7 @@ export default function DetectionFeedbackCard({
           className={`inline-flex h-11 items-center justify-center rounded-full border px-5 text-sm font-semibold transition ${
             selectedValue === true
               ? "border-emerald-600 bg-emerald-50 text-emerald-800"
-              : "border-[var(--line)] bg-[#fffdf8] text-[#5f5548] hover:bg-[#f4eee2]"
+              : "border-(--line) bg-[#fffdf8] text-[#5f5548] hover:bg-[#f4eee2]"
           } disabled:cursor-not-allowed disabled:opacity-60`}
         >
           Prediction was right
@@ -60,7 +60,7 @@ export default function DetectionFeedbackCard({
           className={`inline-flex h-11 items-center justify-center rounded-full border px-5 text-sm font-semibold transition ${
             selectedValue === false
               ? "border-red-600 bg-red-50 text-red-800"
-              : "border-[var(--line)] bg-[#fffdf8] text-[#5f5548] hover:bg-[#f4eee2]"
+              : "border-(--line) bg-[#fffdf8] text-[#5f5548] hover:bg-[#f4eee2]"
           } disabled:cursor-not-allowed disabled:opacity-60`}
         >
           Prediction was wrong
@@ -80,7 +80,7 @@ export default function DetectionFeedbackCard({
           onChange={(event) => onCommentChange(event.target.value)}
           disabled={isSubmitting || isSubmitted}
           placeholder="Share what you noticed or what should be improved..."
-          className="mt-2 min-h-28 w-full rounded-2xl border border-[var(--line)] bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#958878] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/45 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-2 min-h-28 w-full rounded-2xl border border-(--line) bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#958878] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45 disabled:cursor-not-allowed disabled:opacity-60"
         />
       </div>
 

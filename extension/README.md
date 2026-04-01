@@ -7,9 +7,12 @@ TruthLens popup redesigned with a premium editorial UI, finite-state UX flow, pr
 - `manifest.json`: Manifest V3 config, popup entry, permissions, host permissions.
 - `popup.html`: Semantic popup structure with topbar, scrollable content viewport, sticky action rail.
 - `popup.css`: Token-first design system, layout, states, accessibility focus styles, motion.
-- `popup.js`: Finite-state controller (`editing`, `loading`, `result`, `error`), API calls, response normalization.
+- `popup-main.js`: Bootstrap/controller for popup behavior.
+- `popup-state.js`: Shared popup state and UI mode constants.
+- `popup-dom.js`: DOM lookup and required-element guards.
+- `popup-render.js`: Rendering and UI state helpers.
+- `popup-api.js`: API, storage, and active-tab helpers.
 - `assets/icon16.png`, `assets/icon48.png`, `assets/icon128.png`: Extension icons.
-- `assets/avatar.png`: Placeholder avatar.
 
 ## UI Architecture
 
@@ -45,7 +48,7 @@ Payload:
 
 The popup now fills `url` automatically from the active browser tab when the extension opens.
 
-Default base URL in `popup.js`:
+Default base URL in `popup-state.js`:
 
 - `http://localhost:3000`
 

@@ -30,3 +30,13 @@ cd C:\FYP\TruthLens-Fake-News-Detection\Backend
 .\.venv\Scripts\Activate.ps1
 python -m uvicorn app.main:app --reload
 ```
+
+## Verify
+
+Run tests from the same virtualenv so all backend dependencies from `requirements.txt` are available:
+
+```powershell
+cd C:\FYP\TruthLens-Fake-News-Detection\Backend
+.\.venv\Scripts\Activate.ps1
+python -m pytest tests
+```

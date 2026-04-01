@@ -1,7 +1,5 @@
 import Image from "next/image";
 
-import HeroImage from "../../Images/HeroImage.gif";
-
 interface HeroSectionProps {
   searchInput: string;
   onSearchInputChange: (value: string) => void;
@@ -129,9 +127,11 @@ export default function HeroSection({
           <div className="w-full max-w-md">
             <div className="overflow-visible bg-transparent">
               <Image
-                src={HeroImage}
+                src="/hero-image.gif"
                 alt="Illustration of a modern news verification workflow"
                 className="w-full h-auto drop-shadow-[0_24px_50px_rgba(14,18,16,0.35)]"
+                width={960}
+                height={960}
                 priority
               />
             </div>

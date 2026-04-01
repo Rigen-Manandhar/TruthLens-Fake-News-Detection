@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { getToken } from "next-auth/jwt";
 import { ObjectId, type Db, type Filter, type MongoClient } from "mongodb";
 import clientPromise from "@/lib/mongodb-client";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/server/auth/options";
 
 type SessionUser = {
   id?: string | null;
@@ -111,4 +111,3 @@ export async function getProviderInfo(db: Db, userId: string) {
     hasGoogle,
   };
 }
-

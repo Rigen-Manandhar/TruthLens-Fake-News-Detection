@@ -60,7 +60,7 @@ export default function ResetPasswordForm({ token = "" }: ResetPasswordFormProps
 
   return (
     <div className="relative w-full max-w-md rounded-3xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] p-6 sm:p-8 overflow-hidden auth-appear-delay">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#12100d] via-(--accent) to-[#e8b074]" />
+      <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#12100d] via-(--accent) to-[#e8b074]" />
       <div className="absolute -top-16 -right-10 h-32 w-32 rounded-full bg-[rgba(14,124,102,0.14)] blur-3xl" />
       <div className="absolute -bottom-16 -left-10 h-32 w-32 rounded-full bg-[rgba(232,176,116,0.2)] blur-3xl" />
 

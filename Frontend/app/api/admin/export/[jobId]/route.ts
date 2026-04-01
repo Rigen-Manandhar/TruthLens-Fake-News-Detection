@@ -3,9 +3,9 @@ import { ensureSettingsIndexes } from "@/lib/server/db";
 import {
   ADMIN_EXPORT_TYPE,
   buildAdminExportDownloadUrl,
-  getAdminAuthResult,
   verifyAdminExportDownloadUrlSignature,
-} from "@/lib/server/admin";
+} from "@/lib/server/admin/export";
+import { getAdminAuthResult } from "@/lib/server/admin/auth";
 
 export const runtime = "nodejs";
 

@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { ensureSettingsIndexes } from "@/lib/server/db";
-import {
-  buildAdminDashboardPayload,
-  getAdminAuthResult,
-} from "@/lib/server/admin";
+import { buildAdminDashboardPayload } from "@/lib/server/admin/dashboard";
+import { getAdminAuthResult } from "@/lib/server/admin/auth";
 
 export const runtime = "nodejs";
 

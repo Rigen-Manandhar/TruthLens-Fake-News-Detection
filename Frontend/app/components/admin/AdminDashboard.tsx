@@ -119,10 +119,10 @@ export default function AdminDashboard() {
   return (
     <div className="page-shell ambient-grid">
       <div className="pointer-events-none absolute -top-12 -left-12 h-56 w-56 rounded-full bg-[rgba(232,176,116,0.28)] blur-3xl" />
-      <div className="pointer-events-none absolute top-[9rem] right-0 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
+      <div className="pointer-events-none absolute top-36 right-0 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
       <main className="page-main space-y-10 sm:space-y-12">
-        <section className="section-reveal rounded-[2rem] border border-(--line) bg-[#fffdfa]/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10">
+        <section className="section-reveal rounded-4xl border border-(--line) bg-[#fffdfa]/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)] lg:items-end">
             <div className="space-y-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#867a6a]">
@@ -179,7 +179,7 @@ export default function AdminDashboard() {
         </section>
 
         {error && (
-          <section className="rounded-[1.5rem] border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
+          <section className="rounded-3xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
             {error}
           </section>
         )}

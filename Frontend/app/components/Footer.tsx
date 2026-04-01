@@ -8,7 +8,7 @@ interface FooterProps {
 
 export default function Footer({ className = "mt-16" }: FooterProps) {
   return (
-    <footer className={`${className} rounded-[2rem] border border-(--line) bg-[#fffdf8]/90 px-6 py-8 shadow-[0_14px_34px_rgba(20,16,8,0.08)]`}>
+    <footer className={`${className} rounded-4xl border border-(--line) bg-[#fffdf8]/90 px-6 py-8 shadow-[0_14px_34px_rgba(20,16,8,0.08)]`}>
       <div className="flex flex-col gap-5 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
         <div>
           <div className="display-title text-xl font-bold text-[#17130f]">TruthLens</div>

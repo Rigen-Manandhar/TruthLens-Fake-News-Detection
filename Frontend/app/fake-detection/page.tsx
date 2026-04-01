@@ -281,7 +281,7 @@ export default function FakeDetectionPage() {
   return (
     <div className="page-shell ambient-grid">
       <div className="pointer-events-none absolute -top-14 -left-16 h-64 w-64 rounded-full bg-[rgba(232,176,116,0.28)] blur-3xl" />
-      <div className="pointer-events-none absolute top-[8rem] -right-12 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
+      <div className="pointer-events-none absolute top-32 -right-12 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
       <main className="page-main space-y-8 sm:space-y-10">
         <header className="space-y-4 max-w-2xl">

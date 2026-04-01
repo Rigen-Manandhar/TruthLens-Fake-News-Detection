@@ -9,9 +9,9 @@ The system analyzes user-provided text or article URLs and returns a structured 
 
 ## Repository Structure
 
-- `Frontend/`: Next.js application (UI, auth, settings, API routes).
-- `Backend/`: FastAPI inference service and model loading logic.
-- `extension/`: Chrome extension popup client.
+- `Frontend/`: Next.js 16 application with app routes, server helpers, auth, settings, admin tools, and API routes.
+- `Backend/`: FastAPI inference service with separated schemas, explanation helpers, prediction service, and model-loading modules.
+- `extension/`: Chrome extension popup client split into popup state, DOM, render, and API modules.
 
 ## How It Works
 
@@ -83,6 +83,31 @@ npm run dev
 ```
 
 Open `http://localhost:3000`.
+
+## Validation
+
+### Frontend
+
+```bash
+cd Frontend
+npm run lint
+npm run build
+```
+
+### Backend
+
+Run these from the backend virtualenv so `requirements.txt` packages such as `lime` are available:
+
+```bash
+cd Backend
+python -m pytest tests
+python -m uvicorn app.main:app --reload
+```
+
+### Extension
+
+- Load the unpacked `extension/` folder in Chrome.
+- Verify analyze flow, retry flow, and feedback submission after configuring the bearer token.
 
 ## Environment Variables
 
@@ -158,6 +183,7 @@ Quick load:
 4. Select the `extension` folder.
 
 The popup defaults to calling `http://localhost:3000/api/predict` via the frontend layer.
+Its runtime code is bootstrapped from `popup-main.js`, which composes the popup state, DOM, render, and API/storage modules.
 
 ## Security Notes
 

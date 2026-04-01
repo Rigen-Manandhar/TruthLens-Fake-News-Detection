@@ -9,7 +9,7 @@ export default function AdminRecentUsersSection({
   recentUsers,
 }: AdminRecentUsersSectionProps) {
   return (
-    <section className="section-reveal delay-2 rounded-[2rem] border border-(--line) bg-[#fffdfa]/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
+    <section className="section-reveal delay-2 rounded-4xl border border-(--line) bg-[#fffdfa]/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#867a6a]">
@@ -31,7 +31,7 @@ export default function AdminRecentUsersSection({
           {recentUsers.map((user) => (
             <article
               key={user.id}
-              className="rounded-[1.5rem] border border-(--line) bg-[#fffdf8] p-5"
+              className="rounded-3xl border border-(--line) bg-[#fffdf8] p-5"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">

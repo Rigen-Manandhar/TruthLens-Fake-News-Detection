@@ -36,9 +36,9 @@ export default function FakeDetectionForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="relative flex h-full flex-col rounded-3xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-[36rem]"
+      className="relative flex h-full flex-col rounded-3xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-144"
     >
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#12100d] via-(--accent) to-[#e8b074]" />
+      <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#12100d] via-(--accent) to-[#e8b074]" />
 
       <div className="relative flex flex-col h-full">
         <div className="space-y-1.5 mb-4">
@@ -62,7 +62,7 @@ export default function FakeDetectionForm({
             value={articleText}
             onChange={(e) => onArticleChange(e.target.value)}
             placeholder="Paste article text here..."
-            className="min-h-[14rem] sm:min-h-[18rem] lg:h-full w-full resize-y lg:resize-none rounded-2xl border border-(--line) bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#958878] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
+            className="min-h-56 sm:min-h-72 lg:h-full w-full resize-y lg:resize-none rounded-2xl border border-(--line) bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#958878] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
           />
         </div>
 

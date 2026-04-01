@@ -12,9 +12,9 @@ export default function FeaturedNewsStory({
   analysis,
 }: FeaturedNewsStoryProps) {
   return (
-    <article className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] items-center rounded-[2rem] border border-(--line) bg-[#fffdfa]/90 shadow-[0_18px_36px_rgba(24,16,8,0.1)] overflow-hidden">
+    <article className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] items-center rounded-4xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_18px_36px_rgba(24,16,8,0.1)] overflow-hidden">
       <div className="relative h-56 sm:h-72 lg:h-full">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#e8dfcf] via-[#f7f3ea] to-[#e7dcc6]" />
+        <div className="absolute inset-0 bg-linear-to-br from-[#e8dfcf] via-[#f7f3ea] to-[#e7dcc6]" />
         {article.urlToImage && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -23,7 +23,7 @@ export default function FeaturedNewsStory({
             className="absolute inset-0 h-full w-full object-cover"
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1b1510]/80 via-[#201810]/20 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-[#1b1510]/80 via-[#201810]/20 to-transparent" />
         <div className="absolute bottom-5 left-5 right-5 text-[#f8f2e7]">
           <p className="text-[11px] font-semibold tracking-[0.3em] uppercase">
             Top story

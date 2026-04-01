@@ -31,10 +31,10 @@ export default function TermsPage() {
   return (
     <div className="page-shell ambient-grid">
       <div className="pointer-events-none absolute -top-12 -left-12 h-56 w-56 rounded-full bg-[rgba(232,176,116,0.28)] blur-3xl" />
-      <div className="pointer-events-none absolute top-[9rem] right-0 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
+      <div className="pointer-events-none absolute top-36 right-0 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
       <main className="page-main space-y-10 sm:space-y-12">
-        <section className="section-reveal rounded-[2rem] border border-(--line) bg-[#fffdfa]/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10">
+        <section className="section-reveal rounded-4xl border border-(--line) bg-[#fffdfa]/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.16fr)_minmax(0,0.84fr)] lg:items-end">
             <div className="space-y-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#867a6a]">
@@ -93,7 +93,7 @@ export default function TermsPage() {
         </section>
 
         <section className="section-reveal delay-1 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)]">
-          <article className="rounded-[2rem] border border-(--line) bg-[#f7f1e6]/92 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
+          <article className="rounded-4xl border border-(--line) bg-[#f7f1e6]/92 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#867a6a]">
               Important limitation
             </p>
@@ -112,12 +112,12 @@ export default function TermsPage() {
             </p>
           </article>
 
-          <article className="rounded-[2rem] border border-(--line) bg-[#fffdfa]/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
+          <article className="rounded-4xl border border-(--line) bg-[#fffdfa]/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#867a6a]">
               Need help?
             </p>
             <div className="mt-4 space-y-4">
-              <div className="rounded-[1.5rem] border border-(--line) bg-[#fffdf8] p-4">
+              <div className="rounded-3xl border border-(--line) bg-[#fffdf8] p-4">
                 <h3 className="text-lg font-semibold text-[#17130f]">
                   Contact the project inbox
                 </h3>
@@ -134,7 +134,7 @@ export default function TermsPage() {
                 </Link>
               </div>
 
-              <div className="rounded-[1.5rem] border border-(--line) bg-[#fffdf8] p-4">
+              <div className="rounded-3xl border border-(--line) bg-[#fffdf8] p-4">
                 <h3 className="text-lg font-semibold text-[#17130f]">
                   Review privacy terms too
                 </h3>

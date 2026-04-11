@@ -2,14 +2,9 @@
 
 import Footer from "../components/Footer";
 import AccountSummaryCard from "../components/settings/AccountSummaryCard";
-import DeleteAccountModal from "../components/settings/DeleteAccountModal";
 import ExtensionTokenCard from "../components/settings/ExtensionTokenCard";
 import PasswordSection from "../components/settings/PasswordSection";
-import PreferencesSection from "../components/settings/PreferencesSection";
-import PrivacySection from "../components/settings/PrivacySection";
 import ProfileSection from "../components/settings/ProfileSection";
-import ReauthSection from "../components/settings/ReauthSection";
-import SessionsSection from "../components/settings/SessionsSection";
 import { useSettingsController } from "../components/settings/useSettingsController";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
@@ -18,13 +13,8 @@ export default function SettingsPage() {
   const {
     loading,
     profile,
-    sessions,
     name,
     setName,
-    prefs,
-    setPrefs,
-    reauthPassword,
-    setReauthPassword,
     currentPassword,
     setCurrentPassword,
     newPassword,
@@ -35,38 +25,17 @@ export default function SettingsPage() {
     setSetupPassword,
     setupConfirmPassword,
     setSetupConfirmPassword,
-    deleteConfirm,
-    setDeleteConfirm,
-    deleteReason,
-    setDeleteReason,
-    exportJob,
     savingProfile,
-    savingPrefs,
-    reauthing,
     updatingPassword,
     settingPassword,
-    revokingOthers,
-    revokingSessionId,
-    requestingExport,
-    requestingDelete,
-    cancelingDelete,
-    deleteModal,
-    setDeleteModal,
     logoutOpen,
     setLogoutOpen,
     signingOut,
     providerLabel,
     reauthLabel,
     saveProfile,
-    savePrefs,
-    doReauth,
     changePassword,
     setupPasswordAction,
-    revokeSession,
-    revokeOthers,
-    requestExport,
-    requestDeletion,
-    cancelDeletion,
     handleSignOut,
   } = useSettingsController();
 
@@ -82,7 +51,7 @@ export default function SettingsPage() {
             Settings
           </h1>
           <p className="text-sm text-(--muted-foreground) mt-2">
-            Profile, security, privacy and product defaults.
+            Manage your profile, password, and extension access.
           </p>
         </header>
 
@@ -100,16 +69,6 @@ export default function SettingsPage() {
             onNameChange={setName}
             onSave={saveProfile}
           />
-          <ReauthSection
-            profile={profile}
-            reauthPassword={reauthPassword}
-            reauthing={reauthing}
-            onPasswordChange={setReauthPassword}
-            onVerify={doReauth}
-          />
-        </section>
-
-        <section className="grid gap-6 xl:grid-cols-2">
           <PasswordSection
             profile={profile}
             currentPassword={currentPassword}
@@ -127,37 +86,10 @@ export default function SettingsPage() {
             onChangePassword={changePassword}
             onSetupPassword={setupPasswordAction}
           />
-          <PreferencesSection
-            prefs={prefs}
-            savingPrefs={savingPrefs}
-            onPrefsChange={setPrefs}
-            onSave={savePrefs}
-          />
         </section>
 
         <section>
           <ExtensionTokenCard />
-        </section>
-
-        <section className="grid gap-6 xl:grid-cols-2">
-          <SessionsSection
-            sessions={sessions}
-            profile={profile}
-            revokingOthers={revokingOthers}
-            revokingSessionId={revokingSessionId}
-            onRevokeSession={revokeSession}
-            onRevokeOthers={revokeOthers}
-          />
-          <PrivacySection
-            profile={profile}
-            exportJob={exportJob}
-            requestingExport={requestingExport}
-            requestingDelete={requestingDelete}
-            cancelingDelete={cancelingDelete}
-            onRequestExport={requestExport}
-            onOpenDeleteModal={() => setDeleteModal(true)}
-            onCancelDeletion={cancelDeletion}
-          />
         </section>
 
         <Button
@@ -179,17 +111,6 @@ export default function SettingsPage() {
             await handleSignOut();
           }}
           onCancel={() => setLogoutOpen(false)}
-        />
-
-        <DeleteAccountModal
-          open={deleteModal}
-          deleteConfirm={deleteConfirm}
-          deleteReason={deleteReason}
-          requestingDelete={requestingDelete}
-          onDeleteConfirmChange={setDeleteConfirm}
-          onDeleteReasonChange={setDeleteReason}
-          onClose={() => setDeleteModal(false)}
-          onSubmit={requestDeletion}
         />
 
         <Footer />

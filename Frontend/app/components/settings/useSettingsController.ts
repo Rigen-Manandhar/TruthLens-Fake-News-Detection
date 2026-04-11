@@ -3,53 +3,29 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import toast from "react-hot-toast";
+import { fetchProfile } from "./api";
 import {
-  DEFAULT_USER_PREFERENCES,
-  type UserPreferences,
-} from "@/lib/shared/settings";
-import { fetchExportJob, fetchProfile, fetchSessions } from "./api";
-import {
-  cancelAccountDeletion,
-  requestAccountDeletion,
-  requestUserExport,
   reauthenticateUser,
-  revokeOtherSessions,
-  revokeSessionById,
   setupPassword,
   updatePassword,
-  updatePreferences,
   updateProfileName,
 } from "./actions";
-import type { AccountProfile, ExportJob, SessionItem } from "./types";
+import type { AccountProfile } from "./types";
 import { formatDate } from "./utils";
 
 export function useSettingsController() {
   const { status, update } = useSession();
   const [profile, setProfile] = useState<AccountProfile | null>(null);
-  const [sessions, setSessions] = useState<SessionItem[]>([]);
   const [name, setName] = useState("");
-  const [prefs, setPrefs] = useState<UserPreferences>(DEFAULT_USER_PREFERENCES);
-  const [reauthPassword, setReauthPassword] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [setupPasswordValue, setSetupPasswordValue] = useState("");
   const [setupConfirmPassword, setSetupConfirmPassword] = useState("");
-  const [deleteConfirm, setDeleteConfirm] = useState("");
-  const [deleteReason, setDeleteReason] = useState("");
-  const [exportJob, setExportJob] = useState<ExportJob | null>(null);
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
-  const [savingPrefs, setSavingPrefs] = useState(false);
-  const [reauthing, setReauthing] = useState(false);
   const [updatingPassword, setUpdatingPassword] = useState(false);
   const [settingPassword, setSettingPassword] = useState(false);
-  const [revokingOthers, setRevokingOthers] = useState(false);
-  const [revokingSessionId, setRevokingSessionId] = useState<string | null>(null);
-  const [requestingExport, setRequestingExport] = useState(false);
-  const [requestingDelete, setRequestingDelete] = useState(false);
-  const [cancelingDelete, setCancelingDelete] = useState(false);
-  const [deleteModal, setDeleteModal] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
 
@@ -57,12 +33,6 @@ export function useSettingsController() {
     const user = await fetchProfile();
     setProfile(user);
     setName(user.name);
-    setPrefs(user.preferences ?? DEFAULT_USER_PREFERENCES);
-  }, []);
-
-  const loadSessions = useCallback(async () => {
-    const nextSessions = await fetchSessions();
-    setSessions(nextSessions);
   }, []);
 
   useEffect(() => {
@@ -74,7 +44,7 @@ export function useSettingsController() {
     const run = async () => {
       setLoading(true);
       try {
-        await Promise.all([loadProfile(), loadSessions()]);
+        await loadProfile();
       } catch (error) {
         toast.error(error instanceof Error ? error.message : "Failed to load settings.");
       } finally {
@@ -83,27 +53,7 @@ export function useSettingsController() {
     };
 
     void run();
-  }, [loadProfile, loadSessions, status]);
-
-  useEffect(() => {
-    if (!exportJob || exportJob.status !== "processing") {
-      return;
-    }
-
-    const timer = setInterval(async () => {
-      try {
-        const nextJob = await fetchExportJob(exportJob.jobId);
-        setExportJob(nextJob);
-        if (nextJob.status === "completed") {
-          toast.success("Export is ready.");
-        }
-      } catch {
-        return;
-      }
-    }, 3000);
-
-    return () => clearInterval(timer);
-  }, [exportJob]);
+  }, [loadProfile, status]);
 
   const reauthLabel = useMemo(() => {
     if (!profile) {
@@ -153,41 +103,6 @@ export function useSettingsController() {
     }
   }, [name, update]);
 
-  const savePrefs = useCallback(async () => {
-    setSavingPrefs(true);
-    try {
-      const data = await updatePreferences(prefs);
-      setProfile(data.user);
-      setPrefs(data.user.preferences);
-      toast.success("Preferences saved.");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to save preferences.");
-    } finally {
-      setSavingPrefs(false);
-    }
-  }, [prefs]);
-
-  const doReauth = useCallback(
-    async (method: "password" | "google") => {
-      setReauthing(true);
-      try {
-        await reauthenticateUser(
-          method === "password"
-            ? { method, password: reauthPassword }
-            : { method }
-        );
-        setReauthPassword("");
-        await loadProfile();
-        toast.success("Identity verified.");
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Re-auth failed.");
-      } finally {
-        setReauthing(false);
-      }
-    },
-    [loadProfile, reauthPassword]
-  );
-
   const changePasswordAction = useCallback(async () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
       toast.error("Fill all password fields.");
@@ -201,6 +116,7 @@ export function useSettingsController() {
 
     setUpdatingPassword(true);
     try {
+      await reauthenticateUser({ method: "password", password: currentPassword });
       await updatePassword({ currentPassword, newPassword });
       setCurrentPassword("");
       setNewPassword("");
@@ -227,6 +143,7 @@ export function useSettingsController() {
 
     setSettingPassword(true);
     try {
+      await reauthenticateUser({ method: "google" });
       await setupPassword(setupPasswordValue);
       setSetupPasswordValue("");
       setSetupConfirmPassword("");
@@ -238,80 +155,6 @@ export function useSettingsController() {
       setSettingPassword(false);
     }
   }, [loadProfile, setupConfirmPassword, setupPasswordValue]);
-
-  const revokeSession = useCallback(
-    async (sessionId: string) => {
-      setRevokingSessionId(sessionId);
-      try {
-        await revokeSessionById(sessionId);
-        await Promise.all([loadSessions(), loadProfile()]);
-        toast.success("Session revoked.");
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Failed to revoke session.");
-      } finally {
-        setRevokingSessionId(null);
-      }
-    },
-    [loadProfile, loadSessions]
-  );
-
-  const revokeOthersAction = useCallback(async () => {
-    setRevokingOthers(true);
-    try {
-      await revokeOtherSessions();
-      await Promise.all([loadSessions(), loadProfile()]);
-      toast.success("Other sessions revoked.");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to revoke sessions.");
-    } finally {
-      setRevokingOthers(false);
-    }
-  }, [loadProfile, loadSessions]);
-
-  const requestExportAction = useCallback(async () => {
-    setRequestingExport(true);
-    try {
-      const data = await requestUserExport();
-      setExportJob(await fetchExportJob(data.jobId));
-      toast.success("Export requested.");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to request export.");
-    } finally {
-      setRequestingExport(false);
-    }
-  }, []);
-
-  const requestDeletionAction = useCallback(async () => {
-    setRequestingDelete(true);
-    try {
-      await requestAccountDeletion({
-        confirmText: deleteConfirm,
-        reason: deleteReason,
-      });
-      setDeleteModal(false);
-      setDeleteConfirm("");
-      setDeleteReason("");
-      await loadProfile();
-      toast.success("Deletion scheduled.");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to request deletion.");
-    } finally {
-      setRequestingDelete(false);
-    }
-  }, [deleteConfirm, deleteReason, loadProfile]);
-
-  const cancelDeletionAction = useCallback(async () => {
-    setCancelingDelete(true);
-    try {
-      await cancelAccountDeletion();
-      await loadProfile();
-      toast.success("Deletion request cancelled.");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to cancel deletion.");
-    } finally {
-      setCancelingDelete(false);
-    }
-  }, [loadProfile]);
 
   const handleSignOut = useCallback(async () => {
     setSigningOut(true);
@@ -325,13 +168,8 @@ export function useSettingsController() {
   return {
     loading,
     profile,
-    sessions,
     name,
     setName,
-    prefs,
-    setPrefs,
-    reauthPassword,
-    setReauthPassword,
     currentPassword,
     setCurrentPassword,
     newPassword,
@@ -342,38 +180,17 @@ export function useSettingsController() {
     setSetupPassword: setSetupPasswordValue,
     setupConfirmPassword,
     setSetupConfirmPassword,
-    deleteConfirm,
-    setDeleteConfirm,
-    deleteReason,
-    setDeleteReason,
-    exportJob,
     savingProfile,
-    savingPrefs,
-    reauthing,
     updatingPassword,
     settingPassword,
-    revokingOthers,
-    revokingSessionId,
-    requestingExport,
-    requestingDelete,
-    cancelingDelete,
-    deleteModal,
-    setDeleteModal,
     logoutOpen,
     setLogoutOpen,
     signingOut,
     providerLabel,
     reauthLabel,
     saveProfile,
-    savePrefs,
-    doReauth,
     changePassword: changePasswordAction,
     setupPasswordAction,
-    revokeSession,
-    revokeOthers: revokeOthersAction,
-    requestExport: requestExportAction,
-    requestDeletion: requestDeletionAction,
-    cancelDeletion: cancelDeletionAction,
     handleSignOut,
   };
 }

@@ -2,23 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Footer from "../Footer";
-import type { AdminDashboardResponse, AdminExportJob } from "@/lib/shared/admin";
+import type { AdminDashboardResponse } from "@/lib/shared/admin";
 import AdminFeedbackSections from "./AdminFeedbackSections";
 import AdminMetricsGrid from "./AdminMetricsGrid";
 import AdminRecentFeedbackSection from "./AdminRecentFeedbackSection";
 import AdminRecentUsersSection from "./AdminRecentUsersSection";
-import {
-  fetchAdminDashboard,
-  fetchAdminExportJob,
-  requestAdminExport,
-} from "./dashboardApi";
-import { formatDateTime } from "./dashboardUtils";
+import { fetchAdminDashboard } from "./dashboardApi";
 
 export default function AdminDashboard() {
   const [dashboard, setDashboard] = useState<AdminDashboardResponse | null>(null);
-  const [exportJob, setExportJob] = useState<AdminExportJob | null>(null);
   const [loading, setLoading] = useState(true);
-  const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -55,22 +48,6 @@ export default function AdminDashboard() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!exportJob || exportJob.status !== "processing") {
-      return;
-    }
-
-    const interval = setInterval(async () => {
-      try {
-        setExportJob(await fetchAdminExportJob(exportJob.jobId));
-      } catch {
-        return;
-      }
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [exportJob]);
-
   const metricCards = useMemo(() => {
     if (!dashboard) {
       return [];
@@ -100,22 +77,6 @@ export default function AdminDashboard() {
     ];
   }, [dashboard]);
 
-  const handleRequestExport = async () => {
-    setExporting(true);
-    try {
-      const jobId = await requestAdminExport();
-      setExportJob(await fetchAdminExportJob(jobId));
-    } catch (exportError) {
-      setError(
-        exportError instanceof Error
-          ? exportError.message
-          : "Failed to request export."
-      );
-    } finally {
-      setExporting(false);
-    }
-  };
-
   return (
     <div className="page-shell ambient-grid">
       <div className="pointer-events-none absolute -top-12 -left-12 h-56 w-56 rounded-full bg-[rgba(232,176,116,0.28)] blur-3xl" />
@@ -123,58 +84,18 @@ export default function AdminDashboard() {
 
       <main className="page-main space-y-10 sm:space-y-12">
         <section className="section-reveal rounded-4xl border border-(--line) bg-[#fffdfa]/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)] lg:items-end">
-            <div className="space-y-5">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#867a6a]">
-                Admin Dashboard
-              </p>
-              <h1 className="page-title display-title max-w-3xl text-4xl font-bold text-[#17130f] sm:text-[3.2rem]">
-                Review user activity, feedback quality, and export admin data.
-              </h1>
-              <p className="max-w-2xl text-sm leading-7 text-(--muted-foreground) sm:text-base">
-                This dashboard surfaces account growth, fake-news feedback, and
-                recent platform activity in one place. Use it to review what users
-                are submitting and export a full JSON snapshot when needed.
-              </p>
-            </div>
-
-            <div className="rounded-[1.75rem] border border-(--line) bg-[linear-gradient(145deg,rgba(255,253,248,0.96),rgba(247,241,230,0.92))] p-5 shadow-[0_16px_32px_rgba(24,16,8,0.08)]">
-              <div className="space-y-4">
-                <div className="inline-flex rounded-full border border-(--line) bg-[#f6efe3] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5f5548]">
-                  Admin actions
-                </div>
-                <p className="text-sm leading-7 text-[#4f473c]">
-                  Export one JSON file with all admin-visible users and detection
-                  feedback data.
-                </p>
-                <div className="flex flex-col gap-3">
-                  <button
-                    type="button"
-                    onClick={handleRequestExport}
-                    disabled={exporting}
-                    className="inline-flex h-11 items-center justify-center rounded-full bg-[#12100d] px-6 text-sm font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(24,16,8,0.2)] transition-colors hover:bg-(--accent) disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {exporting ? "Preparing export..." : "Export all admin data"}
-                  </button>
-                  {exportJob?.downloadUrl && (
-                    <a
-                      href={exportJob.downloadUrl}
-                      className="text-sm font-semibold text-[#17130f] hover:text-(--accent)"
-                    >
-                      Download JSON export
-                    </a>
-                  )}
-                  {exportJob && (
-                    <p className="text-xs text-[#7f7364]">
-                      Status: {exportJob.status}
-                      {exportJob.expiresAt
-                        ? ` - Expires ${formatDateTime(exportJob.expiresAt)}`
-                        : ""}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
+          <div className="space-y-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#867a6a]">
+              Admin Dashboard
+            </p>
+            <h1 className="page-title display-title max-w-3xl text-4xl font-bold text-[#17130f] sm:text-[3.2rem]">
+              Review user activity and feedback quality.
+            </h1>
+            <p className="max-w-2xl text-sm leading-7 text-(--muted-foreground) sm:text-base">
+              This dashboard surfaces account growth, fake-news feedback, and
+              recent platform activity in one place so you can review how the
+              system is being used.
+            </p>
           </div>
         </section>
 

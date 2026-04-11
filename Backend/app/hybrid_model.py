@@ -10,11 +10,14 @@ from dotenv import load_dotenv
 from app.inference_model import InferenceModel
 from app.parsing import BODY_MIN_WORDS_FOR_B, parse_input
 from app.scoring import (
-    CONFLICT_CONFIDENCE_THRESHOLD,
+    CONFLICT_EVIDENCE_THRESHOLD,
+    build_model_weights,
+    build_weighted_score,
     build_uncertainty,
     check_source,
     determine_model_runs,
     label_to_class,
+    model_confidence_to_evidence,
     resolve_verdict,
 )
 
@@ -92,16 +95,20 @@ class HybridModelLoader:
         input_mode: str = "auto",
         title_candidates: list[str] | None = None,
     ) -> dict:
-        total_score = 0
         steps: list[dict] = []
 
         source_res = check_source(url, self.source_db)
-        total_score += int(source_res.get("score", 0))
+        source_score_impact = int(source_res.get("score", 0))
+        source_evidence = float(source_res.get("evidence", 0.0))
         steps.append(
             {
                 "step": "Source Check",
-                "score_impact": int(source_res.get("score", 0)),
+                "score_impact": source_score_impact,
                 "details": str(source_res.get("reason", "")),
+                "metadata": {
+                    "evidence": source_evidence,
+                    "source_type": source_res.get("source_type"),
+                },
             }
         )
 
@@ -155,7 +162,7 @@ class HybridModelLoader:
                 }
             )
             return {
-                "final_score": total_score,
+                "final_score": source_score_impact,
                 "verdict": "UNCERTAIN",
                 "risk_level": "Needs Review",
                 "steps": steps,
@@ -174,8 +181,8 @@ class HybridModelLoader:
                 "model_outputs": model_outputs,
                 "conflict": {
                     "is_conflict": False,
-                    "threshold": CONFLICT_CONFIDENCE_THRESHOLD,
-                    "raw_score_before_override": total_score,
+                    "threshold": CONFLICT_EVIDENCE_THRESHOLD,
+                    "raw_score_before_override": source_score_impact,
                 },
                 "lime_model": None,
                 "lime_input_text": None,
@@ -184,32 +191,20 @@ class HybridModelLoader:
         headline_label = None
         headline_conf = None
         headline_class = "UNKNOWN"
-        headline_score = 0
+        headline_evidence = 0.0
+        headline_score_impact = 0
 
         if run_a:
             headline_label, headline_conf = self.model_headline.predict(headline_text)
             headline_class = label_to_class(headline_label)
-            if headline_class == "FAKE" and headline_conf > 0.60:
-                headline_score = 2
-            elif headline_class == "REAL" and headline_conf > 0.60:
-                headline_score = -2
-
-            total_score += headline_score
+            headline_evidence = model_confidence_to_evidence(headline_label, headline_conf)
             model_outputs["model_a"] = {
                 "ran": True,
                 "label": headline_label,
                 "confidence": headline_conf,
-                "score_impact": headline_score,
+                "score_impact": headline_score_impact,
                 "input_word_count": headline_words,
             }
-            steps.append(
-                {
-                    "step": "Headline Check",
-                    "score_impact": headline_score,
-                    "details": f"Label: {headline_label}, Conf: {headline_conf:.2f}",
-                    "sentence_preview": headline_text[:140],
-                }
-            )
         else:
             steps.append(
                 {
@@ -222,38 +217,20 @@ class HybridModelLoader:
         body_label = None
         body_conf = None
         body_class = "UNKNOWN"
-        article_score = 0
+        body_evidence = 0.0
+        article_score_impact = 0
 
         if run_b:
             body_label, body_conf = self.model_article.predict(body_text)
             body_class = label_to_class(body_label)
-            if body_class == "FAKE" and body_conf > 0.85:
-                article_score = 1
-            elif body_class == "REAL" and body_conf > 0.97:
-                article_score = -1
-
-            if run_a:
-                if headline_score > 0 and article_score < 0:
-                    article_score = 0
-                elif headline_score < 0 and article_score > 0:
-                    article_score = 0
-
-            total_score += article_score
+            body_evidence = model_confidence_to_evidence(body_label, body_conf)
             model_outputs["model_b"] = {
                 "ran": True,
                 "label": body_label,
                 "confidence": body_conf,
-                "score_impact": article_score,
+                "score_impact": article_score_impact,
                 "input_word_count": body_words,
             }
-            steps.append(
-                {
-                    "step": "Article Check",
-                    "score_impact": article_score,
-                    "details": f"Label: {body_label}, Conf: {body_conf:.2f}",
-                    "input_preview": body_text[:180],
-                }
-            )
         else:
             steps.append(
                 {
@@ -265,14 +242,59 @@ class HybridModelLoader:
                 }
             )
 
+        headline_weight, article_weight = build_model_weights(run_a, run_b, body_words)
+        scoring = build_weighted_score(
+            source_evidence,
+            headline_evidence,
+            body_evidence,
+            headline_weight,
+            article_weight,
+        )
+
+        headline_score_impact = int(scoring["headline_score_impact"])
+        article_score_impact = int(scoring["article_score_impact"])
+
+        if run_a:
+            model_outputs["model_a"]["score_impact"] = headline_score_impact
+            steps.append(
+                {
+                    "step": "Headline Check",
+                    "score_impact": headline_score_impact,
+                    "details": f"Label: {headline_label}, Conf: {headline_conf:.2f}",
+                    "sentence_preview": headline_text[:140],
+                    "metadata": {
+                        "evidence": headline_evidence,
+                        "weight": headline_weight,
+                    },
+                }
+            )
+
+        if run_b:
+            model_outputs["model_b"]["score_impact"] = article_score_impact
+            steps.append(
+                {
+                    "step": "Article Check",
+                    "score_impact": article_score_impact,
+                    "details": f"Label: {body_label}, Conf: {body_conf:.2f}",
+                    "input_preview": body_text[:180],
+                    "metadata": {
+                        "evidence": body_evidence,
+                        "weight": article_weight,
+                    },
+                }
+            )
+
         verdict, risk_level, uncertainty, conflict = resolve_verdict(
-            total_score,
+            float(scoring["weighted_score"]),
             run_a,
             run_b,
             headline_class,
             body_class,
-            headline_conf,
-            body_conf,
+            headline_evidence,
+            body_evidence,
+            float(scoring["headline_contribution"]),
+            float(scoring["article_contribution"]),
+            body_words,
         )
 
         article_class = body_class if run_b else headline_class
@@ -286,7 +308,7 @@ class HybridModelLoader:
             lime_input_text = headline_text
 
         return {
-            "final_score": total_score,
+            "final_score": int(scoring["final_score"]),
             "verdict": verdict,
             "risk_level": risk_level,
             "steps": steps,

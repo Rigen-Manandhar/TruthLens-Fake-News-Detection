@@ -222,7 +222,7 @@ export default function FakeDetectionResult({
           </p>
         )}
 
-        <div className="mt-6 rounded-2xl border border-dashed border-(--line) bg-[#f7f1e6] px-4 py-4 text-sm text-[#5f5548] wrap-break-word max-h-[60vh] overflow-y-auto overscroll-contain sm:max-h-128 lg:flex-1 lg:min-h-0 lg:max-h-[36rem]">
+        <div className="mt-6 rounded-2xl border border-dashed border-(--line) bg-[#f7f1e6] px-4 py-4 text-sm text-[#5f5548] wrap-break-word max-h-[60vh] overflow-y-auto overscroll-contain sm:max-h-128 lg:flex-1 lg:min-h-0 lg:max-h-144">
           {uncertaintyReason && (
             <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900">
               <p className="font-semibold uppercase tracking-wide">

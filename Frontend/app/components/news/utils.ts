@@ -39,7 +39,16 @@ export const getAnalysisText = (analysis?: NewsAnalysis) => {
     return "Analysis unavailable";
   }
 
-  const label = analysis.verdict || "UNCERTAIN";
+  const verdict = (analysis.verdict || "UNCERTAIN").toUpperCase();
+  let label: string;
+  if (verdict === "LIKELY REAL") {
+    label = "Lower Risk";
+  } else if (verdict === "SUSPICIOUS") {
+    label = "Higher Risk";
+  } else {
+    label = "Needs Review";
+  }
+
   const confidence =
     typeof analysis.confidence === "number"
       ? `${Math.round(analysis.confidence * 100)}%`

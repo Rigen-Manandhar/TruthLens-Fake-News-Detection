@@ -36,11 +36,11 @@ export default function FakeDetectionForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="relative flex h-full flex-col rounded-3xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-144"
+      className="relative flex flex-col rounded-3xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-144"
     >
       <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#12100d] via-(--accent) to-[#e8b074]" />
 
-      <div className="relative flex flex-col h-full">
+      <div className="relative flex flex-col">
         <div className="space-y-1.5 mb-4">
           <p className="text-[11px] font-semibold tracking-[0.25em] text-[#867a6a] uppercase">
             Input
@@ -52,17 +52,17 @@ export default function FakeDetectionForm({
             Article Text
           </label>
           <p className="text-xs text-(--muted-foreground)">
-            Paste an excerpt or headline you want to analyse.
+            Paste an excerpt or headline you want to assess.
           </p>
         </div>
 
-        <div className="mb-4 lg:flex-1">
+        <div className="mb-4">
           <textarea
             id="articleText"
             value={articleText}
             onChange={(e) => onArticleChange(e.target.value)}
             placeholder="Paste article text here..."
-            className="min-h-56 sm:min-h-72 lg:h-full w-full resize-y lg:resize-none rounded-2xl border border-(--line) bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#958878] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
+            className="min-h-56 sm:min-h-72 w-full resize-y lg:resize-none rounded-2xl border border-(--line) bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#958878] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
           />
         </div>
 
@@ -87,7 +87,7 @@ export default function FakeDetectionForm({
             }
             className="w-full rounded-2xl border border-(--line) bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
           >
-            <option value="auto">Auto detect</option>
+            <option value="auto">Auto assess</option>
             <option value="headline_only">Headline only</option>
             <option value="full_article">Full article</option>
             <option value="headline_plus_article">Headline + article</option>
@@ -113,7 +113,7 @@ export default function FakeDetectionForm({
             className="w-full rounded-2xl border border-(--line) bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#958878] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
           />
           <p className="text-xs text-(--muted-foreground)">
-            Optional: include a URL to boost source credibility scoring.
+            Optional: include a URL for source and evidence-context signals.
           </p>
         </div>
 
@@ -137,7 +137,7 @@ export default function FakeDetectionForm({
             disabled={isLoading}
             className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-full bg-[#12100d] px-8 text-sm font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(24,16,8,0.22)] transition-all hover:bg-(--accent) disabled:cursor-not-allowed disabled:opacity-60 shrink-0"
           >
-            {isLoading ? "Analyzing..." : "Analyze"}
+            {isLoading ? "Assessing..." : "Assess Risk"}
           </button>
         </div>
       </div>

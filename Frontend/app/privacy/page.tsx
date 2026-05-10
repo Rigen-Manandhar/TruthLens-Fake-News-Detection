@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 const privacyHighlights = [
   {
     title: "Account preferences",
-    body: "TruthLens stores the settings needed to remember your preferred country, news categories, and fake-news detection defaults.",
+    body: "TruthLens stores the settings needed to remember your preferred country, news categories, and risk-assessment defaults.",
   },
   {
     title: "Security controls",
@@ -13,7 +13,7 @@ const privacyHighlights = [
   },
   {
     title: "Feedback and product signals",
-    body: "If you submit detection feedback or use product forms, that information can be stored so the platform can improve review quality and maintain an audit trail.",
+    body: "If you submit assessment feedback or use product forms, that information can be stored so the platform can improve review quality and maintain an audit trail.",
   },
 ];
 
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
               <p className="max-w-2xl text-sm leading-7 text-(--muted-foreground) sm:text-base">
                 TruthLens collects only the information needed to operate the
                 platform, personalize your experience, protect your account, and
-                support the fake-news detection workflow. This page summarizes
+                support the misinformation risk assessment workflow. This page summarizes
                 what data is used and what control you have over it.
               </p>
             </div>

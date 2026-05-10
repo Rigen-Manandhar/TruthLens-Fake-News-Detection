@@ -23,8 +23,8 @@ function setAnalyzeRail(mode) {
   els.analyzeBtn.disabled = isLoading;
   els.analyzeBtn.classList.toggle("loading", isLoading);
   els.analyzeBtnText.textContent = isLoading
-    ? "Analyzing..."
-    : "Analyze Content";
+    ? "Assessing..."
+    : "Assess Risk";
 }
 
 function setSummaryVisibility(showSummary) {
@@ -102,7 +102,7 @@ function getReasonText(raw) {
     return raw.detail.trim();
   }
 
-  return "Hybrid model completed analysis for the submitted content.";
+  return "Hybrid risk analysis completed for the submitted content.";
 }
 
 function buildChecksSummary(raw) {
@@ -147,10 +147,10 @@ function buildWhyText(raw, normalized) {
   if (modelA?.ran || modelB?.ran) {
     const bits = [];
     if (typeof modelA?.confidence === "number") {
-      bits.push(`Model A confidence ${Math.round(modelA.confidence * 100)}%`);
+      bits.push(`Model A language signal confidence ${Math.round(modelA.confidence * 100)}%`);
     }
     if (typeof modelB?.confidence === "number") {
-      bits.push(`Model B confidence ${Math.round(modelB.confidence * 100)}%`);
+      bits.push(`Model B language signal confidence ${Math.round(modelB.confidence * 100)}%`);
     }
     if (bits.length) {
       parts.push(`${bits.join("; ")}.`);
@@ -163,7 +163,7 @@ function buildWhyText(raw, normalized) {
 
   if (parts.length === 0) {
     parts.push(
-      `Verdict is ${normalized.verdictLabel} based on source, text pattern, and model signals.`
+      `Risk label is ${normalized.verdictLabel} based on source, language, and evidence signals.`
     );
   }
 
@@ -177,10 +177,10 @@ export function normalizePredictResponse(raw) {
   let verdictTone = "warn";
 
   if (verdictRaw === "LIKELY REAL") {
-    verdictLabel = "Likely Real";
+    verdictLabel = "Lower Risk";
     verdictTone = "ok";
   } else if (verdictRaw === "SUSPICIOUS") {
-    verdictLabel = "Suspicious";
+    verdictLabel = "Higher Risk";
     verdictTone = "bad";
   } else if (verdictRaw) {
     verdictLabel = titleCase(verdictRaw);

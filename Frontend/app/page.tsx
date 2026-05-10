@@ -83,7 +83,7 @@ export default function Home() {
                 Today&apos;s credibility briefings
               </h2>
               <p className="text-sm text-(--muted-foreground) mt-2 max-w-xl">
-                Fresh stories with confidence signals from your detection pipeline.
+                Fresh stories with risk signals from your assessment pipeline.
                 Scan fast, verify deeper when it matters.
               </p>
             </div>

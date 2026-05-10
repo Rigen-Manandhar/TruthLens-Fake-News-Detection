@@ -16,14 +16,14 @@ const principles = [
   {
     title: "Fast enough for real news cycles",
     body:
-      "The product blends live headlines, source credibility checks, and explainable AI outputs into a workflow that stays useful when stories are still moving.",
+      "The product blends live headlines, source credibility checks, language-model signals, and evidence hints into a workflow that stays useful when stories are still moving.",
   },
 ];
 
 const capabilities = [
   "Live news briefings with credibility signals attached to each story.",
-  "Fake-news detection that combines source checks, headline analysis, and article-level model scoring.",
-  "Explainable outputs that highlight the phrases influencing the model when deeper review is needed.",
+  "Misinformation risk assessment that combines source checks, claim hints, and article-level language signals.",
+  "Explainable outputs that highlight model-influencing phrases while clearly warning that this is not fact verification.",
   "A cleaner reading flow designed for quick scanning on desktop and mobile.",
 ];
 
@@ -47,8 +47,8 @@ export default function AboutPage() {
                 TruthLens is a news credibility platform created around a simple
                 idea: when information moves fast, readers need clearer signals,
                 not more clutter. We combine live news discovery with
-                explainable fake-news detection so users can inspect what they
-                are reading with more context and less guesswork.
+                misinformation risk assessment so users can inspect what they
+                are reading with more context and less overclaiming.
               </p>
             </div>
 
@@ -102,16 +102,16 @@ export default function AboutPage() {
               A final-year project focused on credible reading workflows.
             </h2>
             <p className="mt-4 text-sm leading-7 text-[#5f5548]">
-              TruthLens was developed as a Final Year Project centered on fake
-              news detection. The goal was not just to classify text, but to
-              build a usable product around that intelligence: a place where
-              current headlines, source trust, and model explanations can work
-              together in one interface.
+              TruthLens was developed as a Final Year Project centered on the
+              limits of automated misinformation detection. The goal is not to
+              prove truth from text, but to build a usable review workflow where
+              current headlines, source trust, evidence hints, and model
+              explanations work together in one interface.
             </p>
             <p className="mt-4 text-sm leading-7 text-[#5f5548]">
               That is why the product is split between a live news experience, a
-              FastAPI-powered detection service, and an explainable UI layer that
-              exposes uncertainty instead of hiding it.
+              FastAPI-powered risk assessment service, and an explainable UI
+              layer that exposes uncertainty instead of hiding it.
             </p>
           </article>
 
@@ -139,17 +139,17 @@ export default function AboutPage() {
 
               <div className="rounded-[1.5rem] border border-(--line) bg-[#fffdf8] p-4">
                 <h3 className="text-lg font-semibold text-[#17130f]">
-                  Run a detection check
+                  Run a risk assessment
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-(--muted-foreground)">
-                  Paste text or a URL into the detection workflow to inspect the
-                  verdict, confidence, and explanation output.
+                  Paste text or a URL into the review workflow to inspect the
+                  risk label, source signal, claim hints, and explanation output.
                 </p>
                 <Link
                   href="/fake-detection"
                   className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#17130f] hover:text-(--accent)"
                 >
-                  Open fake news detection
+                  Open risk assessment
                   <span aria-hidden="true">-&gt;</span>
                 </Link>
               </div>

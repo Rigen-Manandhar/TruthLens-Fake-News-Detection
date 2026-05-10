@@ -48,8 +48,8 @@ export default function HeroSection({
             Decide with clarity.
           </h1>
           <p className="text-sm sm:text-base text-(--muted-foreground) mb-8 max-w-xl">
-            TruthLens blends real-time headlines with AI-assisted credibility cues,
-            so your brief stays fast, clean, and grounded in context.
+            TruthLens blends real-time headlines with source, language, and evidence cues,
+            so your brief stays fast, clean, and honest about uncertainty.
           </p>
 
           <form

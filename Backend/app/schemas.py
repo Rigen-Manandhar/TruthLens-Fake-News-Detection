@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class PredictRequest(BaseModel):
@@ -61,6 +61,36 @@ class FetchMetadata(BaseModel):
     resolved_url: str | None = None
 
 
+class EvidenceSourceSignal(BaseModel):
+    domain: str | None = None
+    known: bool = False
+    source_type: str | None = None
+    credibility: str | None = None
+    category: str | None = None
+    rationale: str | None = None
+    last_reviewed: str | None = None
+    reference_url: str | None = None
+    notes: str | None = None
+
+
+class EvidenceCoverageSignal(BaseModel):
+    checked: bool = False
+    status: str
+    query: str | None = None
+    trusted_match_count: int = 0
+    total_results: int | None = None
+    matched_sources: list[str] = Field(default_factory=list)
+    message: str
+
+
+class EvidenceSummary(BaseModel):
+    claim_hints: list[str] = Field(default_factory=list)
+    source_signal: EvidenceSourceSignal
+    coverage_signal: EvidenceCoverageSignal
+    evidence_status: Literal["SUPPORTED_HINTS_FOUND", "NO_COVERAGE_FOUND", "SOURCE_ONLY", "NOT_CHECKED"]
+    limitations: str
+
+
 class PredictResponse(BaseModel):
     final_score: int
     verdict: str
@@ -74,5 +104,6 @@ class PredictResponse(BaseModel):
     model_outputs: ModelOutputs | None = None
     conflict: ConflictInfo | None = None
     fetch_metadata: FetchMetadata | None = None
+    evidence_summary: EvidenceSummary | None = None
     lime_model: Literal["A", "B"] | None = None
     lime_input_text: str | None = None

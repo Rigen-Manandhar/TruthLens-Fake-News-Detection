@@ -1,192 +1,152 @@
-# TruthLens Fake News Detection
+# TruthLens: Hybrid Misinformation Risk Assessment
 
-TruthLens is a Final Year Project focused on fake news detection. It combines:
+TruthLens is a Final Year Project that evaluates misinformation risk using multiple imperfect signals. It does not claim that RoBERTa, or any text classifier, can prove whether news is true or false.
+
+The system combines:
+
 - a Next.js web app,
-- a FastAPI ML backend with two RoBERTa+LoRA classifiers,
+- a FastAPI backend with two RoBERTa+LoRA language-signal models,
+- source credibility and article extraction checks,
+- lightweight claim-hint and evidence-support signals,
+- uncertainty and conflict handling,
 - and a Chrome extension client.
 
-The system analyzes user-provided text or article URLs and returns a structured verdict with risk level, model signals, and optional token-level explanation.
+## What the System Does
 
-## Repository Structure
+TruthLens helps users review news content by showing:
 
-- `Frontend/`: Next.js 16 application with app routes, server helpers, auth, settings, admin tools, and API routes.
-- `Backend/`: FastAPI inference service with separated schemas, explanation helpers, prediction service, and model-loading modules.
-- `extension/`: Chrome extension popup client split into popup state, DOM, render, and API modules.
+- source credibility context,
+- whether article text was extracted or pasted manually,
+- headline and article language-model signals,
+- model confidence and disagreement,
+- claim hints that should be manually checked,
+- optional trusted-source coverage checks when `NEWS_API_KEY` is configured,
+- and a final risk label.
 
-## How It Works
+Backend enum values remain compatible with the original API:
 
-1. User submits text and/or URL from web app or extension.
-2. Frontend route `POST /api/predict` proxies request to backend `POST /predict`.
-3. Backend computes:
-   - source credibility score (domain list),
-   - headline-level model score (Model A),
-   - article-level model score (Model B, when enough body text is available).
-4. Backend returns verdict (`LIKELY REAL`, `SUSPICIOUS`, or `UNCERTAIN`) with metadata.
-5. LIME explanation is generated when `explanation_mode=force`, or automatically for uncertain results.
+- `LIKELY REAL` means lower observed risk, not confirmed truth.
+- `SUSPICIOUS` means higher observed risk, not proven falsehood.
+- `UNCERTAIN` means the system does not have enough reliable evidence for a strong judgment.
 
-## Tech Stack
+## What the System Does Not Claim
 
-- Frontend: Next.js 16, React 19, NextAuth, MongoDB.
-- Backend: FastAPI, PyTorch, Transformers, PEFT, LIME.
-- Models: LoRA adapters under `Backend/model/model_a` and `Backend/model/model_b`.
+TruthLens does not replace human fact-checking. RoBERTa cannot verify real-world events, source intent, hidden context, or whether numbers and quotes are accurate. The model outputs are language-pattern signals learned from training data.
 
-## Prerequisites
+The project is therefore framed as a fact-checking support and misinformation risk assessment workflow, not a final truth detector.
 
-- Node.js 20+
-- npm
-- Python 3.10+
-- MongoDB instance
+## Why Text-Only Classifiers Are Limited
+
+Text classifiers can learn dataset shortcuts, writing style, topic bias, and training-set artifacts. They can be useful for risk screening, but they cannot independently prove factual truth.
+
+This is why TruthLens combines:
+
+- knowledge/source signals,
+- article extraction quality,
+- language-pattern models,
+- claim hints,
+- coverage support,
+- and uncertainty handling.
+
+## Hybrid Architecture
+
+1. User submits text and/or URL from the web app or extension.
+2. `Frontend/app/api/predict/route.ts` proxies to backend `POST /predict`.
+3. The backend checks URL eligibility and safely extracts article text when possible.
+4. The backend checks source credibility from `Backend/app/data/source_credibility.json`.
+5. Model A analyzes headline/claim language.
+6. Model B analyzes longer article language.
+7. The evidence layer extracts check-worthy claim hints and optionally searches trusted-source coverage.
+8. The scoring layer returns a risk label with uncertainty, conflict, and evidence metadata.
+
+Core backend files:
+
+- `Backend/app/main.py`
+- `Backend/app/services/predict_service.py`
+- `Backend/app/hybrid_model.py`
+- `Backend/app/scoring.py`
+- `Backend/app/evidence.py`
+
+## Evidence and Source Credibility Layer
+
+The source database is a small transparent seed list, not a live authority. Each entry includes domain, source type, credibility, category, rationale, review date, reference URL, and notes.
+
+The evidence layer returns:
+
+- `claim_hints`
+- `source_signal`
+- `coverage_signal`
+- `evidence_status`
+- `limitations`
+
+Coverage checks are optional. If `NEWS_API_KEY` is missing, the system reports that evidence coverage was not checked instead of pretending evidence exists.
+
+## Model Limitations and Evaluation
+
+Use `training_info.json` and generated evaluation summaries for report claims. Do not rely on promotional wording inside model README files.
+
+Generate an honest model summary:
+
+```powershell
+cd Backend
+.\.venv\Scripts\python.exe scripts\generate_evaluation_summary.py
+```
+
+The correct defense position is:
+
+> I do not claim RoBERTa can determine truth. It only detects language patterns learned from training data. The improved system treats RoBERTa as one weak-to-moderate signal and combines it with source credibility, extraction quality, evidence hints, and uncertainty handling.
 
 ## Local Setup
 
-### 1. Backend
+### Backend
 
-```bash
+```powershell
 cd Backend
 python -m venv .venv
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-# macOS/Linux
-# source .venv/bin/activate
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Optional model path overrides:
+Optional backend env vars:
 
-```bash
-cp .env.example .env
-```
+- `HEADLINE_MODEL_PATH`
+- `ARTICLE_MODEL_PATH`
+- `BACKEND_CORS_ORIGINS`
+- `NEWS_API_KEY`
 
-Run backend:
+### Frontend
 
-```bash
-uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
-```
-
-### 2. Frontend
-
-```bash
+```powershell
 cd Frontend
 npm install
-```
-
-Create local env file:
-
-```bash
-cp .env.example .env
-```
-
-Run frontend:
-
-```bash
+copy .env.example .env
 npm run dev
 ```
 
 Open `http://localhost:3000`.
 
+### Extension
+
+Load the unpacked `extension/` folder in Chrome. The popup defaults to calling `http://localhost:3000/api/predict`.
+
 ## Validation
 
-### Frontend
+Backend:
 
-```bash
+```powershell
+cd Backend
+.\.venv\Scripts\python.exe -m pytest tests
+```
+
+Frontend:
+
+```powershell
 cd Frontend
 npm run lint
 npm run build
 ```
 
-### Backend
+## Research Framing
 
-Run these from the backend virtualenv so `requirements.txt` packages such as `lime` are available:
-
-```bash
-cd Backend
-python -m pytest tests
-python -m uvicorn app.main:app --reload
-```
-
-### Extension
-
-- Load the unpacked `extension/` folder in Chrome.
-- Verify analyze flow, retry flow, and feedback submission after configuring the bearer token.
-
-## Environment Variables
-
-Use the committed templates:
-- `Frontend/.env.example`
-- `Backend/.env.example`
-
-Important frontend vars:
-- `MONGO_URL`: MongoDB connection string.
-- `NEXTAUTH_SECRET`: NextAuth signing secret.
-- `AUTH_SECRET`: App auth/export signing secret.
-- `NEXTAUTH_URL`: Frontend base URL, e.g. `http://localhost:3000`.
-- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`: Optional Google login.
-- `NEWS_API_KEY`: News feed API key.
-- `MAINTENANCE_API_KEY`: Protects internal deletion endpoint.
-- `BACKEND_URL`: Backend origin (default fallback `http://127.0.0.1:8000`).
-
-Backend vars:
-- `HEADLINE_MODEL_PATH`: Optional override for model A adapter directory.
-- `ARTICLE_MODEL_PATH`: Optional override for model B adapter directory.
-
-## API (Backend)
-
-### `POST /predict`
-
-Request:
-
-```json
-{
-  "text": "article or headline text",
-  "url": "https://example.com/news",
-  "input_mode": "auto",
-  "explanation_mode": "auto"
-}
-```
-
-Accepted `input_mode` values:
-- `auto`
-- `headline_only`
-- `full_article`
-- `headline_plus_article`
-
-Accepted `explanation_mode` values:
-- `none`
-- `auto`
-- `force`
-
-Response includes:
-- `final_score`
-- `verdict`
-- `risk_level`
-- `steps`
-- `uncertainty`
-- `parse_metadata`
-- `model_outputs`
-- `conflict`
-- `fetch_metadata`
-- optional `explanation` / `explanation_html`
-
-### Health endpoints
-
-- `GET /` returns service message.
-- `GET /health` returns `{ "status": "ok" }`.
-
-## Chrome Extension
-
-Extension source is in `extension/`.
-
-Quick load:
-1. Open `chrome://extensions`.
-2. Enable Developer mode.
-3. Click Load unpacked.
-4. Select the `extension` folder.
-
-The popup defaults to calling `http://localhost:3000/api/predict` via the frontend layer.
-Its runtime code is bootstrapped from `popup-main.js`, which composes the popup state, DOM, render, and API/storage modules.
-
-## Security Notes
-
-- Never commit real `.env` files or credentials.
-- `AUTH_SECRET` or `NEXTAUTH_SECRET` must be set for secure export URL signing.
-- Keep `MAINTENANCE_API_KEY` private; it protects account deletion processing route.
+The project aligns with automated fact-checking research because it separates claim review, evidence support, source context, and classifier limitations. It is intentionally not framed as a solved binary fake-news detector.

@@ -6,7 +6,7 @@ const termsHighlights = [
   {
     title: "Informational use",
     body:
-      "TruthLens provides credibility signals, detection scores, and supporting context to help users evaluate news content more carefully.",
+      "TruthLens provides credibility signals, risk labels, and supporting context to help users evaluate news content more carefully.",
   },
   {
     title: "Responsible submission",
@@ -22,7 +22,7 @@ const termsHighlights = [
 
 const termsCommitments = [
   "TruthLens is designed to support informed review, not to guarantee that every output is fully accurate or final.",
-  "Users should apply judgment when acting on credibility scores, explanations, or article classifications.",
+  "Users should apply judgment when acting on credibility signals, explanations, or article risk labels.",
   "Platform misuse, unlawful use, or abuse of account and API features may result in access restrictions.",
   "Questions about these terms can be directed through the Contact page.",
 ];
@@ -45,7 +45,7 @@ export default function TermsPage() {
               </h1>
               <p className="max-w-2xl text-sm leading-7 text-(--muted-foreground) sm:text-base">
                 TruthLens offers live news briefings, credibility indicators,
-                and fake-news detection tools to support better reading
+                and misinformation risk assessment tools to support better reading
                 decisions. These terms explain the basic expectations that apply
                 when you use the platform.
               </p>
@@ -101,10 +101,10 @@ export default function TermsPage() {
               Credibility outputs support decisions, but they are not guarantees.
             </h2>
             <p className="mt-4 text-sm leading-7 text-[#5f5548]">
-              TruthLens combines source credibility, model scoring, and
-              explanation layers to provide useful signals. Those results are
-              intended to assist analysis, not to serve as legal, professional,
-              or fully definitive judgment.
+              TruthLens combines source credibility, language-model signals,
+              evidence hints, and explanation layers to provide useful review
+              signals. Those results are intended to assist analysis, not to
+              serve as legal, professional, or fully definitive judgment.
             </p>
             <p className="mt-4 text-sm leading-7 text-[#5f5548]">
               Users remain responsible for how they interpret and act on the

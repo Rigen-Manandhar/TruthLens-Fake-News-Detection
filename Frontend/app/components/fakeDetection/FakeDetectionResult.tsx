@@ -1,5 +1,6 @@
 import type {
   ConflictInfo,
+  EvidenceSummary,
   FetchMetadata,
   ModelOutputs,
   ParseMetadata,
@@ -23,6 +24,7 @@ interface FakeDetectionResultProps {
   modelOutputs?: ModelOutputs;
   conflict?: ConflictInfo;
   fetchMetadata?: FetchMetadata;
+  evidenceSummary?: EvidenceSummary;
   limeModel?: "A" | "B" | null;
   canExplain?: boolean;
   isExplaining?: boolean;
@@ -40,57 +42,37 @@ const reasonLabelMap: Record<string, string> = {
   LOW_CONFIDENCE: "Low confidence",
   INSUFFICIENT_TEXT: "Insufficient text",
   FETCH_FAILED: "Fetch failed",
+  UNSUPPORTED_URL: "Unsupported URL",
 };
 
-const toFriendlyStepMessage = (step: Step): string => {
-  if (step.step === "Source Check") {
-    if (step.details.includes("No URL provided")) {
-      return "Source credibility check was skipped because no URL was provided.";
-    }
-    return "We checked the source domain credibility.";
-  }
-
-  if (step.step === "URL Extraction") {
-    return "We attempted to fetch article content from the provided URL.";
-  }
-
-  if (step.step === "Headline Check") {
-    if (step.details.startsWith("Skipped")) {
-      return "Headline analysis was skipped for this input.";
-    }
-    return "We analyzed the headline signal.";
-  }
-
-  if (step.step === "Article Check") {
-    if (step.details.startsWith("Skipped")) {
-      return "Article analysis was skipped due to limited article text.";
-    }
-    return "We analyzed the full article content.";
-  }
-
-  return "Additional analysis checks were applied.";
-};
 
 export default function FakeDetectionResult({
   level,
   label,
   details,
   riskLevel,
-  steps,
   explanation,
   analyzedText,
   explanationClass,
   uncertainty,
+  modelOutputs,
+  conflict,
+  fetchMetadata,
+  evidenceSummary,
   limeModel,
   canExplain = false,
   isExplaining = false,
   onExplain,
 }: FakeDetectionResultProps) {
-  const hasResult = label !== "Input Text or URL to detect if the news is Fake or Real";
+  const hasResult = label !== "Paste text or a URL to assess misinformation risk";
   const uncertaintyReason = uncertainty?.reason_code
     ? reasonLabelMap[uncertainty.reason_code] ?? uncertainty.reason_code
     : null;
-  const visibleSteps = (steps ?? []).filter((step) => step.step !== "Input Parsing");
+  const sourceSignal = evidenceSummary?.source_signal;
+  const coverageSignal = evidenceSummary?.coverage_signal;
+  const headlineRan = modelOutputs?.model_a?.ran;
+  const articleRan = modelOutputs?.model_b?.ran;
+  const bothRan = headlineRan && articleRan;
 
   const renderHighlightedText = () => {
     if (!analyzedText || !explanation || explanation.length === 0) {
@@ -119,7 +101,7 @@ export default function FakeDetectionResult({
       <div className="mb-6 font-serif text-sm leading-relaxed">
         <div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h4 className="font-semibold text-[#3f382f] text-xs uppercase tracking-wide font-sans">
-            Deep Learning Analysis (LIME{limeModel ? ` - Model ${limeModel}` : ""})
+            Language Signal Analysis (LIME{limeModel ? ` - Model ${limeModel}` : ""})
           </h4>
           {onExplain && (
             <button
@@ -208,18 +190,27 @@ export default function FakeDetectionResult({
               Risk: {riskLevel}
             </span>
           )}
-          <span className="text-xs text-[#8a7d6d]">Hybrid credibility analysis</span>
+          <span className="text-xs text-[#8a7d6d]">Hybrid evidence and risk analysis</span>
         </div>
 
         {hasResult && (
           <p className="mt-4 text-sm text-[#4f473c] leading-relaxed font-medium">
             {level === "high" &&
-              "The hybrid model analysis indicates this content is likely credible and authentic."}
+              "The available signals show lower misinformation risk, but this is not a guarantee that every claim is true."}
             {level === "low" &&
-              "The analysis detected strong indicators commonly associated with misleading or fabricated content."}
+              "The available signals show higher misinformation risk. Review the source and evidence before trusting or sharing."}
             {level === "mixed" &&
-              "The model detected mixed signals and marked this content for review."}
+              "The system does not have enough reliable evidence to make a strong risk judgment."}
           </p>
+        )}
+
+        {hasResult && (
+          <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900">
+            <p className="font-semibold uppercase tracking-wide">What this result means</p>
+            <p className="mt-1">
+              TruthLens supports review. It does not replace human fact-checking or prove truth.
+            </p>
+          </div>
         )}
 
         <div className="mt-6 rounded-2xl border border-dashed border-(--line) bg-[#f7f1e6] px-4 py-4 text-sm text-[#5f5548] wrap-break-word max-h-[60vh] overflow-y-auto overscroll-contain sm:max-h-128 lg:flex-1 lg:min-h-0 lg:max-h-144">
@@ -238,24 +229,65 @@ export default function FakeDetectionResult({
             <div className="mb-4 whitespace-pre-wrap wrap-break-word text-xs text-[#5f5548]">{details}</div>
           )}
 
-          {visibleSteps.length > 0 && (
+          {(sourceSignal || fetchMetadata?.attempted || headlineRan || articleRan) && (
             <div className="space-y-3 mb-6">
               <h4 className="font-semibold text-[#3f382f] text-xs uppercase tracking-wide">
                 What we checked
               </h4>
-              {visibleSteps.map((stepItem, index) => (
-                <div
-                  key={`${stepItem.step}-${index}`}
-                  className="rounded-xl border border-(--line) bg-[#fffdf8] px-3 py-3"
-                >
-                  <div className="text-xs font-semibold text-[#4c4439]">
-                    {stepItem.step}
+              <div className="grid gap-3">
+                {sourceSignal && (
+                  <div className="rounded-xl border border-(--line) bg-[#fffdf8] px-3 py-3">
+                    <div className="text-xs font-semibold text-[#4c4439]">Source credibility</div>
+                    <p className="text-xs text-[#5f5548] mt-2">
+                      {sourceSignal.known
+                        ? `${sourceSignal.domain} — ${sourceSignal.credibility ?? "credibility noted"}. ${sourceSignal.rationale ?? ""}`
+                        : `${sourceSignal.domain ?? "No URL"} is not in our source database, so no source-based signal was applied.`}
+                    </p>
                   </div>
-                  <p className="text-xs text-[#5f5548] mt-2">
-                    {toFriendlyStepMessage(stepItem)}
-                  </p>
-                </div>
-              ))}
+                )}
+
+                {fetchMetadata?.attempted && (
+                  <div className="rounded-xl border border-(--line) bg-[#fffdf8] px-3 py-3">
+                    <div className="text-xs font-semibold text-[#4c4439]">Article retrieval</div>
+                    <p className="text-xs text-[#5f5548] mt-2">
+                      {fetchMetadata.success
+                        ? "The article text was successfully retrieved from the URL."
+                        : "Article retrieval was attempted but unsuccessful."}
+                    </p>
+                  </div>
+                )}
+
+                {(headlineRan || articleRan) && (
+                  <div className="rounded-xl border border-(--line) bg-[#fffdf8] px-3 py-3">
+                    <div className="text-xs font-semibold text-[#4c4439]">Language analysis</div>
+                    <p className="text-xs text-[#5f5548] mt-2">
+                      {bothRan
+                        ? "Both the headline and the article body were analyzed for language patterns."
+                        : headlineRan
+                          ? "The headline was analyzed for language patterns."
+                          : "The article body was analyzed for language patterns."}
+                      {" "}Language signals are indicators, not proof of truth or falsehood.
+                      {conflict?.is_conflict ? " The signals were inconclusive, so this result is treated as review-needed." : ""}
+                    </p>
+                  </div>
+                )}
+
+                {coverageSignal?.checked && (
+                  <div className="rounded-xl border border-(--line) bg-[#fffdf8] px-3 py-3">
+                    <div className="text-xs font-semibold text-[#4c4439]">Claim cross-reference</div>
+                    <p className="text-xs text-[#5f5548] mt-2">
+                      {coverageSignal.message}
+                    </p>
+                    {evidenceSummary?.claim_hints?.length ? (
+                      <ul className="mt-2 list-disc space-y-1 pl-4 text-xs text-[#5f5548]">
+                        {evidenceSummary.claim_hints.map((claim) => (
+                          <li key={claim}>{claim}</li>
+                        ))}
+                      </ul>
+                    ) : null}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -263,7 +295,7 @@ export default function FakeDetectionResult({
             <div className="mb-4 rounded-xl border border-(--line) bg-(--accent-soft) px-3 py-3 text-xs text-[#0b4f43]">
               <p className="font-semibold uppercase tracking-wide">Explanation on demand</p>
               <p className="mt-1 text-[#0a5f50]">
-                LIME was skipped for speed. Click Explain to generate token-level highlights.
+                LIME was skipped for speed. Click Explain to generate token-level language-signal highlights.
               </p>
               <button
                 type="button"
@@ -280,7 +312,7 @@ export default function FakeDetectionResult({
         </div>
 
         <p className="mt-4 text-[11px] text-[#7f7364] shrink-0">
-          Results powered by Hybrid Deep Learning Analysis.
+          Results powered by Hybrid Evidence and Risk Analysis.
         </p>
       </div>
     </section>

@@ -1,52 +1,142 @@
 [
-    {
-        "domain": "cnn.com",
-        "type": "REAL",
-        "credibility": "High"
-    },
-    {
-        "domain": "reuters.com",
-        "type": "REAL",
-        "credibility": "High"
-    },
-    {
-        "domain": "bbc.com",
-        "type": "REAL",
-        "credibility": "High"
-    },
-    {
-        "domain": "nytimes.com",
-        "type": "REAL",
-        "credibility": "High"
-    },
-    {
-        "domain": "theonion.com",
-        "type": "SATIRE",
-        "credibility": "Low"
-    },
-    {
-        "domain": "babylonbee.com",
-        "type": "SATIRE",
-        "credibility": "Low"
-    },
-    {
-        "domain": "infowars.com",
-        "type": "FAKE",
-        "credibility": "Very Low"
-    },
-    {
-        "domain": "naturalnews.com",
-        "type": "FAKE",
-        "credibility": "Very Low"
-    },
-    {
-        "domain": "breitbart.com",
-        "type": "BIASED",
-        "credibility": "Mixed"
-    },
-    {
-        "domain": "xn--bbc-p98d.com",
-        "type": "FAKE",
-        "credibility": "Very Low"
-    }
+  {
+    "domain": "reuters.com",
+    "type": "REAL",
+    "credibility": "High",
+    "category": "International wire service",
+    "rationale": "Editorially established wire service used as a trusted coverage signal, not as proof that every article is correct.",
+    "last_reviewed": "2026-05-06",
+    "reference_url": "https://www.reuters.com/",
+    "notes": "Seed source entry for transparent source-risk scoring."
+  },
+  {
+    "domain": "apnews.com",
+    "type": "REAL",
+    "credibility": "High",
+    "category": "International wire service",
+    "rationale": "Widely used wire-service source included as a trusted coverage signal.",
+    "last_reviewed": "2026-05-06",
+    "reference_url": "https://apnews.com/",
+    "notes": "Coverage from this source lowers risk but does not prove truth by itself."
+  },
+  {
+    "domain": "bbc.com",
+    "type": "REAL",
+    "credibility": "High",
+    "category": "Public broadcaster",
+    "rationale": "Established international newsroom included as a high-credibility source signal.",
+    "last_reviewed": "2026-05-06",
+    "reference_url": "https://www.bbc.com/news",
+    "notes": "Use as source context, not as an absolute truth label."
+  },
+  {
+    "domain": "cnn.com",
+    "type": "REAL",
+    "credibility": "High",
+    "category": "Mainstream news",
+    "rationale": "Mainstream newsroom included as a known-source signal for coverage and provenance.",
+    "last_reviewed": "2026-05-06",
+    "reference_url": "https://www.cnn.com/",
+    "notes": "Known source does not remove the need to inspect claims."
+  },
+  {
+    "domain": "nytimes.com",
+    "type": "REAL",
+    "credibility": "High",
+    "category": "Mainstream news",
+    "rationale": "Established newsroom included as a known-source signal.",
+    "last_reviewed": "2026-05-06",
+    "reference_url": "https://www.nytimes.com/",
+    "notes": "Source credibility is one signal among several."
+  },
+  {
+    "domain": "theguardian.com",
+    "type": "REAL",
+    "credibility": "High",
+    "category": "Mainstream news",
+    "rationale": "Established newsroom included as a known-source signal.",
+    "last_reviewed": "2026-05-06",
+    "reference_url": "https://www.theguardian.com/",
+    "notes": "Included to broaden trusted coverage beyond US sources."
+  },
+  {
+    "domain": "npr.org",
+    "type": "REAL",
+    "credibility": "High",
+    "category": "Public media",
+    "rationale": "Established public-media newsroom included as a trusted coverage signal.",
+    "last_reviewed": "2026-05-06",
+    "reference_url": "https://www.npr.org/",
+    "notes": "Coverage support is not the same as automatic claim verification."
+  },
+  {
+    "domain": "breitbart.com",
+    "type": "BIASED",
+    "credibility": "Mixed",
+    "category": "Partisan news/commentary",
+    "rationale": "Included as a source-risk example where political framing may require additional evidence checking.",
+    "last_reviewed": "2026-05-06",
+    "reference_url": "https://www.breitbart.com/",
+    "notes": "Biased does not mean every article is false; it increases review priority."
+  },
+  {
+    "domain": "dailymail.co.uk",
+    "type": "BIASED",
+    "credibility": "Mixed",
+    "category": "Tabloid news",
+    "rationale": "Included as a mixed-credibility source where sensational framing may require careful review.",
+    "last_reviewed": "2026-05-06",
+    "reference_url": "https://www.dailymail.co.uk/",
+    "notes": "Used as a cautious source signal, not a binary truth label."
+  },
+  {
+    "domain": "theonion.com",
+    "type": "SATIRE",
+    "credibility": "Low",
+    "category": "Satire",
+    "rationale": "Known satire source; content is intentionally humorous and should not be treated as factual news.",
+    "last_reviewed": "2026-05-06",
+    "reference_url": "https://www.theonion.com/",
+    "notes": "Satire should be explained separately from fabricated misinformation."
+  },
+  {
+    "domain": "babylonbee.com",
+    "type": "SATIRE",
+    "credibility": "Low",
+    "category": "Satire",
+    "rationale": "Known satire source; source context is important before applying a fake/real model label.",
+    "last_reviewed": "2026-05-06",
+    "reference_url": "https://babylonbee.com/",
+    "notes": "Useful example for explaining why text-only classification is limited."
+  },
+  {
+    "domain": "infowars.com",
+    "type": "FAKE",
+    "credibility": "Very Low",
+    "category": "Low-credibility misinformation source",
+    "rationale": "Included as a known low-credibility source-risk example for misinformation review.",
+    "last_reviewed": "2026-05-06",
+    "reference_url": "https://www.infowars.com/",
+    "notes": "Low source credibility raises risk but does not replace claim-level evidence review."
+  },
+  {
+    "domain": "naturalnews.com",
+    "type": "FAKE",
+    "credibility": "Very Low",
+    "category": "Low-credibility health misinformation source",
+    "rationale": "Included as a known low-credibility source-risk example, especially for health-related claims.",
+    "last_reviewed": "2026-05-06",
+    "reference_url": "https://www.naturalnews.com/",
+    "notes": "Health claims should be checked against authoritative evidence."
+  },
+  {
+    "domain": "xn--bbc-p98d.com",
+    "type": "FAKE",
+    "credibility": "Very Low",
+    "category": "Spoofed domain example",
+    "rationale": "Punycode lookalike domain included to show spoofing and source identity risks.",
+    "last_reviewed": "2026-05-06",
+    "reference_url": "https://en.wikipedia.org/wiki/IDN_homograph_attack",
+    "notes": "Demonstrates why URL/source checks matter before trusting article text."
+  }
 ]

@@ -15,6 +15,7 @@ import {
   type ParseMetadata,
   type DetectionPredictionInput,
   type DetectionPredictionSnapshot,
+  type EvidenceSummary,
   type PredictResponse,
   type Step,
   type UncertaintyInfo,
@@ -32,6 +33,13 @@ const mapVerdictToLevel = (verdict: string): CredibilityLevel => {
   return "mixed";
 };
 
+const mapVerdictToDisplayLabel = (verdict: string): string => {
+  const v = verdict.toUpperCase();
+  if (v === "SUSPICIOUS") return "Higher Risk";
+  if (v === "LIKELY REAL") return "Lower Risk";
+  return "Needs Review";
+};
+
 const buildPredictionSnapshot = (
   data: PredictResponse
 ): DetectionPredictionSnapshot => ({
@@ -43,6 +51,7 @@ const buildPredictionSnapshot = (
   modelOutputs: data.model_outputs,
   conflict: data.conflict,
   fetchMetadata: data.fetch_metadata,
+  evidenceSummary: data.evidence_summary,
   limeModel: data.lime_model ?? null,
 });
 
@@ -57,7 +66,7 @@ export default function FakeDetectionPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [resultLevel, setResultLevel] = useState<CredibilityLevel>("mixed");
-  const [resultLabel, setResultLabel] = useState("Input Text or URL to detect if the news is Fake or Real");
+  const [resultLabel, setResultLabel] = useState("Paste text or a URL to assess misinformation risk");
   const [riskLevel, setRiskLevel] = useState<string>("Needs Review");
   const [resultDetails, setResultDetails] = useState(
     "Paste some text and a source URL, then run an analysis to see a preview of credibility insights."
@@ -71,6 +80,7 @@ export default function FakeDetectionPage() {
   const [modelOutputs, setModelOutputs] = useState<ModelOutputs | undefined>(undefined);
   const [conflict, setConflict] = useState<ConflictInfo | undefined>(undefined);
   const [fetchMetadata, setFetchMetadata] = useState<FetchMetadata | undefined>(undefined);
+  const [evidenceSummary, setEvidenceSummary] = useState<EvidenceSummary | undefined>(undefined);
   const [limeModel, setLimeModel] = useState<"A" | "B" | null | undefined>(undefined);
   const [lastPayload, setLastPayload] = useState<PredictPayload | null>(null);
   const [predictionSnapshot, setPredictionSnapshot] =
@@ -118,7 +128,7 @@ export default function FakeDetectionPage() {
     const level = mapVerdictToLevel(data.verdict);
 
     setResultLevel(level);
-    setResultLabel(`${data.verdict}`);
+    setResultLabel(mapVerdictToDisplayLabel(data.verdict));
     setRiskLevel(data.risk_level ?? "Needs Review");
     setResultDetails(data.uncertainty?.reason_message ?? "");
     setSteps(data.steps);
@@ -130,6 +140,7 @@ export default function FakeDetectionPage() {
     setModelOutputs(data.model_outputs);
     setConflict(data.conflict);
     setFetchMetadata(data.fetch_metadata);
+    setEvidenceSummary(data.evidence_summary);
     setLimeModel(data.lime_model);
     setLastPayload(payload);
     setPredictionSnapshot(buildPredictionSnapshot(data));
@@ -181,6 +192,7 @@ export default function FakeDetectionPage() {
     setModelOutputs(undefined);
     setConflict(undefined);
     setFetchMetadata(undefined);
+    setEvidenceSummary(undefined);
     setLimeModel(undefined);
     setLastPayload(null);
     setPredictionSnapshot(null);
@@ -287,19 +299,19 @@ export default function FakeDetectionPage() {
         <header className="space-y-4 max-w-2xl">
           <div className="space-y-4">
             <h1 className="page-title display-title text-4xl sm:text-[2.9rem] font-bold text-[#17130f] tracking-tight">
-              Fake News Detection
+              Misinformation Risk Assessment
             </h1>
             <p className="text-sm sm:text-base text-(--muted-foreground) max-w-xl">
-              Combine source credibility, headline signals, and deep-learning analysis to assess risk in minutes.
+              Combine source credibility, article extraction, language signals, and evidence hints to assess misinformation risk.
             </p>
             <div className="flex items-center gap-3 text-xs text-(--muted-foreground)">
               <span className="h-2 w-2 rounded-full bg-[#12100d]/45" />
-              Hybrid model + source credibility checks
+              Hybrid evidence and risk analysis
             </div>
           </div>
         </header>
 
-        <section className="grid items-start gap-6 xl:grid-cols-2 xl:items-stretch">
+        <section className="grid items-start gap-6 xl:grid-cols-2">
           <FakeDetectionForm
             articleText={articleText}
             sourceUrl={sourceUrl}
@@ -327,6 +339,7 @@ export default function FakeDetectionPage() {
               modelOutputs={modelOutputs}
               conflict={conflict}
               fetchMetadata={fetchMetadata}
+              evidenceSummary={evidenceSummary}
               limeModel={limeModel}
               canExplain={Boolean(lastPayload)}
               isExplaining={isExplaining}

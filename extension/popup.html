@@ -16,9 +16,9 @@
 
       <section class="content-scroll" id="content-scroll">
         <section class="hero" aria-labelledby="analyze-heading">
-          <p class="hero-kicker">Hybrid Credibility Analyzer</p>
-          <h2 id="analyze-heading">Analyze Content</h2>
-          <p id="hero-subtitle" class="hero-subtitle">Paste text to analyze the page you are currently viewing</p>
+          <p class="hero-kicker">Misinformation Risk Analyzer</p>
+          <h2 id="analyze-heading">Assess Content</h2>
+          <p id="hero-subtitle" class="hero-subtitle">Paste text to assess the page you are currently viewing</p>
 
           <div id="hero-result-summary" class="hero-result-summary" hidden aria-live="polite">
             <div class="summary-row">
@@ -37,7 +37,7 @@
               <label for="input-mode" class="field-label">Analysis Mode</label>
               <div class="select-wrap">
                 <select id="input-mode" name="input_mode" aria-label="Analysis mode">
-                  <option value="auto" selected>Auto-Detect</option>
+                  <option value="auto" selected>Auto-Assess</option>
                   <option value="headline_only">Headline only</option>
                   <option value="full_article">Full article</option>
                   <option value="headline_plus_article">Headline + article</option>
@@ -51,7 +51,7 @@
               <textarea
                 id="article-text"
                 name="text"
-                placeholder="Paste the content you want to verify here..."
+                placeholder="Paste the content you want to review here..."
                 rows="8"
               ></textarea>
             </div>
@@ -104,8 +104,8 @@
         <section id="loading-pane" class="pane" hidden aria-label="Loading state">
           <article class="card state-card">
             <div class="spinner" aria-hidden="true"></div>
-            <h3>Analyzing content</h3>
-            <p>Scanning source credibility and language signals. This usually takes a few seconds.</p>
+            <h3>Assessing content</h3>
+            <p>Checking source, language, and evidence signals. This usually takes a few seconds.</p>
           </article>
         </section>
 
@@ -116,7 +116,7 @@
               <span id="result-risk" class="risk-chip">Risk: Needs Review</span>
             </div>
             <h3 id="result-title">Analysis complete</h3>
-            <p id="result-message" class="result-message">Hybrid model completed analysis for the submitted content.</p>
+            <p id="result-message" class="result-message">Hybrid risk analysis completed for the submitted content.</p>
 
             <details id="checks-details" class="result-details">
               <summary>What we checked</summary>
@@ -189,7 +189,7 @@
               <path d="m14.2 6.6 3.2 3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
             </svg>
           </span>
-          <span id="analyze-btn-text">Analyze Content</span>
+          <span id="analyze-btn-text">Assess Risk</span>
         </button>
         <p class="rail-helper">
           <span class="footer-icon" aria-hidden="true">
@@ -198,7 +198,7 @@
               <path d="M12 5.5v1.8M12 16.7v1.8M5.5 12h1.8M16.7 12h1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
             </svg>
           </span>
-          Results powered by Hybrid Deep Learning
+          Results powered by hybrid risk analysis
         </p>
       </footer>
     </main>

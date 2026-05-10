@@ -14,6 +14,7 @@ import {
   type ConflictInfo,
   type DetectionFeedbackSubmission,
   type DetectionPredictionSnapshot,
+  type EvidenceSummary,
   type FetchMetadata,
   type ModelOutputs,
   type ParseMetadata,
@@ -84,6 +85,7 @@ const normalizePrediction = (
     modelOutputs: normalizeOptionalObject<ModelOutputs>(prediction.modelOutputs),
     conflict: normalizeOptionalObject<ConflictInfo>(prediction.conflict),
     fetchMetadata: normalizeOptionalObject<FetchMetadata>(prediction.fetchMetadata),
+    evidenceSummary: normalizeOptionalObject<EvidenceSummary>(prediction.evidenceSummary),
     limeModel,
   };
 };

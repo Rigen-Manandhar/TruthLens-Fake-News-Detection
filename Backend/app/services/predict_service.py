@@ -3,7 +3,8 @@ from __future__ import annotations
 from fastapi import HTTPException
 
 from app.article_extractor import ExtractionError, fetch_and_extract
-from app.config import INPUT_TEXT_MIN_LEN, LIME_RAW_FEATURES
+from app.config import INPUT_TEXT_MIN_LEN, LIME_NUM_SAMPLES, LIME_RAW_FEATURES
+from app.evidence import build_evidence_summary
 from app.explanations import filter_lime_features
 from app.schemas import (
     ConflictInfo,
@@ -33,6 +34,7 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
     text = (req.text or "").strip()
     original_url = (req.url or "").strip() or None
     analysis_url = original_url
+    source_db = getattr(model, "source_db", [])
     title_candidates: list[str] = []
     fetch_metadata = FetchMetadata(attempted=False, success=None)
     eligibility_step: StepDetail | None = None
@@ -99,6 +101,7 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
                     model_outputs=_empty_model_outputs(0, 0),
                     conflict=ConflictInfo(is_conflict=False, threshold=0.80, raw_score_before_override=0),
                     fetch_metadata=fetch_metadata,
+                    evidence_summary=build_evidence_summary(text, original_url, source_db),
                     lime_model=None,
                     lime_input_text=None,
                 )
@@ -158,6 +161,7 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
                     error_type=exc.error_type,
                     resolved_url=exc.resolved_url,
                 ),
+                evidence_summary=build_evidence_summary(text, analysis_url, source_db),
                 lime_model=None,
                 lime_input_text=None,
             )
@@ -199,6 +203,7 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
             model_outputs=_empty_model_outputs(0, 0),
             conflict=ConflictInfo(is_conflict=False, threshold=0.80, raw_score_before_override=final_score),
             fetch_metadata=fetch_metadata,
+            evidence_summary=build_evidence_summary(text, analysis_url, source_db),
             lime_model=None,
             lime_input_text=None,
         )
@@ -234,7 +239,7 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
                 lime_input_text,
                 predictor,
                 num_features=LIME_RAW_FEATURES,
-                num_samples=100,
+                num_samples=LIME_NUM_SAMPLES,
             )
             explanation_list = filter_lime_features(exp.as_list())
             explanation_html = exp.as_html()
@@ -257,6 +262,7 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
         model_outputs=report_dict.get("model_outputs"),
         conflict=report_dict.get("conflict"),
         fetch_metadata=fetch_metadata,
+        evidence_summary=build_evidence_summary(text, analysis_url, source_db),
         lime_model=report_dict.get("lime_model"),
         lime_input_text=report_dict.get("lime_input_text"),
     )

@@ -16,8 +16,8 @@ const displayFont = Instrument_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "TruthLens - AI News Credibility",
-  description: "Verify headlines faster with AI-assisted fake news detection and live signal scoring.",
+  title: "TruthLens - Misinformation Risk Assessment",
+  description: "Assess headlines with source, language, and evidence-support signals without claiming automated truth.",
 };
 
 export default function RootLayout({

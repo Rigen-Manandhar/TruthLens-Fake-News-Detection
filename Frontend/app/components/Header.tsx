@@ -131,7 +131,7 @@ export default function Header() {
             News
           </Link>
           <Link href="/fake-detection" className={navLinkClass(Boolean(isFake))}>
-            Fake News Detection
+            Risk Assessment
           </Link>
           {isAdmin && (
             <Link href="/admin" className={navLinkClass(Boolean(isAdminPage))}>
@@ -179,7 +179,7 @@ export default function Header() {
                     href="/fake-detection"
                     className={`${navLinkClass(Boolean(isFake))} text-center`}
                   >
-                    Fake News Detection
+                    Risk Assessment
                   </Link>
                   {isAdmin && (
                     <Link

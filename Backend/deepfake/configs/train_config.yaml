@@ -1,0 +1,64 @@
+project:
+  name: deepfake-xception-ffpp
+  seed: 42
+  device: auto
+
+paths:
+  train_csv: data/metadata/train_faces.csv
+  val_csv: data/metadata/val_faces.csv
+  test_csv: data/metadata/test_faces.csv
+  checkpoints_dir: checkpoints
+  logs_dir: logs
+  outputs_dir: outputs
+
+data:
+  image_column: face_path
+  image_size: 299
+  batch_size: 8
+  num_workers: 4
+  pin_memory: true
+  weighted_sampler: true
+  limit_train_samples:
+  limit_val_samples:
+  limit_test_samples:
+
+model:
+  pretrained: true
+  freeze_backbone_epochs: 1
+
+training:
+  epochs: 15
+  grad_accum_steps: 2
+  learning_rate: 0.0001
+  weight_decay: 0.0001
+  scheduler:
+    name: reduce_on_plateau
+    factor: 0.5
+    patience: 2
+    min_lr: 0.000001
+  early_stopping_patience: 5
+  log_interval: 20
+
+augmentation:
+  enabled: true
+  horizontal_flip_prob: 0.5
+  color_jitter:
+    brightness: 0.1
+    contrast: 0.1
+    saturation: 0.1
+    hue: 0.02
+  gaussian_blur_prob: 0.15
+  gaussian_noise_prob: 0.10
+  jpeg_prob: 0.20
+  jpeg_quality_min: 75
+  jpeg_quality_max: 100
+
+evaluation:
+  threshold_metric: f1
+  save_plots: true
+
+inference:
+  frames_per_video: 24
+  min_face_frames: 4
+  min_face_confidence: 0.9
+  face_bbox_scale: 1.3

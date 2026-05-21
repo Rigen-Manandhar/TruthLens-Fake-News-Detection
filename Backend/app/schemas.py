@@ -91,6 +91,18 @@ class EvidenceSummary(BaseModel):
     limitations: str
 
 
+class ExplanationWord(BaseModel):
+    word: str
+    weight: float
+    direction: Literal["fake", "real"]
+
+
+class ExplanationSummary(BaseModel):
+    top_fake_words: list[ExplanationWord] = Field(default_factory=list)
+    top_real_words: list[ExplanationWord] = Field(default_factory=list)
+    model_used: Literal["A", "B"] | None = None
+
+
 class PredictResponse(BaseModel):
     final_score: int
     verdict: str
@@ -105,5 +117,6 @@ class PredictResponse(BaseModel):
     conflict: ConflictInfo | None = None
     fetch_metadata: FetchMetadata | None = None
     evidence_summary: EvidenceSummary | None = None
+    explanation_summary: ExplanationSummary | None = None
     lime_model: Literal["A", "B"] | None = None
     lime_input_text: str | None = None

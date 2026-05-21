@@ -102,6 +102,18 @@ export type EvidenceSummary = {
   limitations: string;
 };
 
+export type ExplanationWord = {
+  word: string;
+  weight: number;
+  direction: "fake" | "real";
+};
+
+export type ExplanationSummary = {
+  top_fake_words: ExplanationWord[];
+  top_real_words: ExplanationWord[];
+  model_used: "A" | "B" | null;
+};
+
 export type DetectionPredictionSnapshot = {
   verdict: string;
   riskLevel: string;
@@ -112,6 +124,7 @@ export type DetectionPredictionSnapshot = {
   conflict?: ConflictInfo;
   fetchMetadata?: FetchMetadata;
   evidenceSummary?: EvidenceSummary;
+  explanationSummary?: ExplanationSummary;
   limeModel?: "A" | "B" | null;
 };
 
@@ -129,6 +142,7 @@ export type PredictResponse = {
   conflict?: ConflictInfo;
   fetch_metadata?: FetchMetadata;
   evidence_summary?: EvidenceSummary;
+  explanation_summary?: ExplanationSummary;
   lime_model?: "A" | "B" | null;
   lime_input_text?: string | null;
 };

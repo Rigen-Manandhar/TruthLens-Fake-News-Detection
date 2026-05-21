@@ -9,7 +9,6 @@ from urllib.parse import urlparse
 import httpx
 import trafilatura
 
-
 USER_AGENT = "TruthLensBot/1.0 (+https://truthlens.local)"
 
 
@@ -46,7 +45,9 @@ class _TitleCandidateParser(HTMLParser):
         self._buffer: list[str] = []
 
     def handle_starttag(self, tag: str, attrs):
-        attrs_map = {str(k).lower(): (str(v) if v is not None else "") for k, v in attrs}
+        attrs_map = {
+            str(k).lower(): (str(v) if v is not None else "") for k, v in attrs
+        }
         tag = tag.lower()
 
         if tag == "meta":
@@ -93,7 +94,9 @@ class _TitleCandidateParser(HTMLParser):
 def _normalize_url(url: str) -> str:
     candidate = (url or "").strip()
     if not candidate:
-        raise ExtractionError(error_type="INVALID_URL", message="URL is required for extraction.")
+        raise ExtractionError(
+            error_type="INVALID_URL", message="URL is required for extraction."
+        )
 
     parsed = urlparse(candidate)
     if not parsed.scheme:
@@ -136,7 +139,9 @@ def _enforce_public_host(url: str):
         )
 
     try:
-        records = socket.getaddrinfo(host, parsed.port or (443 if parsed.scheme == "https" else 80))
+        records = socket.getaddrinfo(
+            host, parsed.port or (443 if parsed.scheme == "https" else 80)
+        )
     except socket.gaierror as exc:
         raise ExtractionError(
             error_type="DNS_ERROR",

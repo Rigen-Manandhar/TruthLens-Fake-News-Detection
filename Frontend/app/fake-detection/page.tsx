@@ -10,6 +10,7 @@ import {
   MAX_FEEDBACK_COMMENT_LENGTH,
   type ConflictInfo,
   type DetectionInputMode,
+  type ExplanationSummary,
   type FetchMetadata,
   type ModelOutputs,
   type ParseMetadata,
@@ -52,6 +53,7 @@ const buildPredictionSnapshot = (
   conflict: data.conflict,
   fetchMetadata: data.fetch_metadata,
   evidenceSummary: data.evidence_summary,
+  explanationSummary: data.explanation_summary,
   limeModel: data.lime_model ?? null,
 });
 
@@ -82,6 +84,8 @@ export default function FakeDetectionPage() {
   const [fetchMetadata, setFetchMetadata] = useState<FetchMetadata | undefined>(undefined);
   const [evidenceSummary, setEvidenceSummary] = useState<EvidenceSummary | undefined>(undefined);
   const [limeModel, setLimeModel] = useState<"A" | "B" | null | undefined>(undefined);
+  const [explanationSummary, setExplanationSummary] = useState<ExplanationSummary | undefined>(undefined);
+  const [isTooShort, setIsTooShort] = useState(false);
   const [lastPayload, setLastPayload] = useState<PredictPayload | null>(null);
   const [predictionSnapshot, setPredictionSnapshot] =
     useState<DetectionPredictionSnapshot | null>(null);
@@ -126,10 +130,12 @@ export default function FakeDetectionPage() {
 
   const applyPrediction = (data: PredictResponse, payload: PredictPayload) => {
     const level = mapVerdictToLevel(data.verdict);
+    const tooShort = data.uncertainty?.reason_code === "INSUFFICIENT_TEXT";
 
     setResultLevel(level);
-    setResultLabel(mapVerdictToDisplayLabel(data.verdict));
-    setRiskLevel(data.risk_level ?? "Needs Review");
+    setResultLabel(tooShort ? "Too short" : mapVerdictToDisplayLabel(data.verdict));
+    setRiskLevel(tooShort ? "Too short" : (data.risk_level ?? "Needs Review"));
+    setIsTooShort(tooShort);
     setResultDetails(data.uncertainty?.reason_message ?? "");
     setSteps(data.steps);
     setExplanation(data.explanation);
@@ -141,6 +147,7 @@ export default function FakeDetectionPage() {
     setConflict(data.conflict);
     setFetchMetadata(data.fetch_metadata);
     setEvidenceSummary(data.evidence_summary);
+    setExplanationSummary(data.explanation_summary);
     setLimeModel(data.lime_model);
     setLastPayload(payload);
     setPredictionSnapshot(buildPredictionSnapshot(data));
@@ -340,13 +347,14 @@ export default function FakeDetectionPage() {
               conflict={conflict}
               fetchMetadata={fetchMetadata}
               evidenceSummary={evidenceSummary}
+              explanationSummary={explanationSummary}
               limeModel={limeModel}
-              canExplain={Boolean(lastPayload)}
+              canExplain={Boolean(lastPayload) && !isTooShort && !error}
               isExplaining={isExplaining}
               onExplain={handleExplain}
             />
 
-            {lastPayload && predictionSnapshot && !isLoading && (
+            {lastPayload && predictionSnapshot && !isLoading && !isTooShort && !error && (
               <DetectionFeedbackCard
                 selectedValue={feedbackSelection}
                 comment={feedbackComment}

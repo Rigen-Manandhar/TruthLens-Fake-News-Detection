@@ -12,6 +12,7 @@ export default function Header() {
   const pathname = usePathname();
   const isNews = pathname === "/" || pathname === "";
   const isFake = pathname?.startsWith("/fake-detection");
+  const isDeepfake = pathname?.startsWith("/deepfake-detection");
   const isAdminPage = pathname?.startsWith("/admin");
   const { data: session, status } = useSession();
   const user = session?.user ?? null;
@@ -133,6 +134,9 @@ export default function Header() {
           <Link href="/fake-detection" className={navLinkClass(Boolean(isFake))}>
             Risk Assessment
           </Link>
+          <Link href="/deepfake-detection" className={navLinkClass(Boolean(isDeepfake))}>
+            Deepfake
+          </Link>
           {isAdmin && (
             <Link href="/admin" className={navLinkClass(Boolean(isAdminPage))}>
               Admin
@@ -180,6 +184,12 @@ export default function Header() {
                     className={`${navLinkClass(Boolean(isFake))} text-center`}
                   >
                     Risk Assessment
+                  </Link>
+                  <Link
+                    href="/deepfake-detection"
+                    className={`${navLinkClass(Boolean(isDeepfake))} text-center`}
+                  >
+                    Deepfake
                   </Link>
                   {isAdmin && (
                     <Link

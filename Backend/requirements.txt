@@ -1,7 +1,9 @@
 fastapi
 uvicorn
+python-multipart
 pydantic
 torch
+torchvision
 transformers
 peft
 python-dotenv
@@ -10,3 +12,7 @@ numpy
 scikit-learn
 httpx
 trafilatura
+timm>=1.0.0
+opencv-python>=4.8.0
+Pillow>=10.0.0
+facenet-pytorch>=2.6.0

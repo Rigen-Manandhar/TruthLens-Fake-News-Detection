@@ -3,9 +3,10 @@ from __future__ import annotations
 from fastapi import HTTPException
 
 from app.article_extractor import ExtractionError, fetch_and_extract
-from app.config import INPUT_TEXT_MIN_LEN, LIME_NUM_SAMPLES, LIME_RAW_FEATURES
+from app.config import INPUT_TEXT_MIN_LEN, INPUT_TEXT_MIN_WORDS, LIME_NUM_SAMPLES_FORCE, LIME_RAW_FEATURES
 from app.evidence import build_evidence_summary
-from app.explanations import filter_lime_features
+from app.explanations import build_explanation_summary, filter_lime_features
+from app.parsing import word_count
 from app.schemas import (
     ConflictInfo,
     FetchMetadata,
@@ -58,7 +59,7 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
                 resolved_url=eligibility.normalized_url or original_url,
             )
 
-            if len(text) >= INPUT_TEXT_MIN_LEN:
+            if word_count(text) >= INPUT_TEXT_MIN_WORDS:
                 eligibility_step = StepDetail(
                     step="URL Eligibility",
                     score_impact=0,
@@ -83,7 +84,7 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
                         StepDetail(
                             step="Input Parsing",
                             score_impact=0,
-                            details="No article text was provided, so URL-only analysis could not continue.",
+                            details="Text too short for a proper review. Paste article text to run text-only analysis.",
                         ),
                     ],
                     article_class="UNKNOWN",
@@ -106,7 +107,7 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
                     lime_input_text=None,
                 )
 
-    if len(text) < INPUT_TEXT_MIN_LEN and analysis_url:
+    if word_count(text) < INPUT_TEXT_MIN_WORDS and analysis_url:
         fetch_metadata.attempted = True
         try:
             extracted = fetch_and_extract(analysis_url)
@@ -116,6 +117,51 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
             fetch_metadata.status_code = extracted.status_code
             fetch_metadata.resolved_url = extracted.resolved_url
             fetch_metadata.error_type = None
+            if word_count(text) < INPUT_TEXT_MIN_WORDS:
+                source_res = model.check_source(analysis_url)
+                final_score = int(source_res.get("score", 0))
+                steps = [
+                    StepDetail(
+                        step="Source Check",
+                        score_impact=final_score,
+                        details=str(source_res.get("reason", "Source check unavailable")),
+                    ),
+                    StepDetail(
+                        step="Input Parsing",
+                        score_impact=0,
+                        details="Text too short for a proper review. The article was retrieved but does not contain enough analyzable text.",
+                    ),
+                ]
+                if eligibility_step:
+                    steps.insert(0, eligibility_step)
+                return PredictResponse(
+                    final_score=final_score,
+                    verdict="UNCERTAIN",
+                    risk_level="Needs Review",
+                    steps=steps,
+                    article_class="UNKNOWN",
+                    uncertainty=UncertaintyInfo(
+                        reason_code="INSUFFICIENT_TEXT",
+                        reason_message=(
+                            "Text too short for a proper review. "
+                            "The article was retrieved but does not contain enough text. "
+                            "Please paste the full article text manually."
+                        ),
+                    ),
+                    parse_metadata=ParseMetadata(
+                        used_mode=req.input_mode,
+                        detected_shape="insufficient",
+                        headline_word_count=0,
+                        body_word_count=0,
+                        headline_source=None,
+                    ),
+                    model_outputs=_empty_model_outputs(0, 0),
+                    conflict=ConflictInfo(is_conflict=False, threshold=0.80, raw_score_before_override=final_score),
+                    fetch_metadata=fetch_metadata,
+                    evidence_summary=build_evidence_summary(text, analysis_url, source_db),
+                    lime_model=None,
+                    lime_input_text=None,
+                )
         except ExtractionError as exc:
             source_res = model.check_source(analysis_url)
             final_score = int(source_res.get("score", 0))
@@ -166,7 +212,7 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
                 lime_input_text=None,
             )
 
-    if len(text) < INPUT_TEXT_MIN_LEN:
+    if word_count(text) < INPUT_TEXT_MIN_WORDS:
         source_res = model.check_source(analysis_url)
         final_score = int(source_res.get("score", 0))
         steps = [
@@ -178,7 +224,7 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
             StepDetail(
                 step="Input Parsing",
                 score_impact=0,
-                details="Not enough text to perform model analysis.",
+                details="Text too short for a proper review. Please provide more text or a valid article URL.",
             ),
         ]
         if eligibility_step:
@@ -191,7 +237,10 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
             article_class="UNKNOWN",
             uncertainty=UncertaintyInfo(
                 reason_code="INSUFFICIENT_TEXT",
-                reason_message="Please provide more text or a valid article URL.",
+                reason_message=(
+                    "Text too short for a proper review. "
+                    "Please provide more text or a valid article URL."
+                ),
             ),
             parse_metadata=ParseMetadata(
                 used_mode=req.input_mode,
@@ -221,12 +270,9 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
 
     explanation_list: list[tuple[str, float]] | None = None
     explanation_html: str | None = None
+    explanation_summary = None
 
-    should_explain = False
-    if req.explanation_mode == "force":
-        should_explain = True
-    elif req.explanation_mode == "auto" and report_dict.get("verdict") == "UNCERTAIN":
-        should_explain = True
+    should_explain = req.explanation_mode == "force"
 
     lime_model = report_dict.get("lime_model")
     lime_input_text = (report_dict.get("lime_input_text") or "").strip()
@@ -239,10 +285,11 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
                 lime_input_text,
                 predictor,
                 num_features=LIME_RAW_FEATURES,
-                num_samples=LIME_NUM_SAMPLES,
+                num_samples=LIME_NUM_SAMPLES_FORCE,
             )
             explanation_list = filter_lime_features(exp.as_list())
             explanation_html = exp.as_html()
+            explanation_summary = build_explanation_summary(explanation_list, lime_model)
         except Exception as exc:
             print(f"LIME Error: {exc}")
 
@@ -263,6 +310,7 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
         conflict=report_dict.get("conflict"),
         fetch_metadata=fetch_metadata,
         evidence_summary=build_evidence_summary(text, analysis_url, source_db),
+        explanation_summary=explanation_summary,
         lime_model=report_dict.get("lime_model"),
         lime_input_text=report_dict.get("lime_input_text"),
     )

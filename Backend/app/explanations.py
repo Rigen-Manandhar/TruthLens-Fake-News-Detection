@@ -36,3 +36,26 @@ def _is_stopword_feature(term: str) -> bool:
 def filter_lime_features(features: list[tuple[str, float]]) -> list[tuple[str, float]]:
     filtered = [item for item in features if not _is_stopword_feature(item[0])]
     return filtered[:LIME_MAX_FEATURES]
+
+
+def build_explanation_summary(
+    features: list[tuple[str, float]],
+    lime_model: str | None,
+) -> dict:
+    fake_words = sorted(
+        [(w, s) for w, s in features if s > 0],
+        key=lambda x: -abs(x[1]),
+    )[:7]
+    real_words = sorted(
+        [(w, s) for w, s in features if s < 0],
+        key=lambda x: -abs(x[1]),
+    )[:7]
+    return {
+        "top_fake_words": [
+            {"word": w, "weight": round(s, 4), "direction": "fake"} for w, s in fake_words
+        ],
+        "top_real_words": [
+            {"word": w, "weight": round(s, 4), "direction": "real"} for w, s in real_words
+        ],
+        "model_used": lime_model,
+    }

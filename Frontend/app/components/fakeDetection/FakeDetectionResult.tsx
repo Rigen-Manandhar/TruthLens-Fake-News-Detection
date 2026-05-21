@@ -1,6 +1,7 @@
 import type {
   ConflictInfo,
   EvidenceSummary,
+  ExplanationSummary,
   FetchMetadata,
   ModelOutputs,
   ParseMetadata,
@@ -25,6 +26,7 @@ interface FakeDetectionResultProps {
   conflict?: ConflictInfo;
   fetchMetadata?: FetchMetadata;
   evidenceSummary?: EvidenceSummary;
+  explanationSummary?: ExplanationSummary;
   limeModel?: "A" | "B" | null;
   canExplain?: boolean;
   isExplaining?: boolean;
@@ -59,6 +61,7 @@ export default function FakeDetectionResult({
   conflict,
   fetchMetadata,
   evidenceSummary,
+  explanationSummary,
   limeModel,
   canExplain = false,
   isExplaining = false,
@@ -73,6 +76,75 @@ export default function FakeDetectionResult({
   const headlineRan = modelOutputs?.model_a?.ran;
   const articleRan = modelOutputs?.model_b?.ran;
   const bothRan = headlineRan && articleRan;
+
+  const renderExplanationSummary = () => {
+    if (!explanationSummary || (!explanationSummary.top_fake_words.length && !explanationSummary.top_real_words.length)) {
+      return null;
+    }
+
+    const modelName = explanationSummary.model_used === "A" ? "Headline" : explanationSummary.model_used === "B" ? "Article" : null;
+
+    return (
+      <div className="mb-4 space-y-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h4 className="font-semibold text-[#3f382f] text-xs uppercase tracking-wide font-sans">
+            Language Signal Analysis{modelName ? ` — Model ${explanationSummary.model_used} (${modelName})` : ""}
+          </h4>
+          {onExplain && (
+            <button
+              type="button"
+              onClick={onExplain}
+              disabled={isExplaining}
+              className="inline-flex h-7 items-center rounded-full border border-(--line) bg-[#fffdf8] px-3 text-[11px] font-semibold text-[#5f5548] hover:bg-[#f4eee2] disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {isExplaining ? "Explaining..." : "Re-explain"}
+            </button>
+          )}
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          {explanationSummary.top_fake_words.length > 0 && (
+            <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-red-800">
+                Fake indicators
+              </p>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {explanationSummary.top_fake_words.map((w) => (
+                  <span
+                    key={w.word}
+                    className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-900"
+                    style={{ opacity: Math.min(1, Math.abs(w.weight) * 2 + 0.3) }}
+                    title={`Weight: ${w.weight.toFixed(4)} (pushes toward FAKE)`}
+                  >
+                    {w.word}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          {explanationSummary.top_real_words.length > 0 && (
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-emerald-800">
+                Real indicators
+              </p>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {explanationSummary.top_real_words.map((w) => (
+                  <span
+                    key={w.word}
+                    className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-900"
+                    style={{ opacity: Math.min(1, Math.abs(w.weight) * 2 + 0.3) }}
+                    title={`Weight: ${w.weight.toFixed(4)} (pushes toward REAL)`}
+                  >
+                    {w.word}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   const renderHighlightedText = () => {
     if (!analyzedText || !explanation || explanation.length === 0) {
@@ -293,9 +365,9 @@ export default function FakeDetectionResult({
 
           {!explanation?.length && canExplain && onExplain && (
             <div className="mb-4 rounded-xl border border-(--line) bg-(--accent-soft) px-3 py-3 text-xs text-[#0b4f43]">
-              <p className="font-semibold uppercase tracking-wide">Explanation on demand</p>
+              <p className="font-semibold uppercase tracking-wide">Language signals on demand</p>
               <p className="mt-1 text-[#0a5f50]">
-                LIME was skipped for speed. Click Explain to generate token-level language-signal highlights.
+                See which words pushed the result toward FAKE or REAL. Click Language signals to run a detailed analysis.
               </p>
               <button
                 type="button"
@@ -303,11 +375,12 @@ export default function FakeDetectionResult({
                 disabled={isExplaining}
                 className="mt-3 inline-flex h-8 items-center rounded-full bg-[#12100d] px-4 text-[11px] font-semibold text-[#f7f1e6] hover:bg-(--accent) disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {isExplaining ? "Explaining..." : "Explain"}
+                {isExplaining ? "Explaining..." : "Language signals"}
               </button>
             </div>
           )}
 
+          {renderExplanationSummary()}
           {renderHighlightedText()}
         </div>
 

@@ -4,9 +4,11 @@ import os
 
 
 INPUT_TEXT_MIN_LEN = 10
+INPUT_TEXT_MIN_WORDS = 4
 LIME_MAX_FEATURES = 20
 LIME_RAW_FEATURES = 25
 LIME_NUM_SAMPLES = 30
+LIME_NUM_SAMPLES_FORCE = 500
 NEGATION_WORDS = {"no", "not", "nor", "never", "none", "without", "cannot", "can't", "won't", "n't"}
 
 

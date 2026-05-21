@@ -156,7 +156,7 @@ class HybridModelLoader:
                     "step": "Routing",
                     "score_impact": 0,
                     "details": (
-                        "Insufficient parsed text to run Model A or B. "
+                        "Text too short for a proper review. "
                         f"Headline words: {headline_words}, Body words: {body_words}."
                     ),
                 }
@@ -169,7 +169,7 @@ class HybridModelLoader:
                 "article_class": "UNKNOWN",
                 "uncertainty": build_uncertainty(
                     "INSUFFICIENT_TEXT",
-                    "Not enough text was available for reliable model analysis.",
+                    "Text too short for a proper review. Please provide more text.",
                 ),
                 "parse_metadata": {
                     "used_mode": parsed["used_mode"],

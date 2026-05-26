@@ -36,8 +36,8 @@ export default function HeroSection({
 
   return (
     <section className="mb-12 lg:mb-16 relative section-reveal">
-      <div className="pointer-events-none absolute -top-8 left-0 h-44 w-44 rounded-full bg-[rgba(232,176,116,0.36)] blur-3xl" />
-      <div className="pointer-events-none absolute top-4 right-16 h-36 w-36 rounded-full bg-[rgba(14,124,102,0.28)] blur-3xl" />
+      <div className="pointer-events-none absolute -top-8 left-0 h-44 w-44 rounded-full bg-(--warm)/35 blur-3xl" />
+      <div className="pointer-events-none absolute top-4 right-16 h-36 w-36 rounded-full bg-(--accent)/30 blur-3xl" />
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1.26fr)_minmax(0,1fr)] items-center py-2 sm:py-6 lg:py-8">
         <div className="section-reveal delay-1 min-w-0">

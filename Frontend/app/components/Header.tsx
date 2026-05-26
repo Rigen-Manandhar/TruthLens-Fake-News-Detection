@@ -267,6 +267,9 @@ export default function Header() {
               height: navIndicator.height,
               transform: `translate3d(${navIndicator.left}px, ${navIndicator.top}px, 0)`,
               opacity: navIndicator.visible ? 1 : 0,
+              // Hide until measured so we don't paint a 0x0 nub at (0,0)
+              // for one frame before the rect lands.
+              visibility: navIndicator.visible ? "visible" : "hidden",
             }}
           />
           <Link

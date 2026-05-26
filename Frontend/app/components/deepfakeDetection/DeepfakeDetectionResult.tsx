@@ -1,6 +1,7 @@
 "use client";
 
 import type { DeepfakeResponse, DeepfakeVerdict } from "./types";
+import { ImageIcon } from "../ui/icons";
 
 interface DeepfakeDetectionResultProps {
   result: DeepfakeResponse | null;
@@ -71,20 +72,7 @@ export default function DeepfakeDetectionResult({
 
         {!hasResult && !isLoading && (
           <div className="mt-6 flex-1 flex flex-col items-center justify-center text-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10 text-[#c7bba8] mb-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M18 13.5h.008v.008H18V13.5zM15.75 6.75a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-            </svg>
+            <ImageIcon aria-hidden className="h-10 w-10 text-[#c7bba8] mb-3" />
             <p className="text-sm text-(--muted-foreground)">
               Upload an image or video to assess whether visual manipulation signals are present.
             </p>

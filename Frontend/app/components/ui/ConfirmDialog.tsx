@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import Button from "./Button";
+import { AlertTriangle, HelpCircle } from "./icons";
 
 type ConfirmDialogProps = {
   open: boolean;
@@ -11,6 +12,7 @@ type ConfirmDialogProps = {
   confirmLabel?: string;
   cancelLabel?: string;
   isLoading?: boolean;
+  iconType?: "help" | "warn";
   onConfirm: () => void | Promise<void>;
   onCancel: () => void;
 };
@@ -22,6 +24,7 @@ export default function ConfirmDialog({
   confirmLabel = "Yes",
   cancelLabel = "No",
   isLoading = false,
+  iconType = "help",
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
@@ -63,6 +66,12 @@ export default function ConfirmDialog({
     return null;
   }
 
+  const Icon = iconType === "warn" ? AlertTriangle : HelpCircle;
+  const iconBgClass =
+    iconType === "warn"
+      ? "bg-amber-100 text-amber-700"
+      : "bg-gray-900/5 text-gray-700";
+
   const dialog = (
     <div
       className="fixed inset-0 z-60 flex items-end justify-center overflow-y-auto bg-gray-900/45 backdrop-blur-md px-4 py-4 sm:items-center"
@@ -84,9 +93,9 @@ export default function ConfirmDialog({
         <div className="flex items-center gap-3">
           <div
             aria-hidden="true"
-            className="h-10 w-10 rounded-full bg-gray-900/5 text-gray-700 flex items-center justify-center text-sm font-semibold"
+            className={`h-10 w-10 rounded-full flex items-center justify-center ${iconBgClass}`}
           >
-            ?
+            <Icon className="h-5 w-5" aria-hidden />
           </div>
           <div>
             <h3 id={titleId} className="text-base font-semibold text-gray-900">

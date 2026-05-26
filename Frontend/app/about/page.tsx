@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import Footer from "../components/Footer";
+import { ArrowRight } from "../components/ui/icons";
 
 const principles = [
   {
@@ -133,7 +134,7 @@ export default function AboutPage() {
                   className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#17130f] hover:text-(--accent)"
                 >
                   Open news feed
-                  <span aria-hidden="true">-&gt;</span>
+                  <ArrowRight aria-hidden className="h-4 w-4" />
                 </Link>
               </div>
 
@@ -150,7 +151,7 @@ export default function AboutPage() {
                   className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#17130f] hover:text-(--accent)"
                 >
                   Open risk assessment
-                  <span aria-hidden="true">-&gt;</span>
+                  <ArrowRight aria-hidden className="h-4 w-4" />
                 </Link>
               </div>
             </div>

@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import Logo from "./ui/Logo";
 import ConfirmDialog from "./ui/ConfirmDialog";
 import { useReducedMotion } from "./ui/useReducedMotion";
+import { LogOut } from "./ui/icons";
 
 type NavKey = "news" | "fake" | "deepfake" | "admin";
 
@@ -409,12 +410,13 @@ export default function Header() {
                     type="button"
                     onClick={handleLogoutRequest}
                     disabled={isLoggingOut}
-                    className={`block w-full px-4 py-2 text-left transition-colors ${
+                    className={`flex w-full items-center gap-2 px-4 py-2 text-left transition-colors ${
                       isLoggingOut
                         ? "cursor-not-allowed text-[#9f9382]"
                         : "text-(--muted-foreground) hover:bg-[#f4eee2]"
                     }`}
                   >
+                    <LogOut aria-hidden className="h-4 w-4" />
                     {isLoggingOut ? "Logging out..." : "Log out"}
                   </button>
                 </div>

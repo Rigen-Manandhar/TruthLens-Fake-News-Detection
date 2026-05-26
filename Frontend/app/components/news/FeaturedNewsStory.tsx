@@ -1,6 +1,7 @@
 import type { NewsAnalysis } from "./NewsCard";
 import type { NewsArticle } from "./types";
 import { formatNewsDate, getAnalysisStyle, getAnalysisText } from "./utils";
+import { ArrowRight } from "../ui/icons";
 
 type FeaturedNewsStoryProps = {
   article: NewsArticle;
@@ -59,7 +60,7 @@ export default function FeaturedNewsStory({
           className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#17130f] hover:text-(--accent)"
         >
           Read the full story
-          <span aria-hidden="true">-&gt;</span>
+          <ArrowRight aria-hidden className="h-4 w-4" />
         </a>
       </div>
     </article>

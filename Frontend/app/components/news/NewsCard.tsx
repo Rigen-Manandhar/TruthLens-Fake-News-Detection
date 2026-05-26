@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { NewsArticle } from "./types";
 import { formatNewsDate, getAnalysisStyle, getAnalysisText } from "./utils";
+import { ArrowRight } from "../ui/icons";
 
 interface NewsCardProps {
   article: NewsArticle;
@@ -66,9 +67,10 @@ export default function NewsCard({ article, analysis }: NewsCardProps) {
           className="text-sm font-semibold text-[#17130f] hover:text-(--accent) mt-auto inline-flex items-center gap-2"
         >
           Read story
-          <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
-            -&gt;
-          </span>
+          <ArrowRight
+            aria-hidden
+            className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+          />
         </Link>
       </div>
     </article>

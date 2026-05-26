@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { RefreshCw } from "../ui/icons";
 
 interface HeroSectionProps {
   searchInput: string;
@@ -76,27 +77,7 @@ export default function HeroSection({
                 className="shrink-0 inline-flex w-full items-center justify-center gap-2 rounded-full border border-(--line) bg-[#fffdf8] px-5 py-3 text-sm font-semibold text-[#5f5548] shadow-[0_10px_24px_rgba(20,14,7,0.08)] transition-colors hover:bg-[#f4eee2] sm:w-auto"
                 aria-label="Reset news feed"
               >
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  className="h-4 w-4"
-                >
-                  <path
-                    d="M16.667 10A6.667 6.667 0 1 1 14.714 5.286"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M16.667 3.333v4.167H12.5"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <RefreshCw aria-hidden className="h-4 w-4" />
                 Reset Feed
               </button>
             )}

@@ -394,8 +394,35 @@ export default function FakeDetectionResult({
           )}
         </div>
 
-        {hasResult && (
-          <div className="mt-5 rounded-2xl border border-dashed border-(--line) bg-(--surface-deep) px-4 py-4 text-sm text-(--muted-foreground) wrap-break-word max-h-[60vh] overflow-y-auto overscroll-contain sm:max-h-128 lg:flex-1 lg:min-h-0 lg:max-h-144">
+        {hasResult && (() => {
+          const hasUncertainty = Boolean(uncertaintyReason);
+          const hasDetails = Boolean(details && !uncertainty?.reason_message);
+          const hasClaimHints = Boolean(evidenceSummary?.claim_hints?.length);
+          const showLanguageSignalsCta = Boolean(
+            !explanation?.length && canExplain && onExplain
+          );
+          const hasExplanationSummary = Boolean(
+            explanationSummary &&
+              (explanationSummary.top_fake_words.length > 0 ||
+                explanationSummary.top_real_words.length > 0)
+          );
+          const hasHighlightedText = Boolean(
+            analyzedText && explanation && explanation.length > 0
+          );
+          const hasAnyContent =
+            hasUncertainty ||
+            hasDetails ||
+            hasClaimHints ||
+            showLanguageSignalsCta ||
+            hasExplanationSummary ||
+            hasHighlightedText;
+
+          if (!hasAnyContent) {
+            return null;
+          }
+
+          return (
+            <div className="mt-5 rounded-2xl border border-dashed border-(--line) bg-(--surface-deep) px-4 py-4 text-sm text-(--muted-foreground) wrap-break-word max-h-[60vh] overflow-y-auto overscroll-contain sm:max-h-128 lg:flex-1 lg:min-h-0 lg:max-h-144">
             {uncertaintyReason && (
               <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-200">
                 <p className="font-semibold uppercase tracking-wide">
@@ -448,7 +475,8 @@ export default function FakeDetectionResult({
             {renderExplanationSummary()}
             {renderHighlightedText()}
           </div>
-        )}
+          );
+        })()}
 
         <p className="mt-4 text-[11px] text-(--muted-foreground) shrink-0">
           Results powered by Hybrid Evidence and Risk Analysis.

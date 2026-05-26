@@ -48,7 +48,7 @@ export default function FakeDetectionForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="relative flex flex-col rounded-3xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-144"
+      className="relative flex flex-col rounded-3xl border border-(--line) bg-(--surface)/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-144"
     >
       <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#12100d] via-(--accent) to-[#e8b074]" />
 
@@ -98,7 +98,7 @@ export default function FakeDetectionForm({
         <div className="space-y-2 mb-4">
           <label
             htmlFor="sourceUrl"
-            className="text-sm font-semibold text-[#17130f]"
+            className="text-sm font-semibold text-(--foreground-strong)"
           >
             Source URL
           </label>
@@ -108,7 +108,7 @@ export default function FakeDetectionForm({
             value={sourceUrl}
             onChange={(e) => onSourceUrlChange(e.target.value)}
             placeholder="https://example.com"
-            className="w-full rounded-2xl border border-(--line) bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#958878] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
+            className="w-full rounded-2xl border border-(--line) bg-(--surface-deep) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
           />
           <p className="text-xs text-(--muted-foreground)">
             Optional: include a URL for source and evidence-context signals.
@@ -126,17 +126,17 @@ export default function FakeDetectionForm({
             type="button"
             onClick={handleClear}
             disabled={isLoading}
-            className="text-xs font-semibold text-[#7e7263] hover:text-[#17130f] disabled:opacity-50"
+            className="text-xs font-semibold text-(--muted-foreground) hover:text-(--foreground-strong) disabled:opacity-50"
           >
             Clear fields
           </button>
           <div className="flex flex-col items-stretch gap-1.5 sm:flex-row sm:items-center sm:gap-3">
-            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-[#7e7263]">
-              <kbd className="rounded-md border border-(--line) bg-[#fffdf8] px-1.5 py-0.5 font-mono text-[10px] text-[#3f382f]">
+            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-(--muted-foreground)">
+              <kbd className="rounded-md border border-(--line) bg-(--surface-strong) px-1.5 py-0.5 font-mono text-[10px] text-(--foreground-strong)">
                 Ctrl
               </kbd>
               <span aria-hidden>+</span>
-              <kbd className="rounded-md border border-(--line) bg-[#fffdf8] px-1.5 py-0.5 font-mono text-[10px] text-[#3f382f]">
+              <kbd className="rounded-md border border-(--line) bg-(--surface-strong) px-1.5 py-0.5 font-mono text-[10px] text-(--foreground-strong)">
                 Enter
               </kbd>
               <span className="ml-1">to assess</span>
@@ -144,7 +144,7 @@ export default function FakeDetectionForm({
             <button
               type="submit"
               disabled={isLoading}
-              className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-full bg-[#12100d] px-8 text-sm font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(24,16,8,0.22)] transition-all hover:bg-(--accent) disabled:cursor-not-allowed disabled:opacity-60 shrink-0"
+              className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-full bg-(--ink) px-8 text-sm font-semibold text-(--ink-foreground) shadow-[0_12px_24px_rgba(24,16,8,0.22)] transition-all hover:bg-(--accent) disabled:cursor-not-allowed disabled:opacity-60 shrink-0"
             >
               {isLoading ? "Assessing..." : "Assess Risk"}
             </button>

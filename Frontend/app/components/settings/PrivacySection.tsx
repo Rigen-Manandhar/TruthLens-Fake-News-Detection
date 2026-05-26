@@ -27,10 +27,10 @@ export default function PrivacySection({
   const deleting = Boolean(profile?.deletionStatus.scheduledDeletionAt);
 
   return (
-    <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-(--line) p-5 sm:p-6 space-y-3">
-      <h2 className="display-title text-2xl text-[#17130f]">Privacy & data</h2>
-      <div className="rounded-xl border border-(--line) bg-[#fffdf8] px-3 py-3">
-        <p className="text-sm font-semibold text-[#17130f]">Export my data</p>
+    <div className="min-w-0 rounded-3xl bg-(--surface)/90 border border-(--line) p-5 sm:p-6 space-y-3">
+      <h2 className="display-title text-2xl text-(--foreground-strong)">Privacy & data</h2>
+      <div className="rounded-xl border border-(--line) bg-(--surface-strong) px-3 py-3">
+        <p className="text-sm font-semibold text-(--foreground-strong)">Export my data</p>
         <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
           <Button
             type="button"
@@ -43,7 +43,7 @@ export default function PrivacySection({
           {exportJob?.downloadUrl && (
             <a
               href={exportJob.downloadUrl}
-              className="text-xs font-semibold text-[#17130f] hover:text-(--accent) break-all"
+              className="text-xs font-semibold text-(--foreground-strong) hover:text-(--accent) break-all"
             >
               Download JSON
             </a>
@@ -90,21 +90,21 @@ export default function PrivacySection({
         )}
       </div>
       <div className="text-xs font-semibold text-(--muted-foreground) flex flex-wrap gap-3">
-        <Link href="/privacy" className="hover:text-[#17130f]">
+        <Link href="/privacy" className="hover:text-(--foreground-strong)">
           Privacy
         </Link>
-        <Link href="/terms" className="hover:text-[#17130f]">
+        <Link href="/terms" className="hover:text-(--foreground-strong)">
           Terms
         </Link>
         <a
           href="mailto:support@truthlens.app"
-          className="hover:text-[#17130f] break-all"
+          className="hover:text-(--foreground-strong) break-all"
         >
           Contact
         </a>
         <a
           href="mailto:support@truthlens.app?subject=TruthLens%20Issue%20Report"
-          className="hover:text-[#17130f] break-all"
+          className="hover:text-(--foreground-strong) break-all"
         >
           Report issue
         </a>

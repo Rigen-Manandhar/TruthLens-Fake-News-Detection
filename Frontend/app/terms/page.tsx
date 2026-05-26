@@ -34,13 +34,13 @@ export default function TermsPage() {
       <div className="pointer-events-none absolute top-36 right-0 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
       <main id="main-content" className="page-main space-y-10 sm:space-y-12">
-        <section className="section-reveal rounded-4xl border border-(--line) bg-[#fffdfa]/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10">
+        <section className="section-reveal rounded-4xl border border-(--line) bg-(--surface)/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.16fr)_minmax(0,0.84fr)] lg:items-end">
             <div className="space-y-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-(--muted-foreground-strong)">
                 Terms of Service
               </p>
-              <h1 className="page-title display-title max-w-3xl text-4xl font-bold text-[#17130f] sm:text-[3.2rem]">
+              <h1 className="page-title display-title max-w-3xl text-4xl font-bold text-(--foreground-strong) sm:text-[3.2rem]">
                 Terms built around fair use, informed judgment, and account responsibility.
               </h1>
               <p className="max-w-2xl text-sm leading-7 text-(--muted-foreground) sm:text-base">
@@ -53,14 +53,14 @@ export default function TermsPage() {
 
             <div className="rounded-[1.75rem] border border-(--line) bg-[linear-gradient(145deg,rgba(255,253,248,0.96),rgba(247,241,230,0.92))] p-5 shadow-[0_16px_32px_rgba(24,16,8,0.08)]">
               <div className="space-y-4">
-                <div className="inline-flex rounded-full border border-(--line) bg-[#f6efe3] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5f5548]">
+                <div className="inline-flex rounded-full border border-(--line) bg-(--surface-pill) px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-(--muted-foreground)">
                   Terms at a glance
                 </div>
-                <ul className="space-y-3 text-sm leading-6 text-[#4f473c]">
+                <ul className="space-y-3 text-sm leading-6 text-(--foreground)">
                   {termsCommitments.map((item) => (
                     <li
                       key={item}
-                      className="rounded-2xl border border-dashed border-(--line) bg-[#fffdf8] px-4 py-3"
+                      className="rounded-2xl border border-dashed border-(--line) bg-(--surface-strong) px-4 py-3"
                     >
                       {item}
                     </li>
@@ -75,14 +75,14 @@ export default function TermsPage() {
           {termsHighlights.map((item, index) => (
             <article
               key={item.title}
-              className={`section-reveal rounded-[1.75rem] border border-(--line) bg-[#fffdfa]/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] ${
+              className={`section-reveal rounded-[1.75rem] border border-(--line) bg-(--surface)/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] ${
                 index === 1 ? "delay-1" : index === 2 ? "delay-2" : ""
               }`}
             >
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
                 Term {index + 1}
               </p>
-              <h2 className="mt-3 page-title display-title text-2xl font-bold text-[#17130f]">
+              <h2 className="mt-3 page-title display-title text-2xl font-bold text-(--foreground-strong)">
                 {item.title}
               </h2>
               <p className="mt-4 text-sm leading-7 text-(--muted-foreground)">
@@ -93,32 +93,32 @@ export default function TermsPage() {
         </section>
 
         <section className="section-reveal delay-1 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)]">
-          <article className="rounded-4xl border border-(--line) bg-[#f7f1e6]/92 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
+          <article className="rounded-4xl border border-(--line) bg-(--surface-deep)/92 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
               Important limitation
             </p>
-            <h2 className="mt-3 page-title display-title text-3xl font-bold text-[#17130f]">
+            <h2 className="mt-3 page-title display-title text-3xl font-bold text-(--foreground-strong)">
               Credibility outputs support decisions, but they are not guarantees.
             </h2>
-            <p className="mt-4 text-sm leading-7 text-[#5f5548]">
+            <p className="mt-4 text-sm leading-7 text-(--muted-foreground)">
               TruthLens combines source credibility, language-model signals,
               evidence hints, and explanation layers to provide useful review
               signals. Those results are intended to assist analysis, not to
               serve as legal, professional, or fully definitive judgment.
             </p>
-            <p className="mt-4 text-sm leading-7 text-[#5f5548]">
+            <p className="mt-4 text-sm leading-7 text-(--muted-foreground)">
               Users remain responsible for how they interpret and act on the
               information shown inside the product.
             </p>
           </article>
 
-          <article className="rounded-4xl border border-(--line) bg-[#fffdfa]/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
+          <article className="rounded-4xl border border-(--line) bg-(--surface)/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
               Need help?
             </p>
             <div className="mt-4 space-y-4">
-              <div className="rounded-3xl border border-(--line) bg-[#fffdf8] p-4">
-                <h3 className="text-lg font-semibold text-[#17130f]">
+              <div className="rounded-3xl border border-(--line) bg-(--surface-strong) p-4">
+                <h3 className="text-lg font-semibold text-(--foreground-strong)">
                   Contact the project inbox
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-(--muted-foreground)">
@@ -127,15 +127,15 @@ export default function TermsPage() {
                 </p>
                 <Link
                   href="/contact"
-                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#17130f] hover:text-(--accent)"
+                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-(--foreground-strong) hover:text-(--accent)"
                 >
                   Open contact page
                   <span aria-hidden="true">-&gt;</span>
                 </Link>
               </div>
 
-              <div className="rounded-3xl border border-(--line) bg-[#fffdf8] p-4">
-                <h3 className="text-lg font-semibold text-[#17130f]">
+              <div className="rounded-3xl border border-(--line) bg-(--surface-strong) p-4">
+                <h3 className="text-lg font-semibold text-(--foreground-strong)">
                   Review privacy terms too
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-(--muted-foreground)">
@@ -144,7 +144,7 @@ export default function TermsPage() {
                 </p>
                 <Link
                   href="/privacy"
-                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#17130f] hover:text-(--accent)"
+                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-(--foreground-strong) hover:text-(--accent)"
                 >
                   Open privacy page
                   <span aria-hidden="true">-&gt;</span>

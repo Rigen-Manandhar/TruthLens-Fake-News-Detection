@@ -36,7 +36,7 @@ export default function ToastProvider() {
         },
         loading: {
           icon: (
-            <Loader2 className="h-5 w-5 animate-spin text-[#0e7c66]" aria-hidden />
+            <Loader2 className="h-5 w-5 animate-spin text-(--accent)" aria-hidden />
           ),
         },
       }}

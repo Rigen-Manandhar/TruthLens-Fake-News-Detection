@@ -12,14 +12,14 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
 ) {
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-sm font-semibold text-[#17130f]">
+      <label htmlFor={id} className="text-sm font-semibold text-(--foreground-strong)">
         {label}
       </label>
       <div className="relative">
         <select
           ref={ref}
           id={id}
-          className={`w-full appearance-none rounded-2xl border border-(--line) bg-[#f7f1e6] pl-4 pr-10 py-3 text-sm text-[#17130f] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45 disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
+          className={`w-full appearance-none rounded-2xl border border-(--line) bg-(--surface-deep) pl-4 pr-10 py-3 text-sm text-(--foreground-strong) focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45 disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
           {...props}
         >
           {children}

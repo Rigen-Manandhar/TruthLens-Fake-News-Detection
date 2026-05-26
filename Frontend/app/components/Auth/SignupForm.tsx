@@ -76,7 +76,7 @@ export default function SignupForm() {
   };
 
   return (
-    <div className="relative w-full max-w-md rounded-3xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] p-6 sm:p-8 overflow-hidden auth-appear-delay">
+    <div className="relative w-full max-w-md rounded-3xl border border-(--line) bg-(--surface)/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] p-6 sm:p-8 overflow-hidden auth-appear-delay">
       <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#12100d] via-(--accent) to-[#e8b074]" />
       <div className="absolute -top-16 -right-10 h-32 w-32 rounded-full bg-[rgba(14,124,102,0.14)] blur-3xl" />
       <div className="absolute -bottom-16 -left-10 h-32 w-32 rounded-full bg-[rgba(232,176,116,0.2)] blur-3xl" />
@@ -86,7 +86,7 @@ export default function SignupForm() {
           <p className="text-[11px] font-semibold tracking-[0.25em] text-(--muted-foreground-strong) uppercase">
             Start smart
           </p>
-          <h1 className="page-title display-title text-3xl font-bold text-[#17130f] mb-2">
+          <h1 className="page-title display-title text-3xl font-bold text-(--foreground-strong) mb-2">
             Create your account
           </h1>
           <p className="text-sm text-(--muted-foreground)">
@@ -137,7 +137,7 @@ export default function SignupForm() {
           <div className="flex justify-end">
             <Link
               href="/forgot-password"
-              className="text-xs font-semibold text-[#17130f] hover:text-(--accent)"
+              className="text-xs font-semibold text-(--foreground-strong) hover:text-(--accent)"
             >
               Forgot password?
             </Link>
@@ -150,7 +150,7 @@ export default function SignupForm() {
             {isLoading ? "Creating account..." : "Create account"}
           </Button>
 
-          <div className="flex items-center gap-3 text-xs text-[#8a7d6d]">
+          <div className="flex items-center gap-3 text-xs text-(--muted-foreground)">
             <div className="h-px flex-1 bg-(--line)" />
             <span>or</span>
             <div className="h-px flex-1 bg-(--line)" />
@@ -191,7 +191,7 @@ export default function SignupForm() {
             Already have an account?{" "}
             <Link
               href="/login"
-              className="text-[#17130f] font-semibold hover:text-(--accent)"
+              className="text-(--foreground-strong) font-semibold hover:text-(--accent)"
             >
               Log in
             </Link>

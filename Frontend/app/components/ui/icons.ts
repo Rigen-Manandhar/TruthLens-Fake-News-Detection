@@ -1,4 +1,4 @@
-// Curated lucide-react icon set used across the Phase 1 UI polish.
+// Curated lucide-react icon set used across the Phase 1+2 UI polish.
 // Centralised so icon swaps are one-line edits instead of grep-and-replace.
 export {
   ArrowRight,
@@ -28,4 +28,9 @@ export {
   Image as ImageIcon,
   UserCircle2,
   ScanSearch,
+  Sun,
+  Moon,
+  Monitor,
+  History,
+  Trash2,
 } from "lucide-react";

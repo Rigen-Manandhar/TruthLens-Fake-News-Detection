@@ -16,9 +16,9 @@ export default function Button({
 
   const variantStyles = {
     primary:
-      "bg-[#12100d] text-[#f7f1e6] shadow-[0_12px_24px_rgba(24,16,8,0.2)] hover:bg-(--accent)",
+      "bg-(--ink) text-(--ink-foreground) shadow-[0_12px_24px_rgba(24,16,8,0.2)] hover:bg-(--accent)",
     secondary:
-      "border border-(--line) bg-[#fffdf8] text-(--muted-foreground) shadow-[0_8px_20px_rgba(24,16,8,0.08)] hover:bg-[#f5efe4]",
+      "border border-(--line) bg-(--surface-strong) text-(--muted-foreground) shadow-[0_8px_20px_rgba(24,16,8,0.08)] hover:bg-(--surface-hover)",
   };
 
   return (

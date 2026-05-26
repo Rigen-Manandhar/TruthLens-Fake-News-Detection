@@ -7,6 +7,7 @@ import { signOut, useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import Logo from "./ui/Logo";
 import ConfirmDialog from "./ui/ConfirmDialog";
+import ThemeToggle from "./ui/ThemeToggle";
 import { useReducedMotion } from "./ui/useReducedMotion";
 import { LogOut } from "./ui/icons";
 
@@ -227,18 +228,18 @@ export default function Header() {
 
   const navLinkClass = (active: boolean) =>
     `rounded-full px-4 py-1.5 transition-all ${
-      active ? "bg-[#12100d] text-[#f7f1e6] font-semibold" : "hover:text-[#12100d]"
+      active ? "bg-(--ink) text-(--ink-foreground) font-semibold" : "hover:text-(--foreground)"
     }`;
 
   // Desktop variant relies on the sliding indicator instead of a per-item pill,
   // so it only flips text colour and stacks above the indicator via z-index.
   const desktopNavLinkClass = (active: boolean) =>
     `relative z-10 rounded-full px-4 py-1.5 transition-colors duration-300 ease-out ${
-      active ? "text-[#f7f1e6] font-semibold" : "hover:text-[#12100d]"
+      active ? "text-(--ink-foreground) font-semibold" : "hover:text-(--foreground)"
     }`;
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-(--line) bg-[#f7f1e6]/75 backdrop-blur-xl">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-(--line) bg-(--surface-deep)/75 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3.5 sm:px-6 xl:max-w-7xl">
         <div className="min-w-0 flex items-center gap-3">
           <Logo />
@@ -246,11 +247,11 @@ export default function Header() {
 
         <nav
           ref={desktopNavRef}
-          className="relative hidden md:flex items-center justify-center gap-2 rounded-full border border-(--line) bg-white/60 p-1 text-sm text-(--muted-foreground) shadow-[0_10px_30px_rgba(22,16,8,0.06)]"
+          className="relative hidden md:flex items-center justify-center gap-2 rounded-full border border-(--line) bg-(--surface)/60 p-1 text-sm text-(--muted-foreground) shadow-[0_10px_30px_rgba(22,16,8,0.06)]"
         >
           <span
             aria-hidden="true"
-            className={`pointer-events-none absolute rounded-full bg-[#12100d] shadow-[0_8px_18px_rgba(18,16,13,0.18)] ${
+            className={`pointer-events-none absolute rounded-full bg-(--ink) shadow-[0_8px_18px_rgba(18,16,13,0.18)] ${
               navIndicator.animated && !reducedMotion
                 ? "transition-[transform,width,height,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0.24,1)]"
                 : ""
@@ -309,7 +310,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => setIsMobileNavOpen((prev) => !prev)}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-(--line) bg-[#fffdf8] text-[#17130f] shadow-[0_8px_20px_rgba(24,16,8,0.08)] transition-colors hover:bg-[#f4eee2]"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-(--line) bg-(--surface-strong) text-(--foreground-strong) shadow-[0_8px_20px_rgba(24,16,8,0.08)] transition-colors hover:bg-(--surface-hover)"
               aria-expanded={isMobileNavOpen}
               aria-haspopup="menu"
               aria-label="Toggle navigation menu"
@@ -334,7 +335,7 @@ export default function Header() {
             </button>
 
             {isMobileNavOpen && (
-              <div className="absolute right-0 mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-3xl border border-(--line) bg-[#fffdf8] p-3 shadow-[0_20px_40px_rgba(20,16,8,0.14)]">
+              <div className="absolute right-0 mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-3xl border border-(--line) bg-(--surface-strong) p-3 shadow-[0_20px_40px_rgba(20,16,8,0.14)]">
                 <div className="grid gap-2 text-sm text-(--muted-foreground)">
                   <Link href="/" className={`${navLinkClass(isNews)} text-center`}>
                     News
@@ -364,25 +365,35 @@ export default function Header() {
                   <div className="mt-3 grid gap-2 border-t border-(--line) pt-3">
                     <Link
                       href="/login"
-                      className="inline-flex items-center justify-center rounded-full border border-(--line) bg-[#fffdfa] px-4 py-2.5 text-sm font-semibold text-(--muted-foreground) transition-colors hover:bg-[#f4eee2] hover:text-[#12100d]"
+                      className="inline-flex items-center justify-center rounded-full border border-(--line) bg-(--surface) px-4 py-2.5 text-sm font-semibold text-(--muted-foreground) transition-colors hover:bg-(--surface-hover) hover:text-(--foreground)"
                     >
                       Log in
                     </Link>
                     <Link
                       href="/signup"
-                      className="inline-flex items-center justify-center rounded-full bg-[#12100d] px-4 py-2.5 text-sm font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(26,18,8,0.22)] transition-colors hover:bg-(--accent)"
+                      className="inline-flex items-center justify-center rounded-full bg-(--ink) px-4 py-2.5 text-sm font-semibold text-(--ink-foreground) shadow-[0_12px_24px_rgba(26,18,8,0.22)] transition-colors hover:bg-(--accent)"
                     >
                       Get started
                     </Link>
                   </div>
                 )}
+                <div className="mt-3 flex items-center justify-between gap-3 border-t border-(--line) pt-3">
+                  <span className="text-xs font-semibold text-(--muted-foreground-strong)">
+                    Theme
+                  </span>
+                  <ThemeToggle />
+                </div>
               </div>
             )}
           </div>
 
+          <div className="hidden md:block">
+            <ThemeToggle />
+          </div>
+
           {isLoadingUser ? (
             <div
-              className="h-9 w-9 rounded-full bg-[#e7dece] animate-pulse"
+              className="h-9 w-9 rounded-full bg-(--surface-deep) animate-pulse"
               aria-hidden="true"
             />
           ) : user ? (
@@ -390,7 +401,7 @@ export default function Header() {
               <button
                 type="button"
                 onClick={() => setIsMenuOpen((prev) => !prev)}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-[#12100d] text-sm font-semibold text-[#f7f1e6] shadow-[0_10px_22px_rgba(23,17,10,0.25)] transition-colors hover:bg-[#0e7c66]"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-(--ink) text-sm font-semibold text-(--ink-foreground) shadow-[0_10px_22px_rgba(23,17,10,0.25)] transition-colors hover:bg-(--accent)"
                 aria-expanded={isMenuOpen}
                 aria-haspopup="menu"
                 aria-label="Account menu"
@@ -399,10 +410,10 @@ export default function Header() {
                 {avatarInitial}
               </button>
               {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-44 max-w-[calc(100vw-2rem)] rounded-2xl border border-(--line) bg-[#fffdf8] py-2 text-sm shadow-[0_20px_40px_rgba(20,16,8,0.14)]">
+                <div className="absolute right-0 mt-2 w-44 max-w-[calc(100vw-2rem)] rounded-2xl border border-(--line) bg-(--surface-strong) py-2 text-sm shadow-[0_20px_40px_rgba(20,16,8,0.14)]">
                   <Link
                     href="/settings"
-                    className="block px-4 py-2 text-(--muted-foreground) hover:bg-[#f4eee2]"
+                    className="block px-4 py-2 text-(--muted-foreground) hover:bg-(--surface-hover)"
                   >
                     Settings
                   </Link>
@@ -412,8 +423,8 @@ export default function Header() {
                     disabled={isLoggingOut}
                     className={`flex w-full items-center gap-2 px-4 py-2 text-left transition-colors ${
                       isLoggingOut
-                        ? "cursor-not-allowed text-[#9f9382]"
-                        : "text-(--muted-foreground) hover:bg-[#f4eee2]"
+                        ? "cursor-not-allowed text-(--muted-foreground)/70"
+                        : "text-(--muted-foreground) hover:bg-(--surface-hover)"
                     }`}
                   >
                     <LogOut aria-hidden className="h-4 w-4" />
@@ -426,13 +437,13 @@ export default function Header() {
             <>
               <Link
                 href="/login"
-                className="hidden md:inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold text-(--muted-foreground) transition-colors hover:bg-[#f4eee2] hover:text-[#12100d] sm:text-sm"
+                className="hidden md:inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold text-(--muted-foreground) transition-colors hover:bg-(--surface-hover) hover:text-(--foreground) sm:text-sm"
               >
                 Log in
               </Link>
               <Link
                 href="/signup"
-                className="hidden md:inline-flex items-center rounded-full bg-[#12100d] px-4 py-2 text-xs font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(26,18,8,0.22)] transition-colors hover:bg-(--accent) sm:px-5 sm:text-sm"
+                className="hidden md:inline-flex items-center rounded-full bg-(--ink) px-4 py-2 text-xs font-semibold text-(--ink-foreground) shadow-[0_12px_24px_rgba(26,18,8,0.22)] transition-colors hover:bg-(--accent) sm:px-5 sm:text-sm"
               >
                 Get started
               </Link>

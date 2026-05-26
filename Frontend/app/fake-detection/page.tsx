@@ -325,14 +325,14 @@ export default function FakeDetectionPage() {
       <main id="main-content" className="page-main space-y-8 sm:space-y-10">
         <header className="space-y-4 max-w-2xl">
           <div className="space-y-4">
-            <h1 className="page-title display-title text-4xl sm:text-[2.9rem] font-bold text-[#17130f] tracking-tight">
+            <h1 className="page-title display-title text-4xl sm:text-[2.9rem] font-bold text-(--foreground-strong) tracking-tight">
               Misinformation Risk Assessment
             </h1>
             <p className="text-sm sm:text-base text-(--muted-foreground) max-w-xl">
               Combine source credibility, article extraction, language signals, and evidence hints to assess misinformation risk.
             </p>
             <div className="flex items-center gap-3 text-xs text-(--muted-foreground)">
-              <span className="h-2 w-2 rounded-full bg-[#12100d]/45" />
+              <span className="h-2 w-2 rounded-full bg-(--ink)/45" />
               Hybrid evidence and risk analysis
             </div>
           </div>

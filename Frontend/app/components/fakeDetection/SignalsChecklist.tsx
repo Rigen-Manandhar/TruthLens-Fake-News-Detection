@@ -191,7 +191,7 @@ export default function SignalsChecklist(props: SignalsChecklistProps) {
   const rows = buildRows(props);
 
   return (
-    <div className="rounded-2xl border border-(--line) bg-[#fffdf8] px-4 py-4">
+    <div className="rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-4">
       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-(--muted-foreground-strong)">
         Signals checked
       </p>
@@ -210,7 +210,7 @@ export default function SignalsChecklist(props: SignalsChecklistProps) {
               />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-semibold text-[#3f382f]">
+                  <span className="text-xs font-semibold text-(--foreground-strong)">
                     {label}
                   </span>
                   <span className={`flex items-center gap-1 text-[11px] font-semibold ${style.className}`}>
@@ -218,7 +218,7 @@ export default function SignalsChecklist(props: SignalsChecklistProps) {
                     <span className="sr-only">{style.srLabel}</span>
                   </span>
                 </div>
-                <p className="mt-1 text-xs leading-5 text-[#5f5548]">
+                <p className="mt-1 text-xs leading-5 text-(--muted-foreground)">
                   {context}
                 </p>
               </div>

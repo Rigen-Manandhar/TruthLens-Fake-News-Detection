@@ -79,7 +79,7 @@ export default function Home() {
         <section className="space-y-8 section-reveal delay-1">
           <div>
             <div>
-              <h2 className="page-title display-title text-3xl sm:text-[2.65rem] font-bold text-[#17130f]">
+              <h2 className="page-title display-title text-3xl sm:text-[2.65rem] font-bold text-(--foreground-strong)">
                 Today&apos;s credibility briefings
               </h2>
               <p className="text-sm text-(--muted-foreground) mt-2 max-w-xl">

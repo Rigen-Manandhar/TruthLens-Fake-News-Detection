@@ -84,9 +84,9 @@ export default function ExtensionTokenCard() {
   };
 
   return (
-    <div className="rounded-3xl bg-[#fffdfa]/90 border border-(--line) p-5 sm:p-6 space-y-4">
+    <div className="rounded-3xl bg-(--surface)/90 border border-(--line) p-5 sm:p-6 space-y-4">
       <div>
-        <h2 className="display-title text-2xl text-[#17130f]">Extension feedback token</h2>
+        <h2 className="display-title text-2xl text-(--foreground-strong)">Extension feedback token</h2>
         <p className="text-sm text-(--muted-foreground) mt-2">
           Use this token in the Chrome extension so feedback submissions are tied to
           your account.
@@ -115,7 +115,7 @@ export default function ExtensionTokenCard() {
 
       {tokenData && (
         <>
-          <div className="rounded-2xl border border-(--line) bg-[#fffdf8] p-4">
+          <div className="rounded-2xl border border-(--line) bg-(--surface-strong) p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-(--muted-foreground)">
               Current token
             </p>

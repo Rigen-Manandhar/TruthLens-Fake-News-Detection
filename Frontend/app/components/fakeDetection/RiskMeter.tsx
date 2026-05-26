@@ -41,7 +41,7 @@ export default function RiskMeter({
     <div
       role="img"
       aria-label={`Risk level: ${riskLabel}`}
-      className="rounded-2xl border border-(--line) bg-[#fffdf8] px-4 py-4"
+      className="rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-4"
     >
       <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
         <div className="flex flex-col">
@@ -66,7 +66,7 @@ export default function RiskMeter({
         )}
       </div>
 
-      <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-[#f0e8d5]">
+      <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-(--surface-pill)">
         <div
           aria-hidden
           className="absolute inset-y-0 left-0 w-1/3 bg-emerald-300/45"
@@ -82,7 +82,7 @@ export default function RiskMeter({
         {hasScore && (
           <span
             aria-hidden
-            className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-[#12100d] shadow-[0_4px_10px_rgba(24,16,8,0.32)]"
+            className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-(--ink) shadow-[0_4px_10px_rgba(24,16,8,0.32)]"
             style={pointerStyle}
           />
         )}

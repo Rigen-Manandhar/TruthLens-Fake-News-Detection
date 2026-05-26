@@ -81,7 +81,7 @@ export default function DeepfakeDetectionForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="relative flex flex-col rounded-3xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-144"
+      className="relative flex flex-col rounded-3xl border border-(--line) bg-(--surface)/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-144"
     >
       <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#12100d] via-(--accent) to-[#e8b074]" />
 
@@ -90,7 +90,7 @@ export default function DeepfakeDetectionForm({
           <p className="text-[11px] font-semibold tracking-[0.25em] text-(--muted-foreground-strong) uppercase">
             Upload
           </p>
-          <label htmlFor="deepfake-file" className="text-sm font-semibold text-[#17130f]">
+          <label htmlFor="deepfake-file" className="text-sm font-semibold text-(--foreground-strong)">
             Image or Video
           </label>
           <p className="text-xs text-(--muted-foreground)">
@@ -104,8 +104,8 @@ export default function DeepfakeDetectionForm({
           onDragLeave={handleDragLeave}
           className={`mb-4 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed px-4 py-8 transition-colors ${
             isDragOver
-              ? "border-[#0e7c66] bg-[#e8f5f1]"
-              : "border-(--line) bg-[#f7f1e6]"
+              ? "border-(--accent) bg-(--accent-soft)"
+              : "border-(--line) bg-(--surface-deep)"
           }`}
         >
           {previewUrl ? (
@@ -125,31 +125,31 @@ export default function DeepfakeDetectionForm({
                   className="max-h-48 w-auto rounded-xl object-contain"
                 />
               )}
-              <p className="text-xs text-[#5f5548] truncate max-w-full">
+              <p className="text-xs text-(--muted-foreground) truncate max-w-full">
                 {selectedFile?.name}
               </p>
               <button
                 type="button"
                 onClick={handleClear}
-                className="text-xs font-semibold text-[#7e7263] hover:text-[#17130f]"
+                className="text-xs font-semibold text-(--muted-foreground) hover:text-(--foreground-strong)"
               >
                 Remove file
               </button>
             </div>
           ) : (
             <>
-              <Upload aria-hidden className="h-8 w-8 text-[#8a7d6d] mb-2" />
-              <p className="text-sm text-[#5f5548] text-center">
+              <Upload aria-hidden className="h-8 w-8 text-(--muted-foreground) mb-2" />
+              <p className="text-sm text-(--muted-foreground) text-center">
                 Drag and drop or{" "}
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="font-semibold text-[#17130f] hover:text-(--accent)"
+                  className="font-semibold text-(--foreground-strong) hover:text-(--accent)"
                 >
                   browse
                 </button>
               </p>
-              <p className="text-xs text-[#8a7d6d] mt-1">
+              <p className="text-xs text-(--muted-foreground) mt-1">
                 Images: JPG, PNG, WebP. Videos: MP4, MOV, AVI, MKV, WebM.
               </p>
             </>
@@ -175,14 +175,14 @@ export default function DeepfakeDetectionForm({
             type="button"
             onClick={handleClear}
             disabled={isLoading || !selectedFile}
-            className="text-xs font-semibold text-[#7e7263] hover:text-[#17130f] disabled:opacity-50"
+            className="text-xs font-semibold text-(--muted-foreground) hover:text-(--foreground-strong) disabled:opacity-50"
           >
             Clear
           </button>
           <button
             type="submit"
             disabled={isLoading || !selectedFile}
-            className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-full bg-[#12100d] px-8 text-sm font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(24,16,8,0.22)] transition-all hover:bg-(--accent) disabled:cursor-not-allowed disabled:opacity-60 shrink-0"
+            className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-full bg-(--ink) px-8 text-sm font-semibold text-(--ink-foreground) shadow-[0_12px_24px_rgba(24,16,8,0.22)] transition-all hover:bg-(--accent) disabled:cursor-not-allowed disabled:opacity-60 shrink-0"
           >
             {isLoading ? "Analyzing..." : "Assess Media"}
           </button>

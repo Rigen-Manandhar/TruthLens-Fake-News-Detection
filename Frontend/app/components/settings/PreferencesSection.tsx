@@ -22,8 +22,8 @@ export default function PreferencesSection({
   onSave,
 }: PreferencesSectionProps) {
   return (
-    <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-(--line) p-5 sm:p-6 space-y-4">
-      <h2 className="display-title text-2xl text-[#17130f]">Preferences</h2>
+    <div className="min-w-0 rounded-3xl bg-(--surface)/90 border border-(--line) p-5 sm:p-6 space-y-4">
+      <h2 className="display-title text-2xl text-(--foreground-strong)">Preferences</h2>
       <Input
         label="Default country (2-letter)"
         id="newsCountry"
@@ -50,8 +50,8 @@ export default function PreferencesSection({
             }
             className={`px-3 py-1.5 rounded-full text-xs font-semibold border ${
               prefs.newsCategories.includes(category)
-                ? "bg-[#12100d] text-[#f7f1e6] border-[#12100d]"
-                : "bg-[#fffdf8] text-(--muted-foreground) border-(--line)"
+                ? "bg-(--ink) text-(--ink-foreground) border-(--ink)"
+                : "bg-(--surface-strong) text-(--muted-foreground) border-(--line)"
             }`}
           >
             {category}

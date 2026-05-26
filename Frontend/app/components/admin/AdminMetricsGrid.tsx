@@ -19,7 +19,7 @@ export default function AdminMetricsGrid({ metricCards }: AdminMetricsGridProps)
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
             {card.label}
           </p>
-          <p className="mt-4 page-title display-title text-4xl font-bold text-[#17130f]">
+          <p className="mt-4 page-title display-title text-4xl font-bold text-(--foreground-strong)">
             {card.value}
           </p>
         </article>

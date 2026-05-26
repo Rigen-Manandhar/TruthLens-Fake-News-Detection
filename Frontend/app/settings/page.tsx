@@ -47,7 +47,7 @@ export default function SettingsPage() {
     <div className="page-shell ambient-grid">
       <main id="main-content" className="page-main space-y-6">
         <header>
-          <h1 className="page-title display-title text-4xl font-bold text-[#17130f]">
+          <h1 className="page-title display-title text-4xl font-bold text-(--foreground-strong)">
             Settings
           </h1>
           <p className="text-sm text-(--muted-foreground) mt-2">

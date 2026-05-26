@@ -23,7 +23,7 @@ export default function FeaturedNewsStory({
   const accentClass = getVerdictAccentClass(analysis);
 
   return (
-    <article className="relative grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] items-center rounded-4xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_18px_36px_rgba(24,16,8,0.1)] overflow-hidden">
+    <article className="relative grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] items-center rounded-4xl border border-(--line) bg-(--surface)/90 shadow-[0_18px_36px_rgba(24,16,8,0.1)] overflow-hidden">
       <span
         aria-hidden
         className={`pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-linear-to-r ${accentClass}`}
@@ -49,8 +49,8 @@ export default function FeaturedNewsStory({
         </div>
       </div>
       <div className="min-w-0 p-5 sm:p-7">
-        <div className="flex flex-col gap-2 text-xs text-[#6f6457] sm:flex-row sm:items-center sm:justify-between">
-          <span className="inline-flex max-w-full self-start items-center rounded-full border border-(--line) bg-[#f6efe3] px-3 py-1 text-[11px] font-semibold text-[#4f473c]">
+        <div className="flex flex-col gap-2 text-xs text-(--muted-foreground) sm:flex-row sm:items-center sm:justify-between">
+          <span className="inline-flex max-w-full self-start items-center rounded-full border border-(--line) bg-(--surface-pill) px-3 py-1 text-[11px] font-semibold text-(--foreground)">
             {article.source.name}
           </span>
           <span>{formatNewsDate(article.publishedAt)}</span>
@@ -80,14 +80,14 @@ export default function FeaturedNewsStory({
             )}
           </span>
         </div>
-        <p className="text-sm text-[#5f5548] mt-4 line-clamp-4">
+        <p className="text-sm text-(--muted-foreground) mt-4 line-clamp-4">
           {article.description || "Explore the latest on this developing story."}
         </p>
         <a
           href={article.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#17130f] hover:text-(--accent)"
+          className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-(--foreground-strong) hover:text-(--accent)"
         >
           Read the full story
           <ArrowRight aria-hidden className="h-4 w-4" />

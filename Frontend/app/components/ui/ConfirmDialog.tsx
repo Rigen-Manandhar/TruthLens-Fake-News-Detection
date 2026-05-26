@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import Button from "./Button";
 
@@ -25,10 +25,21 @@ export default function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const titleId = useId();
+  const messageId = useId();
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     if (!open) {
       return;
     }
+
+    // Capture the element that opened the dialog so we can restore focus
+    // after it closes — keeps keyboard users oriented.
+    previouslyFocusedRef.current =
+      typeof document !== "undefined"
+        ? (document.activeElement as HTMLElement | null)
+        : null;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !isLoading) {
@@ -37,7 +48,15 @@ export default function ConfirmDialog({
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      const previous = previouslyFocusedRef.current;
+      if (previous && typeof previous.focus === "function") {
+        // Defer focus restoration to the next tick so React can finish
+        // unmounting the dialog DOM before we move focus back.
+        queueMicrotask(() => previous.focus());
+      }
+    };
   }, [open, isLoading, onCancel]);
 
   if (!open || typeof document === "undefined") {
@@ -56,16 +75,26 @@ export default function ConfirmDialog({
       <div
         role="dialog"
         aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={messageId}
+        aria-busy={isLoading}
         className="relative w-full max-w-sm max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-white/80 bg-white/95 p-5 shadow-[0_25px_60px_-35px_rgba(15,23,42,0.45)] sm:p-6"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-gray-900/5 text-gray-700 flex items-center justify-center text-sm font-semibold">
+          <div
+            aria-hidden="true"
+            className="h-10 w-10 rounded-full bg-gray-900/5 text-gray-700 flex items-center justify-center text-sm font-semibold"
+          >
             ?
           </div>
           <div>
-            <h3 className="text-base font-semibold text-gray-900">{title}</h3>
-            <p className="text-sm text-gray-600 mt-1">{message}</p>
+            <h3 id={titleId} className="text-base font-semibold text-gray-900">
+              {title}
+            </h3>
+            <p id={messageId} className="text-sm text-gray-600 mt-1">
+              {message}
+            </p>
           </div>
         </div>
         <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">

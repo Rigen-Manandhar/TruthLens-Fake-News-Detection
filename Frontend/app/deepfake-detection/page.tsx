@@ -94,7 +94,7 @@ export default function DeepfakeDetectionPage() {
       <div className="pointer-events-none absolute -top-14 -left-16 h-64 w-64 rounded-full bg-[rgba(232,176,116,0.28)] blur-3xl" />
       <div className="pointer-events-none absolute top-32 -right-12 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
-      <main className="page-main space-y-8 sm:space-y-10">
+      <main id="main-content" className="page-main space-y-8 sm:space-y-10">
         <header className="space-y-4 max-w-2xl">
           <div className="space-y-4">
             <h1 className="page-title display-title text-4xl sm:text-[2.9rem] font-bold text-[#17130f] tracking-tight">

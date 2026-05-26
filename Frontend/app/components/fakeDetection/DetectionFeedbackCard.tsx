@@ -29,7 +29,7 @@ export default function DetectionFeedbackCard({
   return (
     <section className="rounded-3xl border border-(--line) bg-[#fffdfa]/90 px-5 sm:px-8 py-6 shadow-[0_22px_46px_rgba(24,16,8,0.1)]">
       <div className="space-y-2">
-        <p className="text-[11px] font-semibold tracking-[0.25em] text-[#867a6a] uppercase">
+        <p className="text-[11px] font-semibold tracking-[0.25em] text-(--muted-foreground-strong) uppercase">
           Feedback
         </p>
         <h3 className="text-xl font-semibold text-[#17130f]">

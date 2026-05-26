@@ -12,7 +12,7 @@ export default function AdminRecentUsersSection({
     <section className="section-reveal delay-2 rounded-4xl border border-(--line) bg-[#fffdfa]/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#867a6a]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
             Recent users
           </p>
           <h2 className="mt-2 page-title display-title text-3xl font-bold text-[#17130f]">

@@ -45,7 +45,7 @@ export default function SettingsPage() {
 
   return (
     <div className="page-shell ambient-grid">
-      <main className="page-main space-y-6">
+      <main id="main-content" className="page-main space-y-6">
         <header>
           <h1 className="page-title display-title text-4xl font-bold text-[#17130f]">
             Settings

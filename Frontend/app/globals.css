@@ -7,6 +7,7 @@
   --surface-strong: #f8f3ea;
   --foreground: #12100d;
   --muted-foreground: #5f5548;
+  --muted-foreground-strong: #6e6354;
   --line: rgba(74, 58, 38, 0.14);
   --accent: #0e7c66;
   --accent-strong: #0a6453;
@@ -30,6 +31,29 @@ body {
   font-family: var(--font-body), "Segoe UI", sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
+}
+
+/* Skip-to-content link, visually hidden until focused. */
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 100;
+  transform: translateY(-150%);
+  padding: 0.5rem 0.875rem;
+  border-radius: 9999px;
+  background: #12100d;
+  color: #f7f1e6;
+  font-weight: 600;
+  font-size: 0.85rem;
+  box-shadow: 0 12px 24px rgba(24, 16, 8, 0.22);
+  transition: transform 180ms ease;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: none;
 }
 
 .display-title {
@@ -102,16 +126,35 @@ body {
   }
 }
 
-.section-reveal {
-  animation: fadeUp 0.72s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+/* Animations are gated behind prefers-reduced-motion: no-preference. */
+.section-reveal,
+.auth-appear,
+.auth-appear-delay {
+  opacity: 1;
+  transform: none;
 }
 
-.delay-1 {
-  animation-delay: 0.12s;
-}
+@media (prefers-reduced-motion: no-preference) {
+  .section-reveal {
+    animation: fadeUp 0.72s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
 
-.delay-2 {
-  animation-delay: 0.24s;
+  .auth-appear {
+    animation: authFadeUp 0.7s ease-out both;
+  }
+
+  .auth-appear-delay {
+    animation: authFadeUp 0.85s ease-out both;
+    animation-delay: 0.12s;
+  }
+
+  .delay-1 {
+    animation-delay: 0.12s;
+  }
+
+  .delay-2 {
+    animation-delay: 0.24s;
+  }
 }
 
 @keyframes authFadeUp {
@@ -123,15 +166,6 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.auth-appear {
-  animation: authFadeUp 0.7s ease-out both;
-}
-
-.auth-appear-delay {
-  animation: authFadeUp 0.85s ease-out both;
-  animation-delay: 0.12s;
 }
 
 @keyframes fadeUp {

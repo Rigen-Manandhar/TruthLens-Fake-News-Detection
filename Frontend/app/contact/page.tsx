@@ -92,11 +92,11 @@ export default function ContactPage() {
       <div className="pointer-events-none absolute top-[9rem] right-0 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
       <div className="flex min-h-[calc(100vh-5.5rem)] flex-1 flex-col sm:min-h-[calc(100vh-5.75rem)]">
-        <main className="page-main flex flex-1 flex-col justify-center">
+        <main id="main-content" className="page-main flex flex-1 flex-col justify-center">
           <section className="section-reveal rounded-[2.2rem] border border-(--line) bg-[#fffdfa]/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10 lg:px-10 lg:py-12">
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(29rem,0.88fr)] lg:items-center xl:gap-10">
               <div className="space-y-7">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#867a6a]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-(--muted-foreground-strong)">
                 Contact TruthLens
               </p>
               <h1 className="page-title display-title max-w-3xl text-4xl font-bold text-[#17130f] sm:text-[3.35rem] lg:text-[3.9rem]">
@@ -110,7 +110,7 @@ export default function ContactPage() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <article className="rounded-[1.5rem] border border-(--line) bg-[#f7f1e6]/92 p-5 shadow-[0_16px_32px_rgba(24,16,8,0.08)]">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#867a6a]">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
                     Inbox
                   </p>
                   <p className="mt-3 break-words text-base font-semibold text-[#17130f]">
@@ -122,7 +122,7 @@ export default function ContactPage() {
                 </article>
 
                 <article className="rounded-[1.5rem] border border-(--line) bg-[#fffdf8] p-5 shadow-[0_16px_32px_rgba(24,16,8,0.08)]">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#867a6a]">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
                     Best for
                   </p>
                   <p className="mt-3 text-sm leading-7 text-[#5f5548]">

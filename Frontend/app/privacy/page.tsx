@@ -30,11 +30,11 @@ export default function PrivacyPage() {
       <div className="pointer-events-none absolute -top-12 -left-12 h-56 w-56 rounded-full bg-[rgba(232,176,116,0.28)] blur-3xl" />
       <div className="pointer-events-none absolute top-36 right-0 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
-      <main className="page-main space-y-10 sm:space-y-12">
+      <main id="main-content" className="page-main space-y-10 sm:space-y-12">
         <section className="section-reveal rounded-4xl border border-(--line) bg-[#fffdfa]/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.16fr)_minmax(0,0.84fr)] lg:items-end">
             <div className="space-y-5">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#867a6a]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-(--muted-foreground-strong)">
                 Privacy Policy
               </p>
               <h1 className="page-title display-title max-w-3xl text-4xl font-bold text-[#17130f] sm:text-[3.2rem]">
@@ -76,7 +76,7 @@ export default function PrivacyPage() {
                 index === 1 ? "delay-1" : index === 2 ? "delay-2" : ""
               }`}
             >
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#867a6a]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
                 Category {index + 1}
               </p>
               <h2 className="mt-3 page-title display-title text-2xl font-bold text-[#17130f]">
@@ -91,7 +91,7 @@ export default function PrivacyPage() {
 
         <section className="section-reveal delay-1 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)]">
           <article className="rounded-4xl border border-(--line) bg-[#f7f1e6]/92 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#867a6a]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
               Your controls
             </p>
             <h2 className="mt-3 page-title display-title text-3xl font-bold text-[#17130f]">
@@ -111,7 +111,7 @@ export default function PrivacyPage() {
           </article>
 
           <article className="rounded-4xl border border-(--line) bg-[#fffdfa]/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#867a6a]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
               Need help?
             </p>
             <div className="mt-4 space-y-4">

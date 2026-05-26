@@ -28,6 +28,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${bodyFont.variable} ${displayFont.variable} antialiased`}>
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
         <AuthSessionProvider>
           <Header />
           {children}

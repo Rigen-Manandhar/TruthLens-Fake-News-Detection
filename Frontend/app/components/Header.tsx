@@ -7,6 +7,7 @@ import { signOut, useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import Logo from "./ui/Logo";
 import ConfirmDialog from "./ui/ConfirmDialog";
+import { useReducedMotion } from "./ui/useReducedMotion";
 
 type NavKey = "news" | "fake" | "deepfake" | "admin";
 
@@ -54,6 +55,7 @@ export default function Header() {
   });
   const hasMeasuredIndicatorRef = useRef(false);
   const [navIndicator, setNavIndicator] = useState<NavIndicator>(INITIAL_INDICATOR);
+  const reducedMotion = useReducedMotion();
 
   const activeNavKey: NavKey | null = isNews
     ? "news"
@@ -248,7 +250,7 @@ export default function Header() {
           <span
             aria-hidden="true"
             className={`pointer-events-none absolute rounded-full bg-[#12100d] shadow-[0_8px_18px_rgba(18,16,13,0.18)] ${
-              navIndicator.animated
+              navIndicator.animated && !reducedMotion
                 ? "transition-[transform,width,height,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0.24,1)]"
                 : ""
             }`}
@@ -390,6 +392,7 @@ export default function Header() {
                 className="flex h-9 w-9 items-center justify-center rounded-full bg-[#12100d] text-sm font-semibold text-[#f7f1e6] shadow-[0_10px_22px_rgba(23,17,10,0.25)] transition-colors hover:bg-[#0e7c66]"
                 aria-expanded={isMenuOpen}
                 aria-haspopup="menu"
+                aria-label="Account menu"
                 title="Account settings"
               >
                 {avatarInitial}

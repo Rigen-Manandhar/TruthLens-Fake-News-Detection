@@ -82,10 +82,10 @@ export default function AdminDashboard() {
       <div className="pointer-events-none absolute -top-12 -left-12 h-56 w-56 rounded-full bg-[rgba(232,176,116,0.28)] blur-3xl" />
       <div className="pointer-events-none absolute top-36 right-0 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
-      <main className="page-main space-y-10 sm:space-y-12">
+      <main id="main-content" className="page-main space-y-10 sm:space-y-12">
         <section className="section-reveal rounded-4xl border border-(--line) bg-[#fffdfa]/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10">
           <div className="space-y-5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#867a6a]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-(--muted-foreground-strong)">
               Admin Dashboard
             </p>
             <h1 className="page-title display-title max-w-3xl text-4xl font-bold text-[#17130f] sm:text-[3.2rem]">

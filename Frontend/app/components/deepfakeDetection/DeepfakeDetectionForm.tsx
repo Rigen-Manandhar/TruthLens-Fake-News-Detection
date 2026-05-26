@@ -86,7 +86,7 @@ export default function DeepfakeDetectionForm({
 
       <div className="relative flex flex-col h-full">
         <div className="space-y-1.5 mb-4">
-          <p className="text-[11px] font-semibold tracking-[0.25em] text-[#867a6a] uppercase">
+          <p className="text-[11px] font-semibold tracking-[0.25em] text-(--muted-foreground-strong) uppercase">
             Upload
           </p>
           <label htmlFor="deepfake-file" className="text-sm font-semibold text-[#17130f]">

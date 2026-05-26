@@ -66,7 +66,7 @@ export default function LoginForm({ resetStatus = "" }: LoginFormProps) {
 
       <div className="relative">
         <div className="mb-6">
-          <p className="text-[11px] font-semibold tracking-[0.25em] text-[#847868] uppercase">
+          <p className="text-[11px] font-semibold tracking-[0.25em] text-(--muted-foreground-strong) uppercase">
             Secure access
           </p>
           <h1 className="page-title display-title text-3xl font-bold text-[#17130f] mb-2">

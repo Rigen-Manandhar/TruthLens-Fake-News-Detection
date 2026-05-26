@@ -15,7 +15,7 @@ NEGATION_WORDS = {"no", "not", "nor", "never", "none", "without", "cannot", "can
 def get_cors_origins() -> list[str]:
     configured = os.getenv("BACKEND_CORS_ORIGINS", "").strip()
     if not configured:
-        return ["http://localhost:3001"]
+        return ["http://localhost:3000", "http://127.0.0.1:3000"]
 
     origins = [origin.strip() for origin in configured.split(",") if origin.strip()]
-    return origins or ["http://localhost:3001"]
+    return origins or ["http://localhost:3000", "http://127.0.0.1:3000"]

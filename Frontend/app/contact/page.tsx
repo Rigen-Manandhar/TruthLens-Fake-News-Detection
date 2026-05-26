@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 
 import Footer from "../components/Footer";
+import Textarea from "../components/ui/Textarea";
 
 type ContactStatus = {
   type: "success" | "error";
@@ -203,20 +204,15 @@ export default function ContactPage() {
                 )}
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="contact-message"
-                    className="text-sm font-semibold text-[#17130f]"
-                  >
-                    Message
-                  </label>
-                  <textarea
+                  <Textarea
+                    label="Message"
                     id="contact-message"
                     value={form.message}
                     onChange={(event) => updateField("message", event.target.value)}
-                    className="min-h-40 w-full rounded-[1.5rem] border border-(--line) bg-[#fffdf8] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#948777] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
                     placeholder="Write what you want to send..."
                     maxLength={3000}
                     disabled={isSubmitting}
+                    className="min-h-40"
                   />
                 </div>
 

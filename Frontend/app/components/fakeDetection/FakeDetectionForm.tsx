@@ -1,3 +1,6 @@
+import Select from "../ui/Select";
+import Textarea from "../ui/Textarea";
+
 interface FakeDetectionFormProps {
   articleText: string;
   sourceUrl: string;
@@ -45,35 +48,23 @@ export default function FakeDetectionForm({
           <p className="text-[11px] font-semibold tracking-[0.25em] text-(--muted-foreground-strong) uppercase">
             Input
           </p>
-          <label
-            htmlFor="articleText"
-            className="text-sm font-semibold text-[#17130f]"
-          >
-            Article Text
-          </label>
-          <p className="text-xs text-(--muted-foreground)">
-            Paste an excerpt or headline you want to assess.
-          </p>
         </div>
 
         <div className="mb-4">
-          <textarea
+          <Textarea
+            label="Article text"
             id="articleText"
             value={articleText}
             onChange={(e) => onArticleChange(e.target.value)}
             placeholder="Paste article text here..."
-            className="min-h-56 sm:min-h-72 w-full resize-y lg:resize-none rounded-2xl border border-(--line) bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#958878] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
+            helperText="Paste an excerpt or headline you want to assess."
+            className="min-h-56 sm:min-h-72 resize-y lg:resize-none"
           />
         </div>
 
-        <div className="space-y-2 mb-4">
-          <label
-            htmlFor="inputMode"
-            className="text-sm font-semibold text-[#17130f]"
-          >
-            Input Mode
-          </label>
-          <select
+        <div className="mb-4">
+          <Select
+            label="Input mode"
             id="inputMode"
             value={inputMode}
             onChange={(e) =>
@@ -85,16 +76,13 @@ export default function FakeDetectionForm({
                   | "headline_plus_article"
               )
             }
-            className="w-full rounded-2xl border border-(--line) bg-[#f7f1e6] px-4 py-3 text-sm text-[#17130f] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
+            helperText="Auto mode is recommended. Use manual mode if your paste format is unusual."
           >
             <option value="auto">Auto assess</option>
             <option value="headline_only">Headline only</option>
             <option value="full_article">Full article</option>
             <option value="headline_plus_article">Headline + article</option>
-          </select>
-          <p className="text-xs text-(--muted-foreground)">
-            Auto mode is recommended. Use manual mode if your paste format is unusual.
-          </p>
+          </Select>
         </div>
 
         <div className="space-y-2 mb-4">

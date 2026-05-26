@@ -3,6 +3,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import Button from "../ui/Button";
+import Textarea from "../ui/Textarea";
 
 type ExtensionTokenResponse = {
   token: string;
@@ -118,11 +119,15 @@ export default function ExtensionTokenCard() {
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-(--muted-foreground)">
               Current token
             </p>
-            <textarea
-              readOnly
-              value={tokenData.token}
-              className="mt-3 min-h-28 w-full rounded-xl border border-(--line) bg-[#f7f1e6] px-3 py-3 text-xs text-[#17130f] focus:outline-none"
-            />
+            <div className="mt-3">
+              <Textarea
+                label="Token"
+                id="extension-token"
+                readOnly
+                value={tokenData.token}
+                className="min-h-28 text-xs"
+              />
+            </div>
             <div className="mt-3 flex flex-col gap-3 text-xs text-(--muted-foreground) sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
               <span>Version: {tokenData.version}</span>
               <span className="break-words">Last rotation: {formatDateTime(tokenData.rotatedAt)}</span>

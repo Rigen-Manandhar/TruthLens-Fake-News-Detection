@@ -1,5 +1,6 @@
 import Button from "../ui/Button";
 import Input from "../ui/Input";
+import Select from "../ui/Select";
 import {
   NEWS_CATEGORY_OPTIONS,
   type DetectionExplanationMode,
@@ -57,7 +58,9 @@ export default function PreferencesSection({
           </button>
         ))}
       </div>
-      <select
+      <Select
+        label="Detection input mode"
+        id="detectionInputMode"
         value={prefs.detectionInputMode}
         onChange={(e) =>
           onPrefsChange({
@@ -65,14 +68,15 @@ export default function PreferencesSection({
             detectionInputMode: e.target.value as DetectionInputMode,
           })
         }
-        className="w-full px-4 py-3 border border-(--line) rounded-xl bg-[#fffdf8] text-[#17130f]"
       >
         <option value="auto">Auto</option>
         <option value="headline_only">Headline only</option>
         <option value="full_article">Full article</option>
         <option value="headline_plus_article">Headline + article</option>
-      </select>
-      <select
+      </Select>
+      <Select
+        label="Explanation mode"
+        id="detectionExplanationMode"
         value={prefs.detectionExplanationMode}
         onChange={(e) =>
           onPrefsChange({
@@ -80,11 +84,10 @@ export default function PreferencesSection({
             detectionExplanationMode: e.target.value as DetectionExplanationMode,
           })
         }
-        className="w-full px-4 py-3 border border-(--line) rounded-xl bg-[#fffdf8] text-[#17130f]"
       >
         <option value="auto">Auto explanation</option>
         <option value="none">No explanation</option>
-      </select>
+      </Select>
       <Button
         type="button"
         onClick={onSave}

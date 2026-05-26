@@ -322,3 +322,34 @@ This document captures the **what** for each improvement. Implementation specifi
 4. IF a Web App or Extension change appears to require a backend update, THEN THE feature SHALL stop and surface the conflict for an explicit scope decision before any backend file is edited.
 
 ---
+## Phase 1 — UI Polish Defense Refinement (shipped on `ui-polish-defense-refinement`)
+
+This branch implements a scoped UI/UX polish pass covering 9 areas. Backend, scoring, prediction, auth, DB, API routes, and environment files are untouched. The hero image is intentionally untouched. The branch is committed locally per area; lint and build are green at every commit.
+
+Areas covered:
+
+1. **Dependencies** — `lucide-react` added (only new runtime dependency in Phase 1). `focus-trap-react` is intentionally NOT installed yet (Phase 2 only).
+2. **Accessibility basics** — Skip-to-main-content link added in `app/layout.tsx`; `id="main-content"` added to every top-level `<main>` (13 surfaces). `prefers-reduced-motion: reduce` now disables `section-reveal` / `auth-appear` / `fadeUp` / `authFadeUp` and the sliding nav indicator transition. New `--muted-foreground-strong` token (`#6e6354`) replaces 39 borderline-AA hex eyebrow colors. ConfirmDialog gets `useId`-derived `aria-labelledby` / `aria-describedby` / `aria-busy` plus focus restoration on close (no library — manual capture/restore).
+3. **Icon system** — `lucide-react` rolled out via `app/components/ui/icons.ts`. Replaced text arrows in NewsCard, FeaturedNewsStory, About; reset-feed SVG in HeroSection (`RefreshCw`); upload SVG in DeepfakeDetectionForm (`Upload`); empty-state SVG in DeepfakeDetectionResult (`ImageIcon`); literal `?` in ConfirmDialog (`HelpCircle` with optional `iconType="warn"` `AlertTriangle`); LogOut icon next to Header sign-out menu item.
+4. **Form primitives** — New `Textarea` and `Select` primitives in `app/components/ui/`. Migrated FakeDetectionForm (textarea + input mode select), PreferencesSection (two selects), ExtensionTokenCard (token textarea), and contact page (message textarea). URL/text inputs left as-is to keep scope tight.
+5. **Branded toasts** — `ToastProvider` rebranded with cream surface (`#fffdf8`), 16-px radius, palette-correct border, and lucide icons for success / error / loading.
+6. **News card polish** — `utils.ts` split into `getAnalysisLabel`, `getAnalysisConfidence`, and `getVerdictAccentClass` (original `getAnalysisText` kept for backward compat). NewsCard and FeaturedNewsStory now render a 3-px verdict-tinted top accent strip and a 2-px confidence bar inside the analysis pill (uses `bg-current` so it stays in palette).
+7. **RiskMeter + SignalsChecklist** — New `RiskMeter` (3-segment horizontal meter with pointer at `final_score`, `role="img"` plus `aria-label`) and `SignalsChecklist` (5 rows: Source / Retrieval / Headline / Article / Coverage with status icons, 1-line context, optional disagreement note when `conflict.is_conflict`). FakeDetectionResult drops the `Result:` prefix, removes the inline `Hybrid evidence and risk analysis` caption, removes the four "What we checked" cards (now captured by the checklist), and keeps the existing `What this result means` amber callout. `finalScore` now threads from `predictionSnapshot.finalScore`.
+8. **Detection page polish** — FakeDetectionResult has three states: result, `isLoading` skeleton (Analyzing pill + disabled meter labelled `Analyzing…` + 3 placeholder rows + `aria-busy`), and empty (`ScanSearch` icon + `Awaiting input` + `Try a headline` / `Try a URL` example chips that prefill the form without auto-running). FakeDetectionForm has Ctrl/Cmd+Enter on the textarea (`preventDefault`, calls `onAnalyze`) and a visible `Ctrl + Enter` `<kbd>` hint on `sm+`.
+9. **Footer + contact + microcopy** — Footer rebuilt as a 3-column block (brand + tagline / Product links / Resources links / `©` year + small `Final Year Project` tag). **No status pill** — explicitly avoided since there is no real health endpoint. New `MailLink` component renders `rigenmanandharrm [at] gmail [dot] com` on the server and upgrades to a real `mailto:` anchor after hydration via `useSyncExternalStore` (React 19 compliant). Contact page uses `MailLink`. `Hybrid evidence and risk analysis` wording now appears only in the page sub-eyebrow and result panel footer (the redundant pill caption is removed).
+
+### Phase 2 — Deferred (gated on Phase 1 review approval)
+
+Held for explicit user approval after they review the Phase 1 diff/screenshots. Listed for traceability:
+- Dark mode foundation (CSS-var dark tokens) + `ThemeInit` script + `ThemeToggle` (System/Light/Dark) + `localStorage.truthlens.theme` persistence.
+- ConfirmDialog focus trap via `focus-trap-react` (only place this dependency gets installed).
+- Detection history drawer + `useDetectionHistory` hook (`localStorage.truthlens.detection.history`, capped at 10 entries).
+- Settings sticky sidebar on `lg+` and horizontal scroll-tabs on mobile.
+
+### Verification trail (Phase 1)
+
+- `npm run lint`: green at every per-area commit and at final.
+- `npm run build`: green at every per-area commit and at final (Next.js 16, Turbopack).
+- React 19 strict lint flagged two patterns mid-task; both refactored to `useSyncExternalStore` to comply: `useReducedMotion` and `MailLink` hydration detection.
+- Branch lives on `ui-polish-defense-refinement`; nothing pushed to `main`. Branch tracking will be set when the branch is pushed in the final QA step.
+

@@ -56,7 +56,8 @@ export default function Header() {
     admin: null,
   });
   const hasMeasuredIndicatorRef = useRef(false);
-  const [navIndicator, setNavIndicator] = useState<NavIndicator>(INITIAL_INDICATOR);
+  const [navIndicator, setNavIndicator] =
+    useState<NavIndicator>(INITIAL_INDICATOR);
   const reducedMotion = useReducedMotion();
 
   const activeNavKey: NavKey | null = isNews
@@ -222,20 +223,23 @@ export default function Header() {
     setIsLogoutOpen(false);
   };
 
-  const rawInitial =
-    user?.name?.trim()?.[0] ?? user?.email?.trim()?.[0] ?? "U";
+  const rawInitial = user?.name?.trim()?.[0] ?? user?.email?.trim()?.[0] ?? "U";
   const avatarInitial = rawInitial.toUpperCase();
 
   const navLinkClass = (active: boolean) =>
     `rounded-full px-4 py-1.5 transition-all ${
-      active ? "bg-(--ink) text-(--ink-foreground) font-semibold" : "hover:text-(--foreground)"
+      active
+        ? "bg-(--ink) text-(--ink-foreground) font-semibold"
+        : "hover:text-(--foreground)"
     }`;
 
   // Desktop variant relies on the sliding indicator instead of a per-item pill,
   // so it only flips text colour and stacks above the indicator via z-index.
   const desktopNavLinkClass = (active: boolean) =>
     `relative z-10 rounded-full px-4 py-1.5 transition-colors duration-300 ease-out ${
-      active ? "text-(--ink-foreground) font-semibold" : "hover:text-(--foreground)"
+      active
+        ? "text-(--ink-foreground) font-semibold"
+        : "hover:text-(--foreground)"
     }`;
 
   return (
@@ -337,7 +341,10 @@ export default function Header() {
             {isMobileNavOpen && (
               <div className="absolute right-0 mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-3xl border border-(--line) bg-(--surface-strong) p-3 shadow-[0_20px_40px_rgba(20,16,8,0.14)]">
                 <div className="grid gap-2 text-sm text-(--muted-foreground)">
-                  <Link href="/" className={`${navLinkClass(isNews)} text-center`}>
+                  <Link
+                    href="/"
+                    className={`${navLinkClass(isNews)} text-center`}
+                  >
                     News
                   </Link>
                   <Link
@@ -365,7 +372,7 @@ export default function Header() {
                   <div className="mt-3 grid gap-2 border-t border-(--line) pt-3">
                     <Link
                       href="/login"
-                      className="inline-flex items-center justify-center rounded-full border border-(--line) bg-(--surface) px-4 py-2.5 text-sm font-semibold text-(--muted-foreground) transition-colors hover:bg-(--surface-hover) hover:text-(--foreground)"
+                      className="inline-flex items-center justify-center rounded-full border border-(--line) bg-(--surface) px-4 py-2.5 text-sm font-semibold text-(--muted-foreground) transition-colors hover:bg-(--surface-hover) hover:text-foreground"
                     >
                       Log in
                     </Link>
@@ -437,7 +444,7 @@ export default function Header() {
             <>
               <Link
                 href="/login"
-                className="hidden md:inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold text-(--muted-foreground) transition-colors hover:bg-(--surface-hover) hover:text-(--foreground) sm:text-sm"
+                className="hidden md:inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold text-(--muted-foreground) transition-colors hover:bg-(--surface-hover) hover:text-foreground sm:text-sm"
               >
                 Log in
               </Link>

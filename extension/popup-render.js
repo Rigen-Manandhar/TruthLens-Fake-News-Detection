@@ -1,9 +1,25 @@
 import { els } from "./popup-dom.js";
 import { state, UI_MODES } from "./popup-state.js";
 
+const LEVEL_DESCRIPTIONS = {
+  high: "The available signals show lower misinformation risk, but this is not a guarantee that every claim is true.",
+  low: "The available signals show higher misinformation risk. Review the source and evidence before trusting or sharing.",
+  mixed: "The system does not have enough reliable evidence to make a strong risk judgment.",
+};
+
+const REASON_LABELS = {
+  CONFLICT: "Conflict",
+  LOW_CONFIDENCE: "Low confidence",
+  INSUFFICIENT_TEXT: "Insufficient text",
+  FETCH_FAILED: "Fetch failed",
+  UNSUPPORTED_URL: "Unsupported URL",
+};
+
+const NBSP = "\u00A0";
+
 export function renderSourceUrlStatus() {
   const { isSupported, reasonMessage } = state.activeTabEligibility;
-  els.sourceUrlStatus.textContent = reasonMessage || "\u00A0";
+  els.sourceUrlStatus.textContent = reasonMessage || NBSP;
   els.sourceUrlStatus.classList.remove("is-success", "is-warning");
   els.sourceUrlStatus.classList.add(isSupported ? "is-success" : "is-warning");
 }
@@ -47,7 +63,7 @@ export function setUiMode(mode) {
 }
 
 export function setConfigStatus(message, tone) {
-  els.configStatus.textContent = message || "\u00A0";
+  els.configStatus.textContent = message || NBSP;
   els.configStatus.classList.remove("is-success", "is-error");
 
   if (tone === "success") {
@@ -58,7 +74,7 @@ export function setConfigStatus(message, tone) {
 }
 
 export function setFeedbackStatus(message, tone) {
-  els.feedbackStatus.textContent = message || "\u00A0";
+  els.feedbackStatus.textContent = message || NBSP;
   els.feedbackStatus.classList.remove("is-success", "is-error");
 
   if (tone === "success") {
@@ -81,51 +97,138 @@ function applyToneClass(el, tone) {
   el.classList.add("tone-warn");
 }
 
-function titleCase(raw) {
-  return raw
-    .toLowerCase()
-    .split(/[_\s]+/)
-    .filter(Boolean)
-    .map((part) => part[0].toUpperCase() + part.slice(1))
-    .join(" ");
+function mapVerdictToLevel(verdictRaw) {
+  if (verdictRaw === "LIKELY REAL") return "high";
+  if (verdictRaw === "SUSPICIOUS") return "low";
+  return "mixed";
 }
 
-function getReasonText(raw) {
-  if (
-    raw?.uncertainty?.reason_message &&
-    typeof raw.uncertainty.reason_message === "string"
-  ) {
-    return raw.uncertainty.reason_message.trim();
+function mapLevelToTone(level) {
+  if (level === "high") return "ok";
+  if (level === "low") return "bad";
+  return "warn";
+}
+
+function mapVerdictToDisplayLabel(verdictRaw) {
+  if (verdictRaw === "LIKELY REAL") return "Lower Risk";
+  if (verdictRaw === "SUSPICIOUS") return "Higher Risk";
+  return "Needs Review";
+}
+
+function buildSourceCheckText(sourceSignal) {
+  if (!sourceSignal) return "";
+
+  if (sourceSignal.known) {
+    const domain = sourceSignal.domain ?? "Source";
+    const credibility = sourceSignal.credibility ?? "credibility noted";
+    const rationale =
+      typeof sourceSignal.rationale === "string"
+        ? sourceSignal.rationale.trim()
+        : "";
+    const base = `${domain} — ${credibility}.`;
+    return rationale ? `${base} ${rationale}` : base;
   }
 
-  if (typeof raw?.detail === "string" && raw.detail.trim()) {
-    return raw.detail.trim();
+  const domain = sourceSignal.domain ?? "No URL";
+  return `${domain} is not in our source database, so no source-based signal was applied.`;
+}
+
+function buildArticleRetrievalText(fetchMetadata) {
+  if (!fetchMetadata?.attempted) return "";
+  return fetchMetadata.success
+    ? "The article text was successfully retrieved from the URL."
+    : "Article retrieval was attempted but unsuccessful.";
+}
+
+function buildLanguageAnalysisText(modelOutputs, conflict) {
+  const headlineRan = Boolean(modelOutputs?.model_a?.ran);
+  const articleRan = Boolean(modelOutputs?.model_b?.ran);
+
+  if (!headlineRan && !articleRan) return "";
+
+  let lead;
+  if (headlineRan && articleRan) {
+    lead = "Both the headline and the article body were analyzed for language patterns.";
+  } else if (headlineRan) {
+    lead = "The headline was analyzed for language patterns.";
+  } else {
+    lead = "The article body was analyzed for language patterns.";
   }
 
-  return "Hybrid risk analysis completed for the submitted content.";
+  let text = `${lead} Language signals are indicators, not proof of truth or falsehood.`;
+  if (conflict?.is_conflict) {
+    text += " The signals were inconclusive, so this result is treated as review-needed.";
+  }
+  return text;
+}
+
+function buildCoverageText(coverageSignal, claimHints) {
+  if (!coverageSignal?.checked) return "";
+
+  const message =
+    typeof coverageSignal.message === "string" && coverageSignal.message.trim()
+      ? coverageSignal.message.trim()
+      : "Trusted-source coverage was checked.";
+
+  if (Array.isArray(claimHints) && claimHints.length > 0) {
+    const hintLines = claimHints
+      .map((hint) => `  \u2022 ${hint}`)
+      .join("\n");
+    return `${message}\n${hintLines}`;
+  }
+
+  return message;
 }
 
 function buildChecksSummary(raw) {
-  if (!Array.isArray(raw?.steps) || raw.steps.length === 0) {
-    return "No detailed check trace was returned.";
+  const sections = [];
+
+  const sourceText = buildSourceCheckText(raw?.evidence_summary?.source_signal);
+  if (sourceText) {
+    sections.push(`Source credibility — ${sourceText}`);
   }
 
-  return raw.steps
-    .map((step, idx) => {
-      const stepName =
-        typeof step?.step === "string" && step.step.trim()
-          ? step.step.trim()
-          : `Check ${idx + 1}`;
-      const stepDetail =
-        typeof step?.details === "string" && step.details.trim()
-          ? `: ${step.details.trim()}`
-          : "";
-      return `${idx + 1}. ${stepName}${stepDetail}`;
-    })
-    .join("\n");
+  const retrievalText = buildArticleRetrievalText(raw?.fetch_metadata);
+  if (retrievalText) {
+    sections.push(`Article retrieval — ${retrievalText}`);
+  }
+
+  const languageText = buildLanguageAnalysisText(raw?.model_outputs, raw?.conflict);
+  if (languageText) {
+    sections.push(`Language analysis — ${languageText}`);
+  }
+
+  const coverageText = buildCoverageText(
+    raw?.evidence_summary?.coverage_signal,
+    raw?.evidence_summary?.claim_hints
+  );
+  if (coverageText) {
+    sections.push(`Claim cross-reference — ${coverageText}`);
+  }
+
+  if (sections.length === 0) {
+    if (Array.isArray(raw?.steps) && raw.steps.length > 0) {
+      return raw.steps
+        .map((step, idx) => {
+          const stepName =
+            typeof step?.step === "string" && step.step.trim()
+              ? step.step.trim()
+              : `Check ${idx + 1}`;
+          const stepDetail =
+            typeof step?.details === "string" && step.details.trim()
+              ? `: ${step.details.trim()}`
+              : "";
+          return `${idx + 1}. ${stepName}${stepDetail}`;
+        })
+        .join("\n");
+    }
+    return "No checks were returned for this submission.";
+  }
+
+  return sections.join("\n\n");
 }
 
-function buildWhyText(raw, normalized) {
+function buildAnalysisDetails(raw) {
   const parts = [];
 
   if (raw?.parse_metadata?.used_mode) {
@@ -137,34 +240,25 @@ function buildWhyText(raw, normalized) {
       typeof raw?.parse_metadata?.body_word_count === "number"
         ? raw.parse_metadata.body_word_count
         : 0;
-    parts.push(
-      `Processed approximately ${raw.parse_metadata.headline_word_count + bodyCount} words.`
-    );
+    const total = raw.parse_metadata.headline_word_count + bodyCount;
+    parts.push(`Processed approximately ${total} words.`);
   }
 
   const modelA = raw?.model_outputs?.model_a;
   const modelB = raw?.model_outputs?.model_b;
-  if (modelA?.ran || modelB?.ran) {
-    const bits = [];
-    if (typeof modelA?.confidence === "number") {
-      bits.push(`Model A language signal confidence ${Math.round(modelA.confidence * 100)}%`);
-    }
-    if (typeof modelB?.confidence === "number") {
-      bits.push(`Model B language signal confidence ${Math.round(modelB.confidence * 100)}%`);
-    }
-    if (bits.length) {
-      parts.push(`${bits.join("; ")}.`);
-    }
-  }
-
-  if (raw?.conflict?.is_conflict) {
-    parts.push("Models produced mixed signals, so this result should be reviewed carefully.");
-  }
-
-  if (parts.length === 0) {
-    parts.push(
-      `Risk label is ${normalized.verdictLabel} based on source, language, and evidence signals.`
+  const confidenceBits = [];
+  if (modelA?.ran && typeof modelA.confidence === "number") {
+    confidenceBits.push(
+      `Model A language signal confidence ${Math.round(modelA.confidence * 100)}%`
     );
+  }
+  if (modelB?.ran && typeof modelB.confidence === "number") {
+    confidenceBits.push(
+      `Model B language signal confidence ${Math.round(modelB.confidence * 100)}%`
+    );
+  }
+  if (confidenceBits.length) {
+    parts.push(`${confidenceBits.join("; ")}.`);
   }
 
   return parts.join(" ");
@@ -172,42 +266,47 @@ function buildWhyText(raw, normalized) {
 
 export function normalizePredictResponse(raw) {
   const verdictRaw = String(raw?.verdict || "").trim().toUpperCase();
+  const reasonCode =
+    typeof raw?.uncertainty?.reason_code === "string"
+      ? raw.uncertainty.reason_code
+      : null;
+  const reasonMessage =
+    typeof raw?.uncertainty?.reason_message === "string"
+      ? raw.uncertainty.reason_message.trim()
+      : "";
+  const isTooShort = reasonCode === "INSUFFICIENT_TEXT";
 
-  let verdictLabel = "Needs Review";
-  let verdictTone = "warn";
+  const level = mapVerdictToLevel(verdictRaw);
+  const verdictTone = mapLevelToTone(level);
 
-  if (verdictRaw === "LIKELY REAL") {
-    verdictLabel = "Lower Risk";
-    verdictTone = "ok";
-  } else if (verdictRaw === "SUSPICIOUS") {
-    verdictLabel = "Higher Risk";
-    verdictTone = "bad";
-  } else if (verdictRaw) {
-    verdictLabel = titleCase(verdictRaw);
-    verdictTone = "warn";
-  }
+  const verdictLabel = isTooShort
+    ? "Too short"
+    : mapVerdictToDisplayLabel(verdictRaw);
 
-  const riskLabel =
-    typeof raw?.risk_level === "string" && raw.risk_level.trim()
+  const riskLabel = isTooShort
+    ? "Too short"
+    : typeof raw?.risk_level === "string" && raw.risk_level.trim()
       ? raw.risk_level.trim()
       : "Needs Review";
-  const reasonText = getReasonText(raw);
-  const checksCount = Array.isArray(raw?.steps) ? raw.steps.length : 0;
-  const checksSummary = buildChecksSummary(raw);
 
-  const normalized = {
+  const reasonLabel = reasonCode ? REASON_LABELS[reasonCode] ?? reasonCode : null;
+
+  const resultMessage = LEVEL_DESCRIPTIONS[level];
+  const heroReason = reasonMessage || resultMessage;
+
+  return {
     verdictLabel,
     verdictTone,
     riskLabel,
-    reasonText,
-    checksCount,
-    checksSummary,
-    whyText: "",
+    level,
+    isTooShort,
+    resultMessage,
+    heroReason,
+    reasonLabel,
+    reasonMessage,
+    checksSummary: buildChecksSummary(raw),
+    analysisDetails: buildAnalysisDetails(raw),
   };
-
-  normalized.whyText = buildWhyText(raw, normalized);
-
-  return normalized;
 }
 
 export function setFormLocked(locked) {
@@ -223,7 +322,7 @@ export function showFormError(message) {
 }
 
 export function clearFormError() {
-  els.formError.textContent = "\u00A0";
+  els.formError.textContent = NBSP;
   els.formError.classList.remove("is-visible");
 }
 
@@ -253,8 +352,9 @@ export function syncFeedbackControls() {
 
 export function renderFeedbackSection() {
   const hasPrediction = Boolean(state.lastPayload && state.lastRaw);
-  els.feedbackSection.hidden = !hasPrediction;
-  if (!hasPrediction) {
+  const hideForTooShort = Boolean(state.lastNormalized?.isTooShort);
+  els.feedbackSection.hidden = !hasPrediction || hideForTooShort;
+  if (!hasPrediction || hideForTooShort) {
     return;
   }
 
@@ -270,6 +370,20 @@ export function triggerInvalidShake() {
   els.inputCard.classList.add("shake");
 }
 
+function renderReasonCallout(normalized) {
+  if (!normalized.reasonLabel) {
+    els.resultReason.hidden = true;
+    els.resultReasonLabelText.textContent = "";
+    els.resultReasonText.textContent = "";
+    return;
+  }
+
+  els.resultReason.hidden = false;
+  els.resultReasonLabelText.textContent = normalized.reasonLabel;
+  els.resultReasonText.textContent = normalized.reasonMessage || "";
+  els.resultReasonText.hidden = !normalized.reasonMessage;
+}
+
 export function renderResult(normalized) {
   state.lastNormalized = normalized;
 
@@ -279,20 +393,24 @@ export function renderResult(normalized) {
   els.resultBadge.textContent = normalized.verdictLabel;
   els.resultRisk.textContent = `Risk: ${normalized.riskLabel}`;
   els.resultTitle.textContent = "Analysis complete";
-  els.resultMessage.textContent = normalized.reasonText;
+  els.resultMessage.textContent = normalized.resultMessage;
+
+  renderReasonCallout(normalized);
 
   els.resultChecks.textContent = normalized.checksSummary;
-  els.resultWhy.textContent = normalized.whyText;
+  els.resultWhy.textContent = normalized.analysisDetails;
 
   els.heroSummaryChip.textContent = normalized.verdictLabel;
   els.heroRiskChip.textContent = `Risk: ${normalized.riskLabel}`;
-  els.heroReason.textContent = normalized.reasonText;
+  els.heroReason.textContent = normalized.heroReason;
 
   els.checksDetails.open = false;
   els.whyDetails.open = false;
 
-  const shouldShowWhy = Boolean(normalized.whyText && normalized.whyText.trim());
-  els.whyDetails.hidden = !shouldShowWhy;
+  const shouldShowAnalysisDetails = Boolean(
+    normalized.analysisDetails && normalized.analysisDetails.trim()
+  );
+  els.whyDetails.hidden = !shouldShowAnalysisDetails;
   renderFeedbackSection();
 }
 

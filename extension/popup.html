@@ -116,16 +116,30 @@
               <span id="result-risk" class="risk-chip">Risk: Needs Review</span>
             </div>
             <h3 id="result-title">Analysis complete</h3>
-            <p id="result-message" class="result-message">Hybrid risk analysis completed for the submitted content.</p>
+            <p id="result-message" class="result-message">Paste text or a URL to assess misinformation risk.</p>
+
+            <div id="result-reason" class="result-reason" hidden>
+              <p class="result-reason-label">
+                Reason: <span id="result-reason-label-text"></span>
+              </p>
+              <p id="result-reason-text" class="result-reason-text"></p>
+            </div>
+
+            <div class="result-disclaimer">
+              <p class="result-disclaimer-label">What this result means</p>
+              <p class="result-disclaimer-text">
+                TruthLens supports review. It does not replace human fact-checking or prove truth.
+              </p>
+            </div>
 
             <details id="checks-details" class="result-details">
               <summary>What we checked</summary>
-              <p id="result-checks">No detailed checks were returned.</p>
+              <p id="result-checks">No checks were returned for this submission.</p>
             </details>
 
             <details id="why-details" class="result-details">
-              <summary>Why this verdict</summary>
-              <p id="result-why">Additional model reasoning will appear here when available.</p>
+              <summary>Analysis details</summary>
+              <p id="result-why">Additional analysis details will appear here when available.</p>
             </details>
 
             <section id="feedback-section" class="feedback-section" hidden>

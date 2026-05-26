@@ -278,7 +278,7 @@ export default function FakeDetectionResult({
       aria-busy={isLoading || undefined}
       className="relative flex h-full flex-col rounded-3xl border border-(--line) bg-(--surface)/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-144"
     >
-      <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#e8b074] via-(--accent) to-[#12100d]" />
+      <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-(--warm) via-(--accent) to-(--ink)" />
 
       <div className="relative flex flex-col h-full">
         {hasResult ? (

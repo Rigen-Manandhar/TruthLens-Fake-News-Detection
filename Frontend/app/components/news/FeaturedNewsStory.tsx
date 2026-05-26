@@ -29,7 +29,7 @@ export default function FeaturedNewsStory({
         className={`pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-linear-to-r ${accentClass}`}
       />
       <div className="relative h-56 sm:h-72 lg:h-full">
-        <div className="absolute inset-0 bg-linear-to-br from-[#e8dfcf] via-[#f7f3ea] to-[#e7dcc6]" />
+        <div className="absolute inset-0 bg-linear-to-br from-(--surface-pill) via-(--surface-deep) to-(--surface-pill)" />
         {article.urlToImage && (
           // eslint-disable-next-line @next/next/no-img-element
           <img

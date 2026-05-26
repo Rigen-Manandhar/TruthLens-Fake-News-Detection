@@ -8,6 +8,26 @@ import toast from "react-hot-toast";
 import Logo from "./ui/Logo";
 import ConfirmDialog from "./ui/ConfirmDialog";
 
+type NavKey = "news" | "fake" | "deepfake" | "admin";
+
+type NavIndicator = {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  visible: boolean;
+  animated: boolean;
+};
+
+const INITIAL_INDICATOR: NavIndicator = {
+  left: 0,
+  top: 0,
+  width: 0,
+  height: 0,
+  visible: false,
+  animated: false,
+};
+
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
@@ -25,6 +45,25 @@ export default function Header() {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement | null>(null);
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
+  const desktopNavRef = useRef<HTMLElement | null>(null);
+  const desktopNavItemRefs = useRef<Record<NavKey, HTMLAnchorElement | null>>({
+    news: null,
+    fake: null,
+    deepfake: null,
+    admin: null,
+  });
+  const hasMeasuredIndicatorRef = useRef(false);
+  const [navIndicator, setNavIndicator] = useState<NavIndicator>(INITIAL_INDICATOR);
+
+  const activeNavKey: NavKey | null = isNews
+    ? "news"
+    : isFake
+      ? "fake"
+      : isDeepfake
+        ? "deepfake"
+        : isAdminPage
+          ? "admin"
+          : null;
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -79,6 +118,69 @@ export default function Header() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isLoggingOut, isLogoutOpen, isMenuOpen, isMobileNavOpen]);
 
+  // Position the sliding pill indicator under the active desktop nav item and
+  // keep it in sync with route, admin visibility, and viewport changes.
+  useEffect(() => {
+    const container = desktopNavRef.current;
+    if (!container) {
+      return;
+    }
+
+    const measure = () => {
+      if (!activeNavKey) {
+        setNavIndicator((prev) => ({ ...prev, visible: false }));
+        return;
+      }
+
+      const link = desktopNavItemRefs.current[activeNavKey];
+      if (!link) {
+        return;
+      }
+
+      const linkRect = link.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+
+      // Skip when the desktop nav is hidden (under md breakpoint) — we'd get
+      // an all-zero rect that would collapse the indicator at (0,0).
+      if (linkRect.width === 0 && linkRect.height === 0) {
+        return;
+      }
+
+      setNavIndicator({
+        left: linkRect.left - containerRect.left - container.clientLeft,
+        top: linkRect.top - containerRect.top - container.clientTop,
+        width: linkRect.width,
+        height: linkRect.height,
+        visible: true,
+        // First-ever measurement should not animate from (0,0); only later
+        // route changes should glide.
+        animated: hasMeasuredIndicatorRef.current,
+      });
+      hasMeasuredIndicatorRef.current = true;
+    };
+
+    // Defer to the next frame so that newly-mounted links (e.g., Admin once
+    // the session loads) have their layout settled before we measure.
+    const initialFrame = requestAnimationFrame(measure);
+
+    let resizeFrame: number | null = null;
+    const onResize = () => {
+      if (resizeFrame !== null) {
+        cancelAnimationFrame(resizeFrame);
+      }
+      resizeFrame = requestAnimationFrame(measure);
+    };
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      cancelAnimationFrame(initialFrame);
+      if (resizeFrame !== null) {
+        cancelAnimationFrame(resizeFrame);
+      }
+      window.removeEventListener("resize", onResize);
+    };
+  }, [activeNavKey, isAdmin]);
+
   const handleLogout = async () => {
     if (isLoggingOut) {
       return;
@@ -125,6 +227,13 @@ export default function Header() {
       active ? "bg-[#12100d] text-[#f7f1e6] font-semibold" : "hover:text-[#12100d]"
     }`;
 
+  // Desktop variant relies on the sliding indicator instead of a per-item pill,
+  // so it only flips text colour and stacks above the indicator via z-index.
+  const desktopNavLinkClass = (active: boolean) =>
+    `relative z-10 rounded-full px-4 py-1.5 transition-colors duration-300 ease-out ${
+      active ? "text-[#f7f1e6] font-semibold" : "hover:text-[#12100d]"
+    }`;
+
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-(--line) bg-[#f7f1e6]/75 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3.5 sm:px-6 xl:max-w-7xl">
@@ -132,18 +241,61 @@ export default function Header() {
           <Logo />
         </div>
 
-        <nav className="hidden md:flex items-center justify-center gap-2 rounded-full border border-(--line) bg-white/60 p-1 text-sm text-(--muted-foreground) shadow-[0_10px_30px_rgba(22,16,8,0.06)]">
-          <Link href="/" className={navLinkClass(isNews)}>
+        <nav
+          ref={desktopNavRef}
+          className="relative hidden md:flex items-center justify-center gap-2 rounded-full border border-(--line) bg-white/60 p-1 text-sm text-(--muted-foreground) shadow-[0_10px_30px_rgba(22,16,8,0.06)]"
+        >
+          <span
+            aria-hidden="true"
+            className={`pointer-events-none absolute rounded-full bg-[#12100d] shadow-[0_8px_18px_rgba(18,16,13,0.18)] ${
+              navIndicator.animated
+                ? "transition-[transform,width,height,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0.24,1)]"
+                : ""
+            }`}
+            style={{
+              left: 0,
+              top: 0,
+              width: navIndicator.width,
+              height: navIndicator.height,
+              transform: `translate3d(${navIndicator.left}px, ${navIndicator.top}px, 0)`,
+              opacity: navIndicator.visible ? 1 : 0,
+            }}
+          />
+          <Link
+            ref={(el) => {
+              desktopNavItemRefs.current.news = el;
+            }}
+            href="/"
+            className={desktopNavLinkClass(isNews)}
+          >
             News
           </Link>
-          <Link href="/fake-detection" className={navLinkClass(Boolean(isFake))}>
+          <Link
+            ref={(el) => {
+              desktopNavItemRefs.current.fake = el;
+            }}
+            href="/fake-detection"
+            className={desktopNavLinkClass(Boolean(isFake))}
+          >
             Risk Assessment
           </Link>
-          <Link href="/deepfake-detection" className={navLinkClass(Boolean(isDeepfake))}>
+          <Link
+            ref={(el) => {
+              desktopNavItemRefs.current.deepfake = el;
+            }}
+            href="/deepfake-detection"
+            className={desktopNavLinkClass(Boolean(isDeepfake))}
+          >
             Deepfake
           </Link>
           {isAdmin && (
-            <Link href="/admin" className={navLinkClass(Boolean(isAdminPage))}>
+            <Link
+              ref={(el) => {
+                desktopNavItemRefs.current.admin = el;
+              }}
+              href="/admin"
+              className={desktopNavLinkClass(Boolean(isAdminPage))}
+            >
               Admin
             </Link>
           )}

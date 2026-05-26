@@ -89,7 +89,7 @@ export default function DeepfakeDetectionForm({
           <p className="text-[11px] font-semibold tracking-[0.25em] text-[#867a6a] uppercase">
             Upload
           </p>
-          <label className="text-sm font-semibold text-[#17130f]">
+          <label htmlFor="deepfake-file" className="text-sm font-semibold text-[#17130f]">
             Image or Video
           </label>
           <p className="text-xs text-(--muted-foreground)">
@@ -116,6 +116,8 @@ export default function DeepfakeDetectionForm({
                   className="max-h-48 w-auto rounded-xl"
                 />
               ) : (
+                // Blob URLs from URL.createObjectURL cannot be optimised by next/image; raw <img> is intentional.
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={previewUrl}
                   alt="Preview"
@@ -166,6 +168,7 @@ export default function DeepfakeDetectionForm({
           )}
           <input
             ref={fileInputRef}
+            id="deepfake-file"
             type="file"
             accept={ACCEPTED_TYPES}
             onChange={handleInputChange}

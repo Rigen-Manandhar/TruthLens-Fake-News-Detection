@@ -1,6 +1,6 @@
 "use client";
 
-import type { DeepfakeResponse, DeepfakeRiskLevel, DeepfakeVerdict } from "./types";
+import type { DeepfakeResponse, DeepfakeVerdict } from "./types";
 
 interface DeepfakeDetectionResultProps {
   result: DeepfakeResponse | null;

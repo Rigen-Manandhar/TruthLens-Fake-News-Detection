@@ -25,6 +25,11 @@ export default function ResetPasswordForm({ token = "" }: ResetPasswordFormProps
       return;
     }
 
+    if (password.length < 10) {
+      toast.error("Password must be at least 10 characters.");
+      return;
+    }
+
     if (password !== confirmPassword) {
       toast.error("Passwords do not match.");
       return;

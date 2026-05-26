@@ -16,25 +16,32 @@ export async function GET(request: Request) {
   }
 
   try {
-    // NewsAPI URL
-    let url = `https://newsapi.org/v2/top-headlines?country=${country}&pageSize=${pageSize}&apiKey=${apiKey}`;
+    const newsParams = new URLSearchParams({
+      country,
+      pageSize,
+      apiKey,
+    });
 
     if (category) {
-      url += `&category=${category}`;
+      newsParams.set("category", category);
     }
 
     if (query) {
-      url += `&q=${encodeURIComponent(query)}`;
+      newsParams.set("q", query);
     }
+
+    const url = `https://newsapi.org/v2/top-headlines?${newsParams.toString()}`;
 
     const response = await fetch(url, {
       next: { revalidate: 3600 }, // Cache for 1 hour
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = (await response.json().catch(() => null)) as
+        | { message?: string }
+        | null;
       return NextResponse.json(
-        { error: errorData.message || "Failed to fetch news" },
+        { error: errorData?.message || "Failed to fetch news" },
         { status: response.status }
       );
     }

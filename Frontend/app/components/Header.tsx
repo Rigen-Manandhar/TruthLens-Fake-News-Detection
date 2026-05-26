@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import toast from "react-hot-toast";
@@ -10,6 +10,7 @@ import ConfirmDialog from "./ui/ConfirmDialog";
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const isNews = pathname === "/" || pathname === "";
   const isFake = pathname?.startsWith("/fake-detection");
   const isDeepfake = pathname?.startsWith("/deepfake-detection");
@@ -90,6 +91,10 @@ export default function Header() {
       setIsMenuOpen(false);
       setIsMobileNavOpen(false);
       setIsLogoutOpen(false);
+      // Move off any auth-protected route and re-render the current page so
+      // server components reflect the cleared session immediately.
+      router.replace("/");
+      router.refresh();
       toast.success("You have been logged out.");
     } catch {
       toast.error("Network error. Please try again.");

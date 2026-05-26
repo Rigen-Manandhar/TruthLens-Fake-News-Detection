@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Button from "../ui/Button";
 import type { AccountProfile, ExportJob } from "./types";
 import { formatDate } from "./utils";
@@ -89,12 +90,12 @@ export default function PrivacySection({
         )}
       </div>
       <div className="text-xs font-semibold text-(--muted-foreground) flex flex-wrap gap-3">
-        <a href="/privacy" className="hover:text-[#17130f]">
+        <Link href="/privacy" className="hover:text-[#17130f]">
           Privacy
-        </a>
-        <a href="/terms" className="hover:text-[#17130f]">
+        </Link>
+        <Link href="/terms" className="hover:text-[#17130f]">
           Terms
-        </a>
+        </Link>
         <a
           href="mailto:support@truthlens.app"
           className="hover:text-[#17130f] break-all"

@@ -27,7 +27,7 @@ export default function DeleteAccountModal({
   }
 
   return (
-    <div className="fixed inset-0 z-60 flex items-end sm:items-center justify-center overflow-y-auto bg-black/45 backdrop-blur px-4 py-4">
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center overflow-y-auto bg-black/45 backdrop-blur px-4 py-4">
       <div className="w-full max-w-md max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-(--line) bg-[#fffdf8] p-5 sm:p-6">
         <h3 className="text-lg font-semibold text-[#17130f]">
           Confirm account deletion

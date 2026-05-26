@@ -46,7 +46,7 @@ export default function ConfirmDialog({
 
   const dialog = (
     <div
-      className="fixed inset-0 z-60 flex items-end justify-center overflow-y-auto bg-gray-900/45 backdrop-blur-md px-4 py-4 sm:items-center"
+      className="fixed inset-0 z-[60] flex items-end justify-center overflow-y-auto bg-gray-900/45 backdrop-blur-md px-4 py-4 sm:items-center"
       onClick={() => {
         if (!isLoading) {
           onCancel();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import DeepfakeDetectionForm from "../components/deepfakeDetection/DeepfakeDetectionForm";
 import DeepfakeDetectionResult from "../components/deepfakeDetection/DeepfakeDetectionResult";
 import Footer from "../components/Footer";
@@ -12,6 +12,17 @@ export default function DeepfakeDetectionPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DeepfakeResponse | null>(null);
+
+  // Revoke any outstanding blob URL when the component unmounts so the browser
+  // can release the underlying File. Without this, navigating away keeps the
+  // blob alive for the full document lifetime.
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const handleFileSelect = useCallback(
     (file: File | null) => {

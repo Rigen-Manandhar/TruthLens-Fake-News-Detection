@@ -165,9 +165,6 @@ export default function NewsGrid({
 
   const [featured, ...rest] = news;
   const featuredAnalysis = featured ? analysisByUrl[featured.url] : undefined;
-  const fillerArticle = rest.length > 0 && rest.length % 3 === 2
-    ? rest[rest.length - 1]
-    : null;
 
   return (
       <div className="space-y-8">
@@ -181,16 +178,6 @@ export default function NewsGrid({
             analysis={analysisByUrl[article.url]}
           />
         ))}
-
-        {fillerArticle && (
-          <div className="hidden lg:block">
-            <NewsCard
-              key={`filler-${fillerArticle.url}`}
-              article={fillerArticle}
-              analysis={analysisByUrl[fillerArticle.url]}
-            />
-          </div>
-        )}
       </div>
     </div>
   );

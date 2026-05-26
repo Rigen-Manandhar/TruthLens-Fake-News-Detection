@@ -36,6 +36,15 @@ export default function FakeDetectionForm({
     onSourceUrlChange("");
   };
 
+  const handleTextareaKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>
+  ) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && !isLoading) {
+      e.preventDefault();
+      onAnalyze();
+    }
+  };
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -56,6 +65,7 @@ export default function FakeDetectionForm({
             id="articleText"
             value={articleText}
             onChange={(e) => onArticleChange(e.target.value)}
+            onKeyDown={handleTextareaKeyDown}
             placeholder="Paste article text here..."
             helperText="Paste an excerpt or headline you want to assess."
             className="min-h-56 sm:min-h-72 resize-y lg:resize-none"
@@ -120,13 +130,25 @@ export default function FakeDetectionForm({
           >
             Clear fields
           </button>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-full bg-[#12100d] px-8 text-sm font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(24,16,8,0.22)] transition-all hover:bg-(--accent) disabled:cursor-not-allowed disabled:opacity-60 shrink-0"
-          >
-            {isLoading ? "Assessing..." : "Assess Risk"}
-          </button>
+          <div className="flex flex-col items-stretch gap-1.5 sm:flex-row sm:items-center sm:gap-3">
+            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-[#7e7263]">
+              <kbd className="rounded-md border border-(--line) bg-[#fffdf8] px-1.5 py-0.5 font-mono text-[10px] text-[#3f382f]">
+                Ctrl
+              </kbd>
+              <span aria-hidden>+</span>
+              <kbd className="rounded-md border border-(--line) bg-[#fffdf8] px-1.5 py-0.5 font-mono text-[10px] text-[#3f382f]">
+                Enter
+              </kbd>
+              <span className="ml-1">to assess</span>
+            </span>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-full bg-[#12100d] px-8 text-sm font-semibold text-[#f7f1e6] shadow-[0_12px_24px_rgba(24,16,8,0.22)] transition-all hover:bg-(--accent) disabled:cursor-not-allowed disabled:opacity-60 shrink-0"
+            >
+              {isLoading ? "Assessing..." : "Assess Risk"}
+            </button>
+          </div>
         </div>
       </div>
     </form>

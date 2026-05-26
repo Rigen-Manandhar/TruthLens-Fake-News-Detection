@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import DetectionFeedbackCard from "../components/fakeDetection/DetectionFeedbackCard";
 import FakeDetectionForm from "../components/fakeDetection/FakeDetectionForm";
-import FakeDetectionResult from "../components/fakeDetection/FakeDetectionResult";
+import FakeDetectionResult, {
+  type DetectionExample,
+} from "../components/fakeDetection/FakeDetectionResult";
 import Footer from "../components/Footer";
 import { normalizePreferences } from "@/lib/shared/settings";
 import {
@@ -40,6 +42,21 @@ const mapVerdictToDisplayLabel = (verdict: string): string => {
   if (v === "LIKELY REAL") return "Lower Risk";
   return "Needs Review";
 };
+
+const EXAMPLES: DetectionExample[] = [
+  {
+    key: "headline",
+    label: "Try a headline",
+    text: "Local agency reports a 14% drop in traffic incidents after new pedestrian zones were introduced this quarter.",
+    url: "",
+  },
+  {
+    key: "url",
+    label: "Try a URL",
+    text: "",
+    url: "https://www.reuters.com/",
+  },
+];
 
 const buildPredictionSnapshot = (
   data: PredictResponse
@@ -355,6 +372,12 @@ export default function FakeDetectionPage() {
               limeModel={limeModel}
               canExplain={Boolean(lastPayload) && !isTooShort && !error}
               isExplaining={isExplaining}
+              isLoading={isLoading}
+              examples={EXAMPLES}
+              onPrefill={(example) => {
+                setArticleText(example.text);
+                setSourceUrl(example.url);
+              }}
               onExplain={handleExplain}
             />
 

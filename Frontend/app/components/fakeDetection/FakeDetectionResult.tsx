@@ -10,8 +10,16 @@ import type {
 } from "@/lib/shared/detection-feedback";
 import RiskMeter from "./RiskMeter";
 import SignalsChecklist from "./SignalsChecklist";
+import { ScanSearch } from "../ui/icons";
 
 type CredibilityLevel = "high" | "mixed" | "low";
+
+export type DetectionExample = {
+  key: string;
+  label: string;
+  text: string;
+  url: string;
+};
 
 interface FakeDetectionResultProps {
   level: CredibilityLevel;
@@ -33,6 +41,9 @@ interface FakeDetectionResultProps {
   limeModel?: "A" | "B" | null;
   canExplain?: boolean;
   isExplaining?: boolean;
+  isLoading?: boolean;
+  examples?: DetectionExample[];
+  onPrefill?: (example: DetectionExample) => void;
   onExplain?: () => void;
 }
 
@@ -70,6 +81,9 @@ export default function FakeDetectionResult({
   limeModel,
   canExplain = false,
   isExplaining = false,
+  isLoading = false,
+  examples,
+  onPrefill,
   onExplain,
 }: FakeDetectionResultProps) {
   const hasResult = label !== INITIAL_LABEL;
@@ -260,47 +274,84 @@ export default function FakeDetectionResult({
   };
 
   return (
-    <section className="relative flex h-full flex-col rounded-3xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-144">
+    <section
+      aria-busy={isLoading || undefined}
+      className="relative flex h-full flex-col rounded-3xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-144"
+    >
       <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#e8b074] via-(--accent) to-[#12100d]" />
 
       <div className="relative flex flex-col h-full">
-        <div className="flex flex-wrap items-center gap-3">
-          <div
-            className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${levelStyles[level]} shrink-0 w-fit`}
-          >
-            {label}
-          </div>
-          {riskLevel && (
-            <span className="inline-flex items-center rounded-full border border-(--line) bg-[#fffdf8] px-3 py-1 text-xs font-semibold text-[#5f5548]">
-              Risk: {riskLevel}
-            </span>
-          )}
-        </div>
+        {hasResult ? (
+          <>
+            <div className="flex flex-wrap items-center gap-3">
+              <div
+                className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${levelStyles[level]} shrink-0 w-fit`}
+              >
+                {label}
+              </div>
+              {riskLevel && (
+                <span className="inline-flex items-center rounded-full border border-(--line) bg-[#fffdf8] px-3 py-1 text-xs font-semibold text-[#5f5548]">
+                  Risk: {riskLevel}
+                </span>
+              )}
+            </div>
 
-        {hasResult && (
-          <p className="mt-4 text-sm text-[#4f473c] leading-relaxed font-medium">
-            {level === "high" &&
-              "The available signals show lower misinformation risk, but this is not a guarantee that every claim is true."}
-            {level === "low" &&
-              "The available signals show higher misinformation risk. Review the source and evidence before trusting or sharing."}
-            {level === "mixed" &&
-              "The system does not have enough reliable evidence to make a strong risk judgment."}
-          </p>
-        )}
-
-        {hasResult && (
-          <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900">
-            <p className="font-semibold uppercase tracking-wide">What this result means</p>
-            <p className="mt-1">
-              TruthLens supports review. It does not replace human fact-checking or prove truth.
+            <p className="mt-4 text-sm text-[#4f473c] leading-relaxed font-medium">
+              {level === "high" &&
+                "The available signals show lower misinformation risk, but this is not a guarantee that every claim is true."}
+              {level === "low" &&
+                "The available signals show higher misinformation risk. Review the source and evidence before trusting or sharing."}
+              {level === "mixed" &&
+                "The system does not have enough reliable evidence to make a strong risk judgment."}
             </p>
+
+            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900">
+              <p className="font-semibold uppercase tracking-wide">What this result means</p>
+              <p className="mt-1">
+                TruthLens supports review. It does not replace human fact-checking or prove truth.
+              </p>
+            </div>
+          </>
+        ) : isLoading ? (
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="inline-flex items-center rounded-full border border-(--line) bg-[#f7f1e6] px-3 py-1 text-xs font-semibold text-(--muted-foreground-strong)">
+              Analyzing…
+            </span>
+          </div>
+        ) : (
+          <div className="flex flex-col items-start gap-3">
+            <ScanSearch
+              aria-hidden
+              className="h-8 w-8 text-[#c7bba8]"
+            />
+            <p className="text-sm font-semibold text-[#17130f]">
+              Awaiting input
+            </p>
+            <p className="text-xs text-(--muted-foreground)">
+              Paste an article or URL on the left to begin, or jump in with one
+              of these examples.
+            </p>
+            {examples && examples.length > 0 && onPrefill && (
+              <div className="flex flex-wrap gap-2 pt-1">
+                {examples.map((example) => (
+                  <button
+                    key={example.key}
+                    type="button"
+                    onClick={() => onPrefill(example)}
+                    className="inline-flex items-center rounded-full border border-(--line) bg-[#fffdf8] px-3.5 py-1.5 text-xs font-semibold text-[#17130f] transition-colors hover:bg-[#f4eee2]"
+                  >
+                    {example.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
         <div className="mt-5 space-y-3">
           <RiskMeter
             level={level}
-            riskLabel={hasResult ? label : "Awaiting input"}
+            riskLabel={hasResult ? label : isLoading ? "Analyzing…" : "Awaiting input"}
             finalScore={finalScore}
             riskLevelText={riskLevel}
             disabled={!hasResult}
@@ -313,61 +364,89 @@ export default function FakeDetectionResult({
               conflict={conflict}
             />
           )}
-        </div>
-
-        <div className="mt-5 rounded-2xl border border-dashed border-(--line) bg-[#f7f1e6] px-4 py-4 text-sm text-[#5f5548] wrap-break-word max-h-[60vh] overflow-y-auto overscroll-contain sm:max-h-128 lg:flex-1 lg:min-h-0 lg:max-h-144">
-          {uncertaintyReason && (
-            <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900">
-              <p className="font-semibold uppercase tracking-wide">
-                Reason: {uncertaintyReason}
+          {isLoading && !hasResult && (
+            <div className="rounded-2xl border border-(--line) bg-[#fffdf8] px-4 py-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-(--muted-foreground-strong)">
+                Signals checked
               </p>
-              {uncertainty?.reason_message && (
-                <p className="mt-1 wrap-break-word text-amber-800">
-                  {uncertainty.reason_message}
-                </p>
-              )}
-            </div>
-          )}
-
-          {details && !uncertainty?.reason_message && (
-            <div className="mb-4 whitespace-pre-wrap wrap-break-word text-xs text-[#5f5548]">
-              {details}
-            </div>
-          )}
-
-          {evidenceSummary?.claim_hints?.length ? (
-            <div className="mb-4 rounded-xl border border-(--line) bg-[#fffdf8] px-3 py-3">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-[#4c4439]">
-                Claim hints to verify manually
-              </p>
-              <ul className="mt-2 list-disc space-y-1 pl-4 text-xs text-[#5f5548]">
-                {evidenceSummary.claim_hints.map((claim) => (
-                  <li key={claim}>{claim}</li>
+              <ul className="mt-3 space-y-2.5">
+                {[0, 1, 2].map((idx) => (
+                  <li key={idx} className="flex items-center gap-3">
+                    <span
+                      aria-hidden
+                      className="h-4 w-4 shrink-0 rounded-full bg-[#e6dccb]"
+                    />
+                    <span
+                      aria-hidden
+                      className="h-3 flex-1 rounded-full bg-[#e6dccb]"
+                    />
+                    <span
+                      aria-hidden
+                      className="h-3 w-12 rounded-full bg-[#e6dccb]"
+                    />
+                  </li>
                 ))}
               </ul>
-            </div>
-          ) : null}
-
-          {!explanation?.length && canExplain && onExplain && (
-            <div className="mb-4 rounded-xl border border-(--line) bg-(--accent-soft) px-3 py-3 text-xs text-[#0b4f43]">
-              <p className="font-semibold uppercase tracking-wide">Language signals on demand</p>
-              <p className="mt-1 text-[#0a5f50]">
-                See which words pushed the result toward FAKE or REAL. Click Language signals to run a detailed analysis.
-              </p>
-              <button
-                type="button"
-                onClick={onExplain}
-                disabled={isExplaining}
-                className="mt-3 inline-flex h-8 items-center rounded-full bg-[#12100d] px-4 text-[11px] font-semibold text-[#f7f1e6] hover:bg-(--accent) disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                {isExplaining ? "Explaining..." : "Language signals"}
-              </button>
+              <span className="sr-only">Analyzing in progress</span>
             </div>
           )}
-
-          {renderExplanationSummary()}
-          {renderHighlightedText()}
         </div>
+
+        {hasResult && (
+          <div className="mt-5 rounded-2xl border border-dashed border-(--line) bg-[#f7f1e6] px-4 py-4 text-sm text-[#5f5548] wrap-break-word max-h-[60vh] overflow-y-auto overscroll-contain sm:max-h-128 lg:flex-1 lg:min-h-0 lg:max-h-144">
+            {uncertaintyReason && (
+              <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900">
+                <p className="font-semibold uppercase tracking-wide">
+                  Reason: {uncertaintyReason}
+                </p>
+                {uncertainty?.reason_message && (
+                  <p className="mt-1 wrap-break-word text-amber-800">
+                    {uncertainty.reason_message}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {details && !uncertainty?.reason_message && (
+              <div className="mb-4 whitespace-pre-wrap wrap-break-word text-xs text-[#5f5548]">
+                {details}
+              </div>
+            )}
+
+            {evidenceSummary?.claim_hints?.length ? (
+              <div className="mb-4 rounded-xl border border-(--line) bg-[#fffdf8] px-3 py-3">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-[#4c4439]">
+                  Claim hints to verify manually
+                </p>
+                <ul className="mt-2 list-disc space-y-1 pl-4 text-xs text-[#5f5548]">
+                  {evidenceSummary.claim_hints.map((claim) => (
+                    <li key={claim}>{claim}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            {!explanation?.length && canExplain && onExplain && (
+              <div className="mb-4 rounded-xl border border-(--line) bg-(--accent-soft) px-3 py-3 text-xs text-[#0b4f43]">
+                <p className="font-semibold uppercase tracking-wide">Language signals on demand</p>
+                <p className="mt-1 text-[#0a5f50]">
+                  See which words pushed the result toward FAKE or REAL. Click Language signals to run a detailed analysis.
+                </p>
+                <button
+                  type="button"
+                  onClick={onExplain}
+                  disabled={isExplaining}
+                  className="mt-3 inline-flex h-8 items-center rounded-full bg-[#12100d] px-4 text-[11px] font-semibold text-[#f7f1e6] hover:bg-(--accent) disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {isExplaining ? "Explaining..." : "Language signals"}
+                </button>
+              </div>
+            )}
+
+            {renderExplanationSummary()}
+            {renderHighlightedText()}
+          </div>
+        )}
 
         <p className="mt-4 text-[11px] text-[#7f7364] shrink-0">
           Results powered by Hybrid Evidence and Risk Analysis.

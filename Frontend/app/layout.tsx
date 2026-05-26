@@ -28,10 +28,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <ThemeInit />
-      </head>
       <body className={`${bodyFont.variable} ${displayFont.variable} antialiased`}>
+        {/* ThemeInit runs synchronously during HTML parsing, before any
+            visible content is painted, so the user never sees a flash of
+            the wrong theme. Placed inside <body> rather than <head> to
+            keep Next.js App Router's auto-injected stylesheet wiring intact. */}
+        <ThemeInit />
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>

@@ -133,3 +133,7 @@ Backend/deepfake/checkpoints/
 *.pt
 *.pth
 *.ckpt
+
+# Evaluation artifacts (locally generated, not for commit)
+Backend/scripts/eval_summary_*.txt
+Backend/scripts/eval_summary_*.json

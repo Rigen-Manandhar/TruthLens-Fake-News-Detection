@@ -48,9 +48,11 @@ interface FakeDetectionResultProps {
 }
 
 const levelStyles: Record<CredibilityLevel, string> = {
-  high: "bg-emerald-50 text-emerald-900 border-emerald-200",
-  mixed: "bg-amber-50 text-amber-900 border-amber-200",
-  low: "bg-red-50 text-red-900 border-red-200",
+  high:
+    "bg-emerald-50 text-emerald-900 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-200 dark:border-emerald-400/30",
+  mixed:
+    "bg-amber-50 text-amber-900 border-amber-200 dark:bg-amber-500/10 dark:text-amber-200 dark:border-amber-400/30",
+  low: "bg-red-50 text-red-900 border-red-200 dark:bg-red-500/10 dark:text-red-200 dark:border-red-400/30",
 };
 
 const reasonLabelMap: Record<string, string> = {
@@ -128,15 +130,15 @@ export default function FakeDetectionResult({
 
         <div className="grid gap-3 sm:grid-cols-2">
           {explanationSummary.top_fake_words.length > 0 && (
-            <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-3">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-red-800">
+            <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 dark:border-red-400/30 dark:bg-red-500/10">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-red-800 dark:text-red-300">
                 Fake indicators
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {explanationSummary.top_fake_words.map((w) => (
                   <span
                     key={w.word}
-                    className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-900"
+                    className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-900 dark:bg-red-500/20 dark:text-red-200"
                     style={{ opacity: Math.min(1, Math.abs(w.weight) * 2 + 0.3) }}
                     title={`Weight: ${w.weight.toFixed(4)} (pushes toward FAKE)`}
                   >
@@ -147,15 +149,15 @@ export default function FakeDetectionResult({
             </div>
           )}
           {explanationSummary.top_real_words.length > 0 && (
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-emerald-800">
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3 dark:border-emerald-400/30 dark:bg-emerald-500/10">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">
                 Real indicators
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {explanationSummary.top_real_words.map((w) => (
                   <span
                     key={w.word}
-                    className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-900"
+                    className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-900 dark:bg-emerald-500/20 dark:text-emerald-200"
                     style={{ opacity: Math.min(1, Math.abs(w.weight) * 2 + 0.3) }}
                     title={`Weight: ${w.weight.toFixed(4)} (pushes toward REAL)`}
                   >
@@ -305,7 +307,7 @@ export default function FakeDetectionResult({
                 "The system does not have enough reliable evidence to make a strong risk judgment."}
             </p>
 
-            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900">
+            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-200">
               <p className="font-semibold uppercase tracking-wide">What this result means</p>
               <p className="mt-1">
                 TruthLens supports review. It does not replace human fact-checking or prove truth.
@@ -395,12 +397,12 @@ export default function FakeDetectionResult({
         {hasResult && (
           <div className="mt-5 rounded-2xl border border-dashed border-(--line) bg-(--surface-deep) px-4 py-4 text-sm text-(--muted-foreground) wrap-break-word max-h-[60vh] overflow-y-auto overscroll-contain sm:max-h-128 lg:flex-1 lg:min-h-0 lg:max-h-144">
             {uncertaintyReason && (
-              <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900">
+              <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-200">
                 <p className="font-semibold uppercase tracking-wide">
                   Reason: {uncertaintyReason}
                 </p>
                 {uncertainty?.reason_message && (
-                  <p className="mt-1 wrap-break-word text-amber-800">
+                  <p className="mt-1 wrap-break-word text-amber-800 dark:text-amber-300">
                     {uncertainty.reason_message}
                   </p>
                 )}

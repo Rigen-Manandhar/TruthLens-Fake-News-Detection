@@ -145,7 +145,7 @@ export default function NewsGrid({
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+      <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center dark:bg-red-500/10 dark:border-red-400/30 dark:text-red-200">
         <p className="text-red-700 font-semibold">Error loading news</p>
         <p className="text-red-600 text-sm mt-2">{error}</p>
       </div>

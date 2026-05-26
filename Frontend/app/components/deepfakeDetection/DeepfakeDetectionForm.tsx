@@ -165,7 +165,7 @@ export default function DeepfakeDetectionForm({
         </div>
 
         {error && (
-          <p className="mb-3 text-xs text-red-700 bg-red-50 border border-red-200 rounded-xl px-3 py-2">
+          <p className="mb-3 text-xs text-red-700 bg-red-50 border border-red-200 rounded-xl dark:bg-red-500/10 dark:border-red-400/30 dark:text-red-200 px-3 py-2">
             {error}
           </p>
         )}

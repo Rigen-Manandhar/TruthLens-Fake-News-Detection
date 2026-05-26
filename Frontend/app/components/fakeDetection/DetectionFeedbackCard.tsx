@@ -47,7 +47,7 @@ export default function DetectionFeedbackCard({
           disabled={isSubmitting || isSubmitted}
           className={`inline-flex h-11 items-center justify-center rounded-full border px-5 text-sm font-semibold transition ${
             selectedValue === true
-              ? "border-emerald-600 bg-emerald-50 text-emerald-800"
+              ? "border-emerald-600 bg-emerald-50 text-emerald-800 dark:border-emerald-400/40 dark:bg-emerald-500/10 dark:text-emerald-200"
               : "border-(--line) bg-(--surface-strong) text-(--muted-foreground) hover:bg-(--surface-hover)"
           } disabled:cursor-not-allowed disabled:opacity-60`}
         >
@@ -59,7 +59,7 @@ export default function DetectionFeedbackCard({
           disabled={isSubmitting || isSubmitted}
           className={`inline-flex h-11 items-center justify-center rounded-full border px-5 text-sm font-semibold transition ${
             selectedValue === false
-              ? "border-red-600 bg-red-50 text-red-800"
+              ? "border-red-600 bg-red-50 text-red-800 dark:border-red-400/40 dark:bg-red-500/10 dark:text-red-200"
               : "border-(--line) bg-(--surface-strong) text-(--muted-foreground) hover:bg-(--surface-hover)"
           } disabled:cursor-not-allowed disabled:opacity-60`}
         >
@@ -88,8 +88,8 @@ export default function DetectionFeedbackCard({
         <p
           className={`mt-4 rounded-xl border px-3 py-2 text-xs ${
             status.type === "success"
-              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-              : "border-red-200 bg-red-50 text-red-700"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-400/30 dark:bg-emerald-500/10 dark:text-emerald-200"
+              : "border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200"
           }`}
         >
           {status.message}

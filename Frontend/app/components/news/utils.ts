@@ -19,23 +19,23 @@ export const formatNewsDate = (dateString: string) => {
 
 export const getAnalysisStyle = (analysis?: NewsAnalysis) => {
   if (!analysis || analysis.status === "loading") {
-    return "border-sky-200/80 bg-sky-50 text-sky-900";
+    return "border-sky-200/80 bg-sky-50 text-sky-900 dark:border-sky-400/30 dark:bg-sky-500/10 dark:text-sky-200";
   }
 
   if (analysis.status === "error") {
-    return "border-[#d6ccbd] bg-[#efe8da] text-[#6b6257]";
+    return "border-(--line) bg-(--surface-pill) text-(--muted-foreground)";
   }
 
   const verdict = (analysis.verdict || "").toUpperCase();
   if (verdict === "LIKELY REAL") {
-    return "border-emerald-200 bg-emerald-50 text-emerald-900";
+    return "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-400/30 dark:bg-emerald-500/10 dark:text-emerald-200";
   }
 
   if (verdict === "SUSPICIOUS") {
-    return "border-red-200 bg-red-50 text-red-900";
+    return "border-red-200 bg-red-50 text-red-900 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200";
   }
 
-  return "border-amber-200 bg-amber-50 text-amber-900";
+  return "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-200";
 };
 
 /**
@@ -82,21 +82,21 @@ export const getAnalysisConfidence = (analysis?: NewsAnalysis): number | null =>
  */
 export const getVerdictAccentClass = (analysis?: NewsAnalysis): string => {
   if (!analysis || analysis.status === "loading") {
-    return "from-sky-300/60 via-sky-200/30 to-transparent";
+    return "from-sky-300/60 via-sky-200/30 to-transparent dark:from-sky-400/45 dark:via-sky-400/15 dark:to-transparent";
   }
 
   if (analysis.status === "error") {
-    return "from-[#d6ccbd]/60 via-[#d6ccbd]/20 to-transparent";
+    return "from-(--line) via-(--line) to-transparent";
   }
 
   const verdict = (analysis.verdict || "").toUpperCase();
   if (verdict === "LIKELY REAL") {
-    return "from-emerald-400/60 via-emerald-200/30 to-transparent";
+    return "from-emerald-400/60 via-emerald-200/30 to-transparent dark:from-emerald-400/45 dark:via-emerald-400/15 dark:to-transparent";
   }
   if (verdict === "SUSPICIOUS") {
-    return "from-red-400/60 via-red-200/30 to-transparent";
+    return "from-red-400/60 via-red-200/30 to-transparent dark:from-red-400/45 dark:via-red-400/15 dark:to-transparent";
   }
-  return "from-amber-400/60 via-amber-200/30 to-transparent";
+  return "from-amber-400/60 via-amber-200/30 to-transparent dark:from-amber-400/45 dark:via-amber-400/15 dark:to-transparent";
 };
 
 /**

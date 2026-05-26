@@ -221,8 +221,8 @@ export default function ContactPage() {
                   <p
                     className={`rounded-2xl border px-4 py-3 text-sm ${
                       status.type === "success"
-                        ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                        : "border-red-200 bg-red-50 text-red-700"
+                        ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-400/30 dark:bg-emerald-500/10 dark:text-emerald-200"
+                        : "border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200"
                     }`}
                   >
                     {status.message}

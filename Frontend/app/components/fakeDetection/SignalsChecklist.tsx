@@ -34,17 +34,17 @@ interface SignalRow {
 
 const statusStyles: Record<Status, { className: string; Icon: typeof CheckCircle2; srLabel: string }> = {
   pass: {
-    className: "text-emerald-700",
+    className: "text-emerald-700 dark:text-emerald-300",
     Icon: CheckCircle2,
     srLabel: "Checked",
   },
   warn: {
-    className: "text-amber-700",
+    className: "text-amber-700 dark:text-amber-300",
     Icon: AlertTriangle,
     srLabel: "Warning",
   },
   fail: {
-    className: "text-red-700",
+    className: "text-red-700 dark:text-red-300",
     Icon: XCircle,
     srLabel: "Failed",
   },
@@ -227,7 +227,7 @@ export default function SignalsChecklist(props: SignalsChecklistProps) {
         })}
       </ul>
       {props.conflict?.is_conflict && (
-        <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-900">
+        <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-900 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-200">
           Models disagreed — result treated as review-needed.
         </p>
       )}

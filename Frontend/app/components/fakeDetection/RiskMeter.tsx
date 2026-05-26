@@ -14,9 +14,9 @@ const POINTER_MIN = 0.04;
 const POINTER_MAX = 0.96;
 
 const levelTextClass: Record<RiskLevel, string> = {
-  low: "text-emerald-800",
-  mixed: "text-amber-800",
-  high: "text-red-800",
+  low: "text-emerald-800 dark:text-emerald-300",
+  mixed: "text-amber-800 dark:text-amber-300",
+  high: "text-red-800 dark:text-red-300",
 };
 
 const clampPointer = (value: number) =>
@@ -69,20 +69,20 @@ export default function RiskMeter({
       <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-(--surface-pill)">
         <div
           aria-hidden
-          className="absolute inset-y-0 left-0 w-1/3 bg-emerald-300/45"
+          className="absolute inset-y-0 left-0 w-1/3 bg-emerald-300/45 dark:bg-emerald-500/25"
         />
         <div
           aria-hidden
-          className="absolute inset-y-0 left-1/3 w-1/3 bg-amber-300/45"
+          className="absolute inset-y-0 left-1/3 w-1/3 bg-amber-300/45 dark:bg-amber-500/25"
         />
         <div
           aria-hidden
-          className="absolute inset-y-0 right-0 w-1/3 bg-red-300/45"
+          className="absolute inset-y-0 right-0 w-1/3 bg-red-300/45 dark:bg-red-500/25"
         />
         {hasScore && (
           <span
             aria-hidden
-            className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-(--ink) shadow-[0_4px_10px_rgba(24,16,8,0.32)]"
+            className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-(--surface) bg-(--ink) shadow-[0_4px_10px_rgba(24,16,8,0.32)]"
             style={pointerStyle}
           />
         )}

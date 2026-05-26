@@ -8,6 +8,8 @@ import type {
   Step,
   UncertaintyInfo,
 } from "@/lib/shared/detection-feedback";
+import RiskMeter from "./RiskMeter";
+import SignalsChecklist from "./SignalsChecklist";
 
 type CredibilityLevel = "high" | "mixed" | "low";
 
@@ -16,6 +18,7 @@ interface FakeDetectionResultProps {
   label: string;
   details: string;
   riskLevel?: string;
+  finalScore?: number;
   steps?: Step[];
   explanation?: [string, number][];
   analyzedText?: string;
@@ -47,12 +50,14 @@ const reasonLabelMap: Record<string, string> = {
   UNSUPPORTED_URL: "Unsupported URL",
 };
 
+const INITIAL_LABEL = "Paste text or a URL to assess misinformation risk";
 
 export default function FakeDetectionResult({
   level,
   label,
   details,
   riskLevel,
+  finalScore,
   explanation,
   analyzedText,
   explanationClass,
@@ -67,28 +72,33 @@ export default function FakeDetectionResult({
   isExplaining = false,
   onExplain,
 }: FakeDetectionResultProps) {
-  const hasResult = label !== "Paste text or a URL to assess misinformation risk";
+  const hasResult = label !== INITIAL_LABEL;
   const uncertaintyReason = uncertainty?.reason_code
     ? reasonLabelMap[uncertainty.reason_code] ?? uncertainty.reason_code
     : null;
-  const sourceSignal = evidenceSummary?.source_signal;
-  const coverageSignal = evidenceSummary?.coverage_signal;
-  const headlineRan = modelOutputs?.model_a?.ran;
-  const articleRan = modelOutputs?.model_b?.ran;
-  const bothRan = headlineRan && articleRan;
 
   const renderExplanationSummary = () => {
-    if (!explanationSummary || (!explanationSummary.top_fake_words.length && !explanationSummary.top_real_words.length)) {
+    if (
+      !explanationSummary ||
+      (!explanationSummary.top_fake_words.length &&
+        !explanationSummary.top_real_words.length)
+    ) {
       return null;
     }
 
-    const modelName = explanationSummary.model_used === "A" ? "Headline" : explanationSummary.model_used === "B" ? "Article" : null;
+    const modelName =
+      explanationSummary.model_used === "A"
+        ? "Headline"
+        : explanationSummary.model_used === "B"
+          ? "Article"
+          : null;
 
     return (
       <div className="mb-4 space-y-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h4 className="font-semibold text-[#3f382f] text-xs uppercase tracking-wide font-sans">
-            Language Signal Analysis{modelName ? ` — Model ${explanationSummary.model_used} (${modelName})` : ""}
+            Language Signal Analysis
+            {modelName ? ` — Model ${explanationSummary.model_used} (${modelName})` : ""}
           </h4>
           {onExplain && (
             <button
@@ -155,7 +165,10 @@ export default function FakeDetectionResult({
     let colorMode: "fake" | "real" | "neutral" = "neutral";
     if (normalizedClass.includes("FAKE") || normalizedClass.includes("FALSE")) {
       colorMode = "fake";
-    } else if (normalizedClass.includes("REAL") || normalizedClass.includes("TRUE")) {
+    } else if (
+      normalizedClass.includes("REAL") ||
+      normalizedClass.includes("TRUE")
+    ) {
       colorMode = "real";
     } else if (level === "low") {
       colorMode = "fake";
@@ -255,14 +268,13 @@ export default function FakeDetectionResult({
           <div
             className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${levelStyles[level]} shrink-0 w-fit`}
           >
-            {hasResult ? `Result: ${label}` : label}
+            {label}
           </div>
           {riskLevel && (
             <span className="inline-flex items-center rounded-full border border-(--line) bg-[#fffdf8] px-3 py-1 text-xs font-semibold text-[#5f5548]">
               Risk: {riskLevel}
             </span>
           )}
-          <span className="text-xs text-[#8a7d6d]">Hybrid evidence and risk analysis</span>
         </div>
 
         {hasResult && (
@@ -285,83 +297,56 @@ export default function FakeDetectionResult({
           </div>
         )}
 
-        <div className="mt-6 rounded-2xl border border-dashed border-(--line) bg-[#f7f1e6] px-4 py-4 text-sm text-[#5f5548] wrap-break-word max-h-[60vh] overflow-y-auto overscroll-contain sm:max-h-128 lg:flex-1 lg:min-h-0 lg:max-h-144">
+        <div className="mt-5 space-y-3">
+          <RiskMeter
+            level={level}
+            riskLabel={hasResult ? label : "Awaiting input"}
+            finalScore={finalScore}
+            riskLevelText={riskLevel}
+            disabled={!hasResult}
+          />
+          {hasResult && (
+            <SignalsChecklist
+              evidenceSummary={evidenceSummary}
+              fetchMetadata={fetchMetadata}
+              modelOutputs={modelOutputs}
+              conflict={conflict}
+            />
+          )}
+        </div>
+
+        <div className="mt-5 rounded-2xl border border-dashed border-(--line) bg-[#f7f1e6] px-4 py-4 text-sm text-[#5f5548] wrap-break-word max-h-[60vh] overflow-y-auto overscroll-contain sm:max-h-128 lg:flex-1 lg:min-h-0 lg:max-h-144">
           {uncertaintyReason && (
             <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900">
               <p className="font-semibold uppercase tracking-wide">
                 Reason: {uncertaintyReason}
               </p>
               {uncertainty?.reason_message && (
-                <p className="mt-1 wrap-break-word text-amber-800">{uncertainty.reason_message}</p>
+                <p className="mt-1 wrap-break-word text-amber-800">
+                  {uncertainty.reason_message}
+                </p>
               )}
             </div>
           )}
 
           {details && !uncertainty?.reason_message && (
-            <div className="mb-4 whitespace-pre-wrap wrap-break-word text-xs text-[#5f5548]">{details}</div>
-          )}
-
-          {(sourceSignal || fetchMetadata?.attempted || headlineRan || articleRan) && (
-            <div className="space-y-3 mb-6">
-              <h4 className="font-semibold text-[#3f382f] text-xs uppercase tracking-wide">
-                What we checked
-              </h4>
-              <div className="grid gap-3">
-                {sourceSignal && (
-                  <div className="rounded-xl border border-(--line) bg-[#fffdf8] px-3 py-3">
-                    <div className="text-xs font-semibold text-[#4c4439]">Source credibility</div>
-                    <p className="text-xs text-[#5f5548] mt-2">
-                      {sourceSignal.known
-                        ? `${sourceSignal.domain} — ${sourceSignal.credibility ?? "credibility noted"}. ${sourceSignal.rationale ?? ""}`
-                        : `${sourceSignal.domain ?? "No URL"} is not in our source database, so no source-based signal was applied.`}
-                    </p>
-                  </div>
-                )}
-
-                {fetchMetadata?.attempted && (
-                  <div className="rounded-xl border border-(--line) bg-[#fffdf8] px-3 py-3">
-                    <div className="text-xs font-semibold text-[#4c4439]">Article retrieval</div>
-                    <p className="text-xs text-[#5f5548] mt-2">
-                      {fetchMetadata.success
-                        ? "The article text was successfully retrieved from the URL."
-                        : "Article retrieval was attempted but unsuccessful."}
-                    </p>
-                  </div>
-                )}
-
-                {(headlineRan || articleRan) && (
-                  <div className="rounded-xl border border-(--line) bg-[#fffdf8] px-3 py-3">
-                    <div className="text-xs font-semibold text-[#4c4439]">Language analysis</div>
-                    <p className="text-xs text-[#5f5548] mt-2">
-                      {bothRan
-                        ? "Both the headline and the article body were analyzed for language patterns."
-                        : headlineRan
-                          ? "The headline was analyzed for language patterns."
-                          : "The article body was analyzed for language patterns."}
-                      {" "}Language signals are indicators, not proof of truth or falsehood.
-                      {conflict?.is_conflict ? " The signals were inconclusive, so this result is treated as review-needed." : ""}
-                    </p>
-                  </div>
-                )}
-
-                {coverageSignal?.checked && (
-                  <div className="rounded-xl border border-(--line) bg-[#fffdf8] px-3 py-3">
-                    <div className="text-xs font-semibold text-[#4c4439]">Claim cross-reference</div>
-                    <p className="text-xs text-[#5f5548] mt-2">
-                      {coverageSignal.message}
-                    </p>
-                    {evidenceSummary?.claim_hints?.length ? (
-                      <ul className="mt-2 list-disc space-y-1 pl-4 text-xs text-[#5f5548]">
-                        {evidenceSummary.claim_hints.map((claim) => (
-                          <li key={claim}>{claim}</li>
-                        ))}
-                      </ul>
-                    ) : null}
-                  </div>
-                )}
-              </div>
+            <div className="mb-4 whitespace-pre-wrap wrap-break-word text-xs text-[#5f5548]">
+              {details}
             </div>
           )}
+
+          {evidenceSummary?.claim_hints?.length ? (
+            <div className="mb-4 rounded-xl border border-(--line) bg-[#fffdf8] px-3 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-[#4c4439]">
+                Claim hints to verify manually
+              </p>
+              <ul className="mt-2 list-disc space-y-1 pl-4 text-xs text-[#5f5548]">
+                {evidenceSummary.claim_hints.map((claim) => (
+                  <li key={claim}>{claim}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
 
           {!explanation?.length && canExplain && onExplain && (
             <div className="mb-4 rounded-xl border border-(--line) bg-(--accent-soft) px-3 py-3 text-xs text-[#0b4f43]">

@@ -70,6 +70,7 @@ export default function FakeDetectionPage() {
   const [resultLevel, setResultLevel] = useState<CredibilityLevel>("mixed");
   const [resultLabel, setResultLabel] = useState("Paste text or a URL to assess misinformation risk");
   const [riskLevel, setRiskLevel] = useState<string>("Needs Review");
+  const [finalScore, setFinalScore] = useState<number | undefined>(undefined);
   const [resultDetails, setResultDetails] = useState(
     "Paste some text and a source URL, then run an analysis to see a preview of credibility insights."
   );
@@ -135,6 +136,7 @@ export default function FakeDetectionPage() {
     setResultLevel(level);
     setResultLabel(tooShort ? "Too short" : mapVerdictToDisplayLabel(data.verdict));
     setRiskLevel(tooShort ? "Too short" : (data.risk_level ?? "Needs Review"));
+    setFinalScore(typeof data.final_score === "number" ? data.final_score : undefined);
     setIsTooShort(tooShort);
     setResultDetails(data.uncertainty?.reason_message ?? "");
     setSteps(data.steps);
@@ -201,6 +203,7 @@ export default function FakeDetectionPage() {
     setFetchMetadata(undefined);
     setEvidenceSummary(undefined);
     setLimeModel(undefined);
+    setFinalScore(undefined);
     setLastPayload(null);
     setPredictionSnapshot(null);
     setFeedbackSelection(null);
@@ -337,6 +340,7 @@ export default function FakeDetectionPage() {
               label={resultLabel}
               details={resultDetails}
               riskLevel={riskLevel}
+              finalScore={finalScore}
               steps={steps}
               explanation={explanation}
               analyzedText={analyzedText}

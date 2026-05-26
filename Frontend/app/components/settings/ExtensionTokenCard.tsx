@@ -3,6 +3,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import Button from "../ui/Button";
+import Textarea from "../ui/Textarea";
 
 type ExtensionTokenResponse = {
   token: string;
@@ -83,9 +84,9 @@ export default function ExtensionTokenCard() {
   };
 
   return (
-    <div className="rounded-3xl bg-[#fffdfa]/90 border border-(--line) p-5 sm:p-6 space-y-4">
+    <div className="rounded-3xl bg-(--surface)/90 border border-(--line) p-5 sm:p-6 space-y-4">
       <div>
-        <h2 className="display-title text-2xl text-[#17130f]">Extension feedback token</h2>
+        <h2 className="display-title text-2xl text-(--foreground-strong)">Extension feedback token</h2>
         <p className="text-sm text-(--muted-foreground) mt-2">
           Use this token in the Chrome extension so feedback submissions are tied to
           your account.
@@ -114,15 +115,19 @@ export default function ExtensionTokenCard() {
 
       {tokenData && (
         <>
-          <div className="rounded-2xl border border-(--line) bg-[#fffdf8] p-4">
+          <div className="rounded-2xl border border-(--line) bg-(--surface-strong) p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-(--muted-foreground)">
               Current token
             </p>
-            <textarea
-              readOnly
-              value={tokenData.token}
-              className="mt-3 min-h-28 w-full rounded-xl border border-(--line) bg-[#f7f1e6] px-3 py-3 text-xs text-[#17130f] focus:outline-none"
-            />
+            <div className="mt-3">
+              <Textarea
+                label="Token"
+                id="extension-token"
+                readOnly
+                value={tokenData.token}
+                className="min-h-28 text-xs"
+              />
+            </div>
             <div className="mt-3 flex flex-col gap-3 text-xs text-(--muted-foreground) sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
               <span>Version: {tokenData.version}</span>
               <span className="break-words">Last rotation: {formatDateTime(tokenData.rotatedAt)}</span>

@@ -113,29 +113,29 @@ export default function NewsGrid({
     return (
       <div className="space-y-8">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-          <div className="rounded-3xl border border-(--line) bg-[#fffdfa]/85 p-6 shadow-[0_16px_30px_rgba(24,16,8,0.09)]">
-            <div className="h-6 w-24 bg-[#e6dccb] rounded-full animate-pulse" />
-            <div className="mt-4 h-8 w-3/4 bg-[#e6dccb] rounded-xl animate-pulse" />
-            <div className="mt-3 h-4 w-2/3 bg-[#e6dccb] rounded-xl animate-pulse" />
-            <div className="mt-6 h-52 w-full bg-[#e6dccb] rounded-2xl animate-pulse" />
+          <div className="rounded-3xl border border-(--line) bg-(--surface)/85 p-6 shadow-[0_16px_30px_rgba(24,16,8,0.09)]">
+            <div className="h-6 w-24 bg-(--surface-pill) rounded-full animate-pulse" />
+            <div className="mt-4 h-8 w-3/4 bg-(--surface-pill) rounded-xl animate-pulse" />
+            <div className="mt-3 h-4 w-2/3 bg-(--surface-pill) rounded-xl animate-pulse" />
+            <div className="mt-6 h-52 w-full bg-(--surface-pill) rounded-2xl animate-pulse" />
           </div>
-          <div className="rounded-3xl border border-(--line) bg-[#fffdfa]/85 p-6 shadow-[0_16px_30px_rgba(24,16,8,0.09)]">
-            <div className="h-6 w-20 bg-[#e6dccb] rounded-full animate-pulse" />
-            <div className="mt-4 h-4 w-4/5 bg-[#e6dccb] rounded-xl animate-pulse" />
-            <div className="mt-3 h-4 w-2/3 bg-[#e6dccb] rounded-xl animate-pulse" />
-            <div className="mt-6 h-4 w-1/2 bg-[#e6dccb] rounded-xl animate-pulse" />
+          <div className="rounded-3xl border border-(--line) bg-(--surface)/85 p-6 shadow-[0_16px_30px_rgba(24,16,8,0.09)]">
+            <div className="h-6 w-20 bg-(--surface-pill) rounded-full animate-pulse" />
+            <div className="mt-4 h-4 w-4/5 bg-(--surface-pill) rounded-xl animate-pulse" />
+            <div className="mt-3 h-4 w-2/3 bg-(--surface-pill) rounded-xl animate-pulse" />
+            <div className="mt-6 h-4 w-1/2 bg-(--surface-pill) rounded-xl animate-pulse" />
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
           {Array.from({ length: 6 }).map((_, idx) => (
             <div
               key={`skeleton-${idx}`}
-              className="h-80 rounded-3xl border border-(--line) bg-[#fffdfa]/85 p-4 shadow-[0_16px_30px_rgba(24,16,8,0.09)]"
+              className="h-80 rounded-3xl border border-(--line) bg-(--surface)/85 p-4 shadow-[0_16px_30px_rgba(24,16,8,0.09)]"
             >
-              <div className="h-40 w-full bg-[#e6dccb] rounded-2xl animate-pulse" />
-              <div className="mt-4 h-4 w-24 bg-[#e6dccb] rounded-full animate-pulse" />
-              <div className="mt-3 h-5 w-3/4 bg-[#e6dccb] rounded-xl animate-pulse" />
-              <div className="mt-2 h-4 w-2/3 bg-[#e6dccb] rounded-xl animate-pulse" />
+              <div className="h-40 w-full bg-(--surface-pill) rounded-2xl animate-pulse" />
+              <div className="mt-4 h-4 w-24 bg-(--surface-pill) rounded-full animate-pulse" />
+              <div className="mt-3 h-5 w-3/4 bg-(--surface-pill) rounded-xl animate-pulse" />
+              <div className="mt-2 h-4 w-2/3 bg-(--surface-pill) rounded-xl animate-pulse" />
             </div>
           ))}
         </div>
@@ -155,8 +155,8 @@ export default function NewsGrid({
   if (news.length === 0) {
     return (
       <div className="text-center py-20">
-        <p className="text-[#5f5548]">No news articles found.</p>
-        <p className="text-sm text-[#786d61] mt-2">
+        <p className="text-(--muted-foreground)">No news articles found.</p>
+        <p className="text-sm text-(--muted-foreground) mt-2">
           Try a different topic or search phrase.
         </p>
       </div>

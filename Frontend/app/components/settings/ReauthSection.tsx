@@ -18,8 +18,8 @@ export default function ReauthSection({
   onVerify,
 }: ReauthSectionProps) {
   return (
-    <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-(--line) p-5 sm:p-6 space-y-4">
-      <h2 className="display-title text-2xl text-[#17130f]">Re-authentication</h2>
+    <div className="min-w-0 rounded-3xl bg-(--surface)/90 border border-(--line) p-5 sm:p-6 space-y-4">
+      <h2 className="display-title text-2xl text-(--foreground-strong)">Re-authentication</h2>
       {profile?.providerInfo.passwordLogin ? (
         <>
           <Input

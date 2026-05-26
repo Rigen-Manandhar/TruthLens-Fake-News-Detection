@@ -1,5 +1,6 @@
 import Button from "../ui/Button";
 import Input from "../ui/Input";
+import Select from "../ui/Select";
 import {
   NEWS_CATEGORY_OPTIONS,
   type DetectionExplanationMode,
@@ -21,8 +22,8 @@ export default function PreferencesSection({
   onSave,
 }: PreferencesSectionProps) {
   return (
-    <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-(--line) p-5 sm:p-6 space-y-4">
-      <h2 className="display-title text-2xl text-[#17130f]">Preferences</h2>
+    <div className="min-w-0 rounded-3xl bg-(--surface)/90 border border-(--line) p-5 sm:p-6 space-y-4">
+      <h2 className="display-title text-2xl text-(--foreground-strong)">Preferences</h2>
       <Input
         label="Default country (2-letter)"
         id="newsCountry"
@@ -49,15 +50,17 @@ export default function PreferencesSection({
             }
             className={`px-3 py-1.5 rounded-full text-xs font-semibold border ${
               prefs.newsCategories.includes(category)
-                ? "bg-[#12100d] text-[#f7f1e6] border-[#12100d]"
-                : "bg-[#fffdf8] text-(--muted-foreground) border-(--line)"
+                ? "bg-(--ink) text-(--ink-foreground) border-(--ink)"
+                : "bg-(--surface-strong) text-(--muted-foreground) border-(--line)"
             }`}
           >
             {category}
           </button>
         ))}
       </div>
-      <select
+      <Select
+        label="Detection input mode"
+        id="detectionInputMode"
         value={prefs.detectionInputMode}
         onChange={(e) =>
           onPrefsChange({
@@ -65,14 +68,15 @@ export default function PreferencesSection({
             detectionInputMode: e.target.value as DetectionInputMode,
           })
         }
-        className="w-full px-4 py-3 border border-(--line) rounded-xl bg-[#fffdf8] text-[#17130f]"
       >
         <option value="auto">Auto</option>
         <option value="headline_only">Headline only</option>
         <option value="full_article">Full article</option>
         <option value="headline_plus_article">Headline + article</option>
-      </select>
-      <select
+      </Select>
+      <Select
+        label="Explanation mode"
+        id="detectionExplanationMode"
         value={prefs.detectionExplanationMode}
         onChange={(e) =>
           onPrefsChange({
@@ -80,11 +84,10 @@ export default function PreferencesSection({
             detectionExplanationMode: e.target.value as DetectionExplanationMode,
           })
         }
-        className="w-full px-4 py-3 border border-(--line) rounded-xl bg-[#fffdf8] text-[#17130f]"
       >
         <option value="auto">Auto explanation</option>
         <option value="none">No explanation</option>
-      </select>
+      </Select>
       <Button
         type="button"
         onClick={onSave}

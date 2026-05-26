@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 
 import Footer from "../components/Footer";
+import Textarea from "../components/ui/Textarea";
+import MailLink from "../components/ui/MailLink";
 
 type ContactStatus = {
   type: "success" | "error";
@@ -92,14 +94,14 @@ export default function ContactPage() {
       <div className="pointer-events-none absolute top-[9rem] right-0 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
       <div className="flex min-h-[calc(100vh-5.5rem)] flex-1 flex-col sm:min-h-[calc(100vh-5.75rem)]">
-        <main className="page-main flex flex-1 flex-col justify-center">
-          <section className="section-reveal rounded-[2.2rem] border border-(--line) bg-[#fffdfa]/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10 lg:px-10 lg:py-12">
+        <main id="main-content" className="page-main flex flex-1 flex-col justify-center">
+          <section className="section-reveal rounded-[2.2rem] border border-(--line) bg-(--surface)/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10 lg:px-10 lg:py-12">
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(29rem,0.88fr)] lg:items-center xl:gap-10">
               <div className="space-y-7">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#867a6a]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-(--muted-foreground-strong)">
                 Contact TruthLens
               </p>
-              <h1 className="page-title display-title max-w-3xl text-4xl font-bold text-[#17130f] sm:text-[3.35rem] lg:text-[3.9rem]">
+              <h1 className="page-title display-title max-w-3xl text-4xl font-bold text-(--foreground-strong) sm:text-[3.35rem] lg:text-[3.9rem]">
                 Send a message without leaving the product.
               </h1>
               <p className="max-w-2xl text-sm leading-8 text-(--muted-foreground) sm:text-base">
@@ -109,30 +111,30 @@ export default function ContactPage() {
               </p>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <article className="rounded-[1.5rem] border border-(--line) bg-[#f7f1e6]/92 p-5 shadow-[0_16px_32px_rgba(24,16,8,0.08)]">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#867a6a]">
+                <article className="rounded-[1.5rem] border border-(--line) bg-(--surface-deep)/92 p-5 shadow-[0_16px_32px_rgba(24,16,8,0.08)]">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
                     Inbox
                   </p>
-                  <p className="mt-3 break-words text-base font-semibold text-[#17130f]">
-                    rigenmanandharrm@gmail.com
+                  <p className="mt-3 break-words text-base font-semibold text-(--foreground-strong)">
+                    <MailLink user="rigenmanandharrm" domain="gmail.com" />
                   </p>
-                  <p className="mt-2 text-sm leading-6 text-[#5f5548]">
+                  <p className="mt-2 text-sm leading-6 text-(--muted-foreground)">
                     Every submission from this page is routed to this address.
                   </p>
                 </article>
 
-                <article className="rounded-[1.5rem] border border-(--line) bg-[#fffdf8] p-5 shadow-[0_16px_32px_rgba(24,16,8,0.08)]">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#867a6a]">
+                <article className="rounded-[1.5rem] border border-(--line) bg-(--surface-strong) p-5 shadow-[0_16px_32px_rgba(24,16,8,0.08)]">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
                     Best for
                   </p>
-                  <p className="mt-3 text-sm leading-7 text-[#5f5548]">
+                  <p className="mt-3 text-sm leading-7 text-(--muted-foreground)">
                     Feature feedback, integration questions, project inquiries,
                     and issues affecting the news feed or detection flow.
                   </p>
                 </article>
               </div>
 
-              <div className="rounded-[1.6rem] border border-dashed border-(--line) bg-[linear-gradient(135deg,rgba(14,124,102,0.08),rgba(232,176,116,0.12))] px-5 py-4 text-sm leading-7 text-[#4f473c] shadow-[0_14px_28px_rgba(24,16,8,0.05)]">
+              <div className="rounded-[1.6rem] border border-dashed border-(--line) bg-[linear-gradient(135deg,rgba(14,124,102,0.08),rgba(232,176,116,0.12))] px-5 py-4 text-sm leading-7 text-(--foreground) shadow-[0_14px_28px_rgba(24,16,8,0.05)]">
                 Messages from this form go directly to the TruthLens inbox, and{" "}
                 {useAccountEmail
                   ? "your signed-in account email is used as the reply target."
@@ -145,7 +147,7 @@ export default function ContactPage() {
                 <div className="space-y-2">
                   <label
                     htmlFor="contact-name"
-                    className="text-sm font-semibold text-[#17130f]"
+                    className="text-sm font-semibold text-(--foreground-strong)"
                   >
                     Your name
                   </label>
@@ -154,7 +156,7 @@ export default function ContactPage() {
                     type="text"
                     value={form.name}
                     onChange={(event) => updateField("name", event.target.value)}
-                    className="w-full rounded-2xl border border-(--line) bg-[#fffdf8] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#948777] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
+                    className="w-full rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
                     placeholder="What should we call you?"
                     maxLength={80}
                     disabled={isSubmitting}
@@ -163,21 +165,21 @@ export default function ContactPage() {
 
                 {useAccountEmail ? (
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-[#17130f]">
+                    <label className="text-sm font-semibold text-(--foreground-strong)">
                       Reply email
                     </label>
-                    <div className="rounded-2xl border border-(--line) bg-[#eef6f3] px-4 py-3 text-sm text-[#0b5b4d]">
+                    <div className="rounded-2xl border border-(--line) bg-(--accent-soft) px-4 py-3 text-sm text-(--accent-strong)">
                       <div className="font-semibold">Signed in as</div>
                       <div className="mt-1 break-words">{sessionEmail}</div>
                     </div>
                   </div>
                 ) : authStatus === "loading" ? (
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-[#17130f]">
+                    <label className="text-sm font-semibold text-(--foreground-strong)">
                       Reply email
                     </label>
                     <div
-                      className="h-[3.125rem] rounded-2xl border border-(--line) bg-[#f6efe3] animate-pulse"
+                      className="h-[3.125rem] rounded-2xl border border-(--line) bg-(--surface-pill) animate-pulse"
                       aria-hidden="true"
                     />
                   </div>
@@ -185,7 +187,7 @@ export default function ContactPage() {
                   <div className="space-y-2">
                     <label
                       htmlFor="contact-email"
-                      className="text-sm font-semibold text-[#17130f]"
+                      className="text-sm font-semibold text-(--foreground-strong)"
                     >
                       Your email
                     </label>
@@ -194,7 +196,7 @@ export default function ContactPage() {
                       type="email"
                       value={form.email}
                       onChange={(event) => updateField("email", event.target.value)}
-                      className="w-full rounded-2xl border border-(--line) bg-[#fffdf8] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#948777] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
+                      className="w-full rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
                       placeholder="Where should replies go?"
                       maxLength={120}
                       disabled={isSubmitting}
@@ -203,20 +205,15 @@ export default function ContactPage() {
                 )}
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="contact-message"
-                    className="text-sm font-semibold text-[#17130f]"
-                  >
-                    Message
-                  </label>
-                  <textarea
+                  <Textarea
+                    label="Message"
                     id="contact-message"
                     value={form.message}
                     onChange={(event) => updateField("message", event.target.value)}
-                    className="min-h-40 w-full rounded-[1.5rem] border border-(--line) bg-[#fffdf8] px-4 py-3 text-sm text-[#17130f] placeholder:text-[#948777] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
                     placeholder="Write what you want to send..."
                     maxLength={3000}
                     disabled={isSubmitting}
+                    className="min-h-40"
                   />
                 </div>
 
@@ -233,7 +230,7 @@ export default function ContactPage() {
                 )}
 
                 <div className="flex flex-col gap-4 border-t border-(--line)/80 pt-4 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-xs leading-6 text-[#7f7364]">
+                  <p className="text-xs leading-6 text-(--muted-foreground)">
                     Submitted messages are sent to the TruthLens contact inbox
                     with{" "}
                     {useAccountEmail
@@ -243,7 +240,7 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="inline-flex h-12 shrink-0 items-center justify-center rounded-full bg-[#12100d] px-7 text-sm font-semibold whitespace-nowrap text-[#f7f1e6] shadow-[0_12px_24px_rgba(24,16,8,0.2)] transition-colors hover:bg-(--accent) disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-[10.5rem]"
+                    className="inline-flex h-12 shrink-0 items-center justify-center rounded-full bg-(--ink) px-7 text-sm font-semibold whitespace-nowrap text-(--ink-foreground) shadow-[0_12px_24px_rgba(24,16,8,0.2)] transition-colors hover:bg-(--accent) disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-[10.5rem]"
                   >
                     {isSubmitting ? "Sending..." : "Send message"}
                   </button>

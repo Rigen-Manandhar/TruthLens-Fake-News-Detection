@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { RefreshCw } from "../ui/icons";
 
 interface HeroSectionProps {
   searchInput: string;
@@ -40,7 +41,7 @@ export default function HeroSection({
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1.26fr)_minmax(0,1fr)] items-center py-2 sm:py-6 lg:py-8">
         <div className="section-reveal delay-1 min-w-0">
-          <h1 className="page-title display-title text-4xl sm:text-[3.35rem] lg:text-[3.8rem] font-bold text-[#17130f] mb-5">
+          <h1 className="page-title display-title text-4xl sm:text-[3.35rem] lg:text-[3.8rem] font-bold text-(--foreground-strong) mb-5">
             Read the day.
             <br />
             Verify the signal.
@@ -61,11 +62,11 @@ export default function HeroSection({
               value={searchInput}
               onChange={(e) => onSearchInputChange(e.target.value)}
               placeholder="Search a headline, publisher, topic..."
-              className="flex-1 px-5 py-3 rounded-full border border-(--line) bg-[#fffdf8] shadow-[0_10px_24px_rgba(20,14,7,0.08)] text-sm text-[#16120e] focus:outline-none focus:ring-2 focus:ring-(--accent)/45 placeholder:text-[#8d7f6f]"
+              className="flex-1 px-5 py-3 rounded-full border border-(--line) bg-(--surface-strong) shadow-[0_10px_24px_rgba(20,14,7,0.08)] text-sm text-(--foreground) focus:outline-none focus:ring-2 focus:ring-(--accent)/45 placeholder:text-(--muted-foreground)/70"
             />
             <button
               type="submit"
-              className="shrink-0 w-full sm:w-auto px-7 py-3 rounded-full bg-[#12100d] text-[#f7f1e6] text-sm font-semibold transition-colors shadow-[0_12px_24px_rgba(26,18,8,0.2)] hover:bg-(--accent)"
+              className="shrink-0 w-full sm:w-auto px-7 py-3 rounded-full bg-(--ink) text-(--ink-foreground) text-sm font-semibold transition-colors shadow-[0_12px_24px_rgba(26,18,8,0.2)] hover:bg-(--accent)"
             >
               Search Feed
             </button>
@@ -73,30 +74,10 @@ export default function HeroSection({
               <button
                 type="button"
                 onClick={onResetFeed}
-                className="shrink-0 inline-flex w-full items-center justify-center gap-2 rounded-full border border-(--line) bg-[#fffdf8] px-5 py-3 text-sm font-semibold text-[#5f5548] shadow-[0_10px_24px_rgba(20,14,7,0.08)] transition-colors hover:bg-[#f4eee2] sm:w-auto"
+                className="shrink-0 inline-flex w-full items-center justify-center gap-2 rounded-full border border-(--line) bg-(--surface-strong) px-5 py-3 text-sm font-semibold text-(--muted-foreground) shadow-[0_10px_24px_rgba(20,14,7,0.08)] transition-colors hover:bg-(--surface-hover) sm:w-auto"
                 aria-label="Reset news feed"
               >
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  className="h-4 w-4"
-                >
-                  <path
-                    d="M16.667 10A6.667 6.667 0 1 1 14.714 5.286"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M16.667 3.333v4.167H12.5"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <RefreshCw aria-hidden className="h-4 w-4" />
                 Reset Feed
               </button>
             )}
@@ -112,8 +93,8 @@ export default function HeroSection({
                   onClick={() => onCategoryChange(isActive ? "" : topic.value)}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
                     isActive
-                      ? "bg-[#12100d] text-[#f6f1e6] border-[#12100d] shadow-[0_8px_20px_rgba(22,16,8,0.18)]"
-                      : "bg-[#fffdf8] text-(--muted-foreground) border-(--line) hover:bg-[#f4eee2]"
+                      ? "bg-(--ink) text-(--ink-foreground) border-(--ink) shadow-[0_8px_20px_rgba(22,16,8,0.18)]"
+                      : "bg-(--surface-strong) text-(--muted-foreground) border-(--line) hover:bg-(--surface-hover)"
                   }`}
                 >
                   {topic.label}

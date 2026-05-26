@@ -65,7 +65,7 @@ export default function Home() {
       <div className="pointer-events-none absolute -top-10 -left-12 h-52 w-52 rounded-full bg-[rgba(232,176,116,0.26)] blur-3xl" />
       <div className="pointer-events-none absolute top-[7.5rem] -right-14 h-60 w-60 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
-      <main className="page-main">
+      <main id="main-content" className="page-main">
         <HeroSection
           searchInput={searchInput}
           onSearchInputChange={setSearchInput}
@@ -79,7 +79,7 @@ export default function Home() {
         <section className="space-y-8 section-reveal delay-1">
           <div>
             <div>
-              <h2 className="page-title display-title text-3xl sm:text-[2.65rem] font-bold text-[#17130f]">
+              <h2 className="page-title display-title text-3xl sm:text-[2.65rem] font-bold text-(--foreground-strong)">
                 Today&apos;s credibility briefings
               </h2>
               <p className="text-sm text-(--muted-foreground) mt-2 max-w-xl">

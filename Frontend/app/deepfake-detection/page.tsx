@@ -94,10 +94,10 @@ export default function DeepfakeDetectionPage() {
       <div className="pointer-events-none absolute -top-14 -left-16 h-64 w-64 rounded-full bg-[rgba(232,176,116,0.28)] blur-3xl" />
       <div className="pointer-events-none absolute top-32 -right-12 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
-      <main className="page-main space-y-8 sm:space-y-10">
+      <main id="main-content" className="page-main space-y-8 sm:space-y-10">
         <header className="space-y-4 max-w-2xl">
           <div className="space-y-4">
-            <h1 className="page-title display-title text-4xl sm:text-[2.9rem] font-bold text-[#17130f] tracking-tight">
+            <h1 className="page-title display-title text-4xl sm:text-[2.9rem] font-bold text-(--foreground-strong) tracking-tight">
               Deepfake Detection
             </h1>
             <p className="text-sm sm:text-base text-(--muted-foreground) max-w-xl">
@@ -106,7 +106,7 @@ export default function DeepfakeDetectionPage() {
               authenticity.
             </p>
             <div className="flex items-center gap-3 text-xs text-(--muted-foreground)">
-              <span className="h-2 w-2 rounded-full bg-[#12100d]/45" />
+              <span className="h-2 w-2 rounded-full bg-(--ink)/45" />
               Visual manipulation risk analysis
             </div>
           </div>

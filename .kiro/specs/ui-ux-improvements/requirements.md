@@ -322,3 +322,59 @@ This document captures the **what** for each improvement. Implementation specifi
 4. IF a Web App or Extension change appears to require a backend update, THEN THE feature SHALL stop and surface the conflict for an explicit scope decision before any backend file is edited.
 
 ---
+## Phase 1 — UI Polish Defense Refinement (shipped on `ui-polish-defense-refinement`)
+
+This branch implements a scoped UI/UX polish pass covering 9 areas. Backend, scoring, prediction, auth, DB, API routes, and environment files are untouched. The hero image is intentionally untouched. The branch is committed locally per area; lint and build are green at every commit.
+
+Areas covered:
+
+1. **Dependencies** — `lucide-react` added (only new runtime dependency in Phase 1). `focus-trap-react` is intentionally NOT installed yet (Phase 2 only).
+2. **Accessibility basics** — Skip-to-main-content link added in `app/layout.tsx`; `id="main-content"` added to every top-level `<main>` (13 surfaces). `prefers-reduced-motion: reduce` now disables `section-reveal` / `auth-appear` / `fadeUp` / `authFadeUp` and the sliding nav indicator transition. New `--muted-foreground-strong` token (`#6e6354`) replaces 39 borderline-AA hex eyebrow colors. ConfirmDialog gets `useId`-derived `aria-labelledby` / `aria-describedby` / `aria-busy` plus focus restoration on close (no library — manual capture/restore).
+3. **Icon system** — `lucide-react` rolled out via `app/components/ui/icons.ts`. Replaced text arrows in NewsCard, FeaturedNewsStory, About; reset-feed SVG in HeroSection (`RefreshCw`); upload SVG in DeepfakeDetectionForm (`Upload`); empty-state SVG in DeepfakeDetectionResult (`ImageIcon`); literal `?` in ConfirmDialog (`HelpCircle` with optional `iconType="warn"` `AlertTriangle`); LogOut icon next to Header sign-out menu item.
+4. **Form primitives** — New `Textarea` and `Select` primitives in `app/components/ui/`. Migrated FakeDetectionForm (textarea + input mode select), PreferencesSection (two selects), ExtensionTokenCard (token textarea), and contact page (message textarea). URL/text inputs left as-is to keep scope tight.
+5. **Branded toasts** — `ToastProvider` rebranded with cream surface (`#fffdf8`), 16-px radius, palette-correct border, and lucide icons for success / error / loading.
+6. **News card polish** — `utils.ts` split into `getAnalysisLabel`, `getAnalysisConfidence`, and `getVerdictAccentClass` (original `getAnalysisText` kept for backward compat). NewsCard and FeaturedNewsStory now render a 3-px verdict-tinted top accent strip and a 2-px confidence bar inside the analysis pill (uses `bg-current` so it stays in palette).
+7. **RiskMeter + SignalsChecklist** — New `RiskMeter` (3-segment horizontal meter with pointer at `final_score`, `role="img"` plus `aria-label`) and `SignalsChecklist` (5 rows: Source / Retrieval / Headline / Article / Coverage with status icons, 1-line context, optional disagreement note when `conflict.is_conflict`). FakeDetectionResult drops the `Result:` prefix, removes the inline `Hybrid evidence and risk analysis` caption, removes the four "What we checked" cards (now captured by the checklist), and keeps the existing `What this result means` amber callout. `finalScore` now threads from `predictionSnapshot.finalScore`.
+8. **Detection page polish** — FakeDetectionResult has three states: result, `isLoading` skeleton (Analyzing pill + disabled meter labelled `Analyzing…` + 3 placeholder rows + `aria-busy`), and empty (`ScanSearch` icon + `Awaiting input` + `Try a headline` / `Try a URL` example chips that prefill the form without auto-running). FakeDetectionForm has Ctrl/Cmd+Enter on the textarea (`preventDefault`, calls `onAnalyze`) and a visible `Ctrl + Enter` `<kbd>` hint on `sm+`.
+9. **Footer + contact + microcopy** — Footer rebuilt as a 3-column block (brand + tagline / Product links / Resources links / `©` year + small `Final Year Project` tag). **No status pill** — explicitly avoided since there is no real health endpoint. New `MailLink` component renders `rigenmanandharrm [at] gmail [dot] com` on the server and upgrades to a real `mailto:` anchor after hydration via `useSyncExternalStore` (React 19 compliant). Contact page uses `MailLink`. `Hybrid evidence and risk analysis` wording now appears only in the page sub-eyebrow and result panel footer (the redundant pill caption is removed).
+
+### Phase 2 — Deferred (gated on Phase 1 review approval)
+
+Held for explicit user approval after they review the Phase 1 diff/screenshots. Listed for traceability:
+- Dark mode foundation (CSS-var dark tokens) + `ThemeInit` script + `ThemeToggle` (System/Light/Dark) + `localStorage.truthlens.theme` persistence.
+- ConfirmDialog focus trap via `focus-trap-react` (only place this dependency gets installed).
+- Detection history drawer + `useDetectionHistory` hook (`localStorage.truthlens.detection.history`, capped at 10 entries).
+- Settings sticky sidebar on `lg+` and horizontal scroll-tabs on mobile.
+
+### Verification trail (Phase 1)
+
+- `npm run lint`: green at every per-area commit and at final.
+- `npm run build`: green at every per-area commit and at final (Next.js 16, Turbopack).
+- React 19 strict lint flagged two patterns mid-task; both refactored to `useSyncExternalStore` to comply: `useReducedMotion` and `MailLink` hydration detection.
+- Branch lives on `ui-polish-defense-refinement`; nothing pushed to `main`. Branch tracking will be set when the branch is pushed in the final QA step.
+
+
+## Phase 2 — Dark Mode, Focus Trap, Detection History, Settings Nav (shipped on `ui-polish-defense-refinement`)
+
+This phase layers four user-facing capabilities on top of the Phase 1 polish, still on the same branch and still without touching backend / extension / API / DB / auth / env files. The hero image remains untouched.
+
+Areas covered:
+
+1. **Dependency** — `focus-trap-react@^10.2.3` added (the only new runtime dependency in Phase 2). Used exclusively by `ConfirmDialog` and `HistoryDrawer`.
+2. **Dark mode foundation + System/Light/Dark toggle** — `globals.css` defines a full token system in `:root` (and explicit `[data-theme="light"]`) and overrides every token for `[data-theme="dark"]` (warm near-black surfaces `#15120e` / `#1f1a14`, brightened teal accent `#2db89e`, inverted ink). Custom Tailwind v4 `dark` variant declared via `@custom-variant`. `body` gradient now flows from `--background-edge-1` / `--background-soft` / `--background-edge-2` so it themes correctly. New `ThemeInit` component injects an inline `<script>` into `<head>` that reads `localStorage.truthlens.theme` (with `prefers-color-scheme` fallback) and sets `data-theme` on `<html>` *before* paint to prevent FOUC. New `ThemeToggle` segmented switch (System / Light / Dark) is mounted in the header on desktop and inside the mobile drawer. The toggle persists to `localStorage`, dispatches a `truthlens.theme:change` custom event for in-tab sync, listens for OS theme changes when in System mode, and uses `useSyncExternalStore` to satisfy React 19's `react-hooks/set-state-in-effect` rule. ~360 hardcoded color literals across 48 files were bulk-converted to token references (`bg-(--surface)`, `text-(--foreground-strong)`, `bg-(--ink)`, etc.); the only intentional remaining hex literals are an error message red and the hero image overlay text (always against a dark gradient).
+3. **ConfirmDialog focus trap** — `ConfirmDialog` now wraps its content in `<FocusTrap>` from `focus-trap-react` with `initialFocus` configurable via a new `initialFocus` prop (defaults to "cancel"), `returnFocusOnDeactivate: true` restores focus to the trigger, and `escapeDeactivates: false` keeps Esc handling local so it can gate on `isLoading`. Buttons carry `data-confirm-dialog-action` attributes the trap uses as focus selectors. ARIA from Phase 1 (`aria-labelledby`, `aria-describedby`, `aria-busy`) preserved.
+4. **Detection history (localStorage only)** — New `useDetectionHistory` hook persists to `localStorage` under `truthlens.detection.history` in a versioned envelope (`{ version: 1, entries: [...] }`), capped at 10 entries, with a 200-char excerpt limit and entry shape `{ id, createdAt, inputExcerpt, sourceUrl, inputMode, verdict, riskLevel, finalScore }`. Hook uses `useSyncExternalStore` so multiple subscribers stay in sync without prop drilling. New `HistoryDrawer` (slide-in right panel, focus-trapped, theme-aware) lists entries with verdict pill, time-ago, "Reload" (refills form without auto-running), per-entry "Remove", and a "Clear history" footer. `FakeDetectionForm` gets a "Recent (N)" button in its header that only appears when entries exist; `fake-detection/page.tsx` pushes non-`INSUFFICIENT_TEXT` predictions to history.
+5. **Settings sticky sidebar / scroll-tabs** — `settings/page.tsx` is now a `lg:grid-cols-[14rem_minmax(0,1fr)]` layout. `SettingsSideNav` renders a sticky vertical list on `lg+` and a horizontal scroll-tab strip below `lg`, both pointing at four anchored sections (`account`, `profile`, `security`, `extension`). Active highlighting is driven by an `IntersectionObserver` scroll-spy. The existing `useSettingsController` hook and section components are unchanged.
+
+### Verification trail (Phase 2)
+
+- `npm run lint` and `npm run build`: green at every per-area commit and at final.
+- React 19 `react-hooks/set-state-in-effect` rule again required `useSyncExternalStore` for the theme choice and the history hook; both flow through that pattern.
+- Branch lives on `ui-polish-defense-refinement`. Phase 1 was already pushed; Phase 2 is appended on top with the final push happening only after this QA pass is green.
+
+### What stays out of scope (still deferred / not done)
+
+- Mass migration of intermediate-tone text hex literals to tokens (a handful of one-off greens / placeholder tints remain inline; they read fine in both modes against the chosen surfaces).
+- Backend, extension, API routes, MongoDB, scoring, auth, environment files: still untouched per the project-wide guardrail.
+- Hero GIF: still untouched per explicit user instruction.
+

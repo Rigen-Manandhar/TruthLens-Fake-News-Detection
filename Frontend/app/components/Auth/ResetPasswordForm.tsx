@@ -64,17 +64,17 @@ export default function ResetPasswordForm({ token = "" }: ResetPasswordFormProps
   };
 
   return (
-    <div className="relative w-full max-w-md rounded-3xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] p-6 sm:p-8 overflow-hidden auth-appear-delay">
+    <div className="relative w-full max-w-md rounded-3xl border border-(--line) bg-(--surface)/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] p-6 sm:p-8 overflow-hidden auth-appear-delay">
       <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#12100d] via-(--accent) to-[#e8b074]" />
       <div className="absolute -top-16 -right-10 h-32 w-32 rounded-full bg-[rgba(14,124,102,0.14)] blur-3xl" />
       <div className="absolute -bottom-16 -left-10 h-32 w-32 rounded-full bg-[rgba(232,176,116,0.2)] blur-3xl" />
 
       <div className="relative">
         <div className="mb-6">
-          <p className="text-[11px] font-semibold tracking-[0.25em] text-[#847868] uppercase">
+          <p className="text-[11px] font-semibold tracking-[0.25em] text-(--muted-foreground-strong) uppercase">
             Secure reset
           </p>
-          <h1 className="page-title display-title text-3xl font-bold text-[#17130f] mb-2">
+          <h1 className="page-title display-title text-3xl font-bold text-(--foreground-strong) mb-2">
             Set a new password
           </h1>
           <p className="text-sm text-(--muted-foreground)">
@@ -123,7 +123,7 @@ export default function ResetPasswordForm({ token = "" }: ResetPasswordFormProps
             Need a new email?{" "}
             <Link
               href="/forgot-password"
-              className="text-[#17130f] font-semibold hover:text-(--accent)"
+              className="text-(--foreground-strong) font-semibold hover:text-(--accent)"
             >
               Request another reset link
             </Link>

@@ -38,8 +38,8 @@ export default function PasswordSection({
   onSetupPassword,
 }: PasswordSectionProps) {
   return (
-    <div className="min-w-0 rounded-3xl bg-[#fffdfa]/90 border border-(--line) p-5 sm:p-6 space-y-4">
-      <h2 className="display-title text-2xl text-[#17130f]">
+    <div className="min-w-0 rounded-3xl bg-(--surface)/90 border border-(--line) p-5 sm:p-6 space-y-4">
+      <h2 className="display-title text-2xl text-(--foreground-strong)">
         {profile?.hasPassword ? "Change password" : "Set backup password"}
       </h2>
       {profile?.hasPassword ? (

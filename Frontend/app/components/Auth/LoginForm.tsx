@@ -59,17 +59,17 @@ export default function LoginForm({ resetStatus = "" }: LoginFormProps) {
   };
 
   return (
-    <div className="relative w-full max-w-md rounded-3xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] p-6 sm:p-8 overflow-hidden auth-appear-delay">
+    <div className="relative w-full max-w-md rounded-3xl border border-(--line) bg-(--surface)/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] p-6 sm:p-8 overflow-hidden auth-appear-delay">
       <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#12100d] via-(--accent) to-[#e8b074]" />
       <div className="absolute -top-16 -right-10 h-32 w-32 rounded-full bg-[rgba(14,124,102,0.14)] blur-3xl" />
       <div className="absolute -bottom-16 -left-10 h-32 w-32 rounded-full bg-[rgba(232,176,116,0.2)] blur-3xl" />
 
       <div className="relative">
         <div className="mb-6">
-          <p className="text-[11px] font-semibold tracking-[0.25em] text-[#847868] uppercase">
+          <p className="text-[11px] font-semibold tracking-[0.25em] text-(--muted-foreground-strong) uppercase">
             Secure access
           </p>
-          <h1 className="page-title display-title text-3xl font-bold text-[#17130f] mb-2">
+          <h1 className="page-title display-title text-3xl font-bold text-(--foreground-strong) mb-2">
             Welcome back
           </h1>
           <p className="text-sm text-(--muted-foreground)">
@@ -100,7 +100,7 @@ export default function LoginForm({ resetStatus = "" }: LoginFormProps) {
           <div className="flex justify-end">
             <Link
               href="/forgot-password"
-              className="text-xs font-semibold text-[#17130f] hover:text-(--accent)"
+              className="text-xs font-semibold text-(--foreground-strong) hover:text-(--accent)"
             >
               Forgot password?
             </Link>
@@ -113,7 +113,7 @@ export default function LoginForm({ resetStatus = "" }: LoginFormProps) {
             {isLoading ? "Logging in..." : "Continue"}
           </Button>
 
-          <div className="flex items-center gap-3 text-xs text-[#8a7d6d]">
+          <div className="flex items-center gap-3 text-xs text-(--muted-foreground)">
             <div className="h-px flex-1 bg-(--line)" />
             <span>or</span>
             <div className="h-px flex-1 bg-(--line)" />
@@ -154,7 +154,7 @@ export default function LoginForm({ resetStatus = "" }: LoginFormProps) {
             Don&apos;t have an account?{" "}
             <Link
               href="/signup"
-              className="text-[#17130f] font-semibold hover:text-(--accent)"
+              className="text-(--foreground-strong) font-semibold hover:text-(--accent)"
             >
               Create one
             </Link>

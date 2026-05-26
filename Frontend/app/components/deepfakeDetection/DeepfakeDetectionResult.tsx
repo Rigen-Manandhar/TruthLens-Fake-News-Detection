@@ -1,6 +1,7 @@
 "use client";
 
 import type { DeepfakeResponse, DeepfakeVerdict } from "./types";
+import { ImageIcon } from "../ui/icons";
 
 interface DeepfakeDetectionResultProps {
   result: DeepfakeResponse | null;
@@ -20,7 +21,7 @@ export default function DeepfakeDetectionResult({
   const hasResult = result !== null;
 
   return (
-    <section className="relative flex h-full flex-col rounded-3xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-144">
+    <section className="relative flex h-full flex-col rounded-3xl border border-(--line) bg-(--surface)/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-144">
       <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#e8b074] via-(--accent) to-[#12100d]" />
 
       <div className="relative flex flex-col h-full">
@@ -32,12 +33,12 @@ export default function DeepfakeDetectionResult({
               Result: {result.verdict}
             </div>
           ) : (
-            <div className="inline-flex items-center rounded-full border border-(--line) bg-[#fffdf8] px-3 py-1 text-xs font-semibold text-[#5f5548]">
+            <div className="inline-flex items-center rounded-full border border-(--line) bg-(--surface-strong) px-3 py-1 text-xs font-semibold text-(--muted-foreground)">
               Upload media to see results
             </div>
           )}
           {hasResult && (
-            <span className="inline-flex items-center rounded-full border border-(--line) bg-[#fffdf8] px-3 py-1 text-xs font-semibold text-[#5f5548]">
+            <span className="inline-flex items-center rounded-full border border-(--line) bg-(--surface-strong) px-3 py-1 text-xs font-semibold text-(--muted-foreground)">
               Risk: {result.risk_level}
             </span>
           )}
@@ -59,11 +60,11 @@ export default function DeepfakeDetectionResult({
               </p>
             </div>
 
-            <p className="text-sm text-[#4f473c] leading-relaxed font-medium">
+            <p className="text-sm text-(--foreground) leading-relaxed font-medium">
               {result.message}
             </p>
 
-            <p className="text-xs text-[#7f7364]">
+            <p className="text-xs text-(--muted-foreground)">
               Media type: {result.media_type === "image" ? "Image" : "Video"}
             </p>
           </div>
@@ -71,27 +72,14 @@ export default function DeepfakeDetectionResult({
 
         {!hasResult && !isLoading && (
           <div className="mt-6 flex-1 flex flex-col items-center justify-center text-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10 text-[#c7bba8] mb-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M18 13.5h.008v.008H18V13.5zM15.75 6.75a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-            </svg>
+            <ImageIcon aria-hidden className="h-10 w-10 text-(--muted-foreground)/60 mb-3" />
             <p className="text-sm text-(--muted-foreground)">
               Upload an image or video to assess whether visual manipulation signals are present.
             </p>
           </div>
         )}
 
-        <p className="mt-auto pt-4 text-[11px] text-[#7f7364] shrink-0">
+        <p className="mt-auto pt-4 text-[11px] text-(--muted-foreground) shrink-0">
           Results powered by visual manipulation risk analysis.
         </p>
       </div>

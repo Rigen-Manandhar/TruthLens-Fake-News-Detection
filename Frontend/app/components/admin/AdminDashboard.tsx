@@ -57,12 +57,12 @@ export default function AdminDashboard() {
       {
         label: "Registered users",
         value: dashboard.metrics.totalUsers,
-        tone: "bg-[#fffdfa]/88",
+        tone: "bg-(--surface)/88",
       },
       {
         label: "Feedback submissions",
         value: dashboard.metrics.totalFeedback,
-        tone: "bg-[#f7f1e6]/92",
+        tone: "bg-(--surface-deep)/92",
       },
       {
         label: "Marked correct",
@@ -82,13 +82,13 @@ export default function AdminDashboard() {
       <div className="pointer-events-none absolute -top-12 -left-12 h-56 w-56 rounded-full bg-[rgba(232,176,116,0.28)] blur-3xl" />
       <div className="pointer-events-none absolute top-36 right-0 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
-      <main className="page-main space-y-10 sm:space-y-12">
-        <section className="section-reveal rounded-4xl border border-(--line) bg-[#fffdfa]/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10">
+      <main id="main-content" className="page-main space-y-10 sm:space-y-12">
+        <section className="section-reveal rounded-4xl border border-(--line) bg-(--surface)/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10">
           <div className="space-y-5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#867a6a]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-(--muted-foreground-strong)">
               Admin Dashboard
             </p>
-            <h1 className="page-title display-title max-w-3xl text-4xl font-bold text-[#17130f] sm:text-[3.2rem]">
+            <h1 className="page-title display-title max-w-3xl text-4xl font-bold text-(--foreground-strong) sm:text-[3.2rem]">
               Review user activity and feedback quality.
             </h1>
             <p className="max-w-2xl text-sm leading-7 text-(--muted-foreground) sm:text-base">
@@ -110,10 +110,10 @@ export default function AdminDashboard() {
             {Array.from({ length: 4 }).map((_, index) => (
               <div
                 key={`metric-skeleton-${index}`}
-                className="rounded-[1.75rem] border border-(--line) bg-[#fffdfa]/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)]"
+                className="rounded-[1.75rem] border border-(--line) bg-(--surface)/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)]"
               >
-                <div className="h-4 w-28 rounded-full bg-[#e6dccb] animate-pulse" />
-                <div className="mt-4 h-10 w-24 rounded-2xl bg-[#e6dccb] animate-pulse" />
+                <div className="h-4 w-28 rounded-full bg-(--surface-pill) animate-pulse" />
+                <div className="mt-4 h-10 w-24 rounded-2xl bg-(--surface-pill) animate-pulse" />
               </div>
             ))}
           </section>

@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import DetectionFeedbackCard from "../components/fakeDetection/DetectionFeedbackCard";
 import FakeDetectionForm from "../components/fakeDetection/FakeDetectionForm";
-import FakeDetectionResult from "../components/fakeDetection/FakeDetectionResult";
+import FakeDetectionResult, {
+  type DetectionExample,
+} from "../components/fakeDetection/FakeDetectionResult";
+import HistoryDrawer from "../components/fakeDetection/HistoryDrawer";
+import {
+  useDetectionHistory,
+  type DetectionHistoryEntry,
+} from "../components/fakeDetection/useDetectionHistory";
 import Footer from "../components/Footer";
 import { normalizePreferences } from "@/lib/shared/settings";
 import {
@@ -41,6 +48,21 @@ const mapVerdictToDisplayLabel = (verdict: string): string => {
   return "Needs Review";
 };
 
+const EXAMPLES: DetectionExample[] = [
+  {
+    key: "headline",
+    label: "Try a headline",
+    text: "Local agency reports a 14% drop in traffic incidents after new pedestrian zones were introduced this quarter.",
+    url: "",
+  },
+  {
+    key: "url",
+    label: "Try a URL",
+    text: "",
+    url: "https://www.reuters.com/",
+  },
+];
+
 const buildPredictionSnapshot = (
   data: PredictResponse
 ): DetectionPredictionSnapshot => ({
@@ -66,10 +88,18 @@ export default function FakeDetectionPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isExplaining, setIsExplaining] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const {
+    entries: historyEntries,
+    pushEntry: pushHistoryEntry,
+    removeEntry: removeHistoryEntry,
+    clear: clearHistory,
+  } = useDetectionHistory();
 
   const [resultLevel, setResultLevel] = useState<CredibilityLevel>("mixed");
   const [resultLabel, setResultLabel] = useState("Paste text or a URL to assess misinformation risk");
   const [riskLevel, setRiskLevel] = useState<string>("Needs Review");
+  const [finalScore, setFinalScore] = useState<number | undefined>(undefined);
   const [resultDetails, setResultDetails] = useState(
     "Paste some text and a source URL, then run an analysis to see a preview of credibility insights."
   );
@@ -135,6 +165,7 @@ export default function FakeDetectionPage() {
     setResultLevel(level);
     setResultLabel(tooShort ? "Too short" : mapVerdictToDisplayLabel(data.verdict));
     setRiskLevel(tooShort ? "Too short" : (data.risk_level ?? "Needs Review"));
+    setFinalScore(typeof data.final_score === "number" ? data.final_score : undefined);
     setIsTooShort(tooShort);
     setResultDetails(data.uncertainty?.reason_message ?? "");
     setSteps(data.steps);
@@ -151,6 +182,18 @@ export default function FakeDetectionPage() {
     setLimeModel(data.lime_model);
     setLastPayload(payload);
     setPredictionSnapshot(buildPredictionSnapshot(data));
+
+    if (!tooShort) {
+      pushHistoryEntry({
+        inputText: payload.text,
+        sourceUrl: payload.url,
+        inputMode: payload.input_mode,
+        verdict: mapVerdictToDisplayLabel(data.verdict),
+        riskLevel: data.risk_level ?? "Needs Review",
+        finalScore:
+          typeof data.final_score === "number" ? data.final_score : null,
+      });
+    }
   };
 
   const runPrediction = async (payload: PredictPayload, explanationMode: ExplanationMode) => {
@@ -201,6 +244,7 @@ export default function FakeDetectionPage() {
     setFetchMetadata(undefined);
     setEvidenceSummary(undefined);
     setLimeModel(undefined);
+    setFinalScore(undefined);
     setLastPayload(null);
     setPredictionSnapshot(null);
     setFeedbackSelection(null);
@@ -302,17 +346,17 @@ export default function FakeDetectionPage() {
       <div className="pointer-events-none absolute -top-14 -left-16 h-64 w-64 rounded-full bg-[rgba(232,176,116,0.28)] blur-3xl" />
       <div className="pointer-events-none absolute top-32 -right-12 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
 
-      <main className="page-main space-y-8 sm:space-y-10">
+      <main id="main-content" className="page-main space-y-8 sm:space-y-10">
         <header className="space-y-4 max-w-2xl">
           <div className="space-y-4">
-            <h1 className="page-title display-title text-4xl sm:text-[2.9rem] font-bold text-[#17130f] tracking-tight">
+            <h1 className="page-title display-title text-4xl sm:text-[2.9rem] font-bold text-(--foreground-strong) tracking-tight">
               Misinformation Risk Assessment
             </h1>
             <p className="text-sm sm:text-base text-(--muted-foreground) max-w-xl">
               Combine source credibility, article extraction, language signals, and evidence hints to assess misinformation risk.
             </p>
             <div className="flex items-center gap-3 text-xs text-(--muted-foreground)">
-              <span className="h-2 w-2 rounded-full bg-[#12100d]/45" />
+              <span className="h-2 w-2 rounded-full bg-(--ink)/45" />
               Hybrid evidence and risk analysis
             </div>
           </div>
@@ -325,10 +369,12 @@ export default function FakeDetectionPage() {
             inputMode={inputMode}
             isLoading={isLoading}
             error={error}
+            historyCount={historyEntries.length}
             onArticleChange={setArticleText}
             onSourceUrlChange={setSourceUrl}
             onInputModeChange={setInputMode}
             onAnalyze={analyze}
+            onOpenHistory={() => setHistoryOpen(true)}
           />
 
           <div className="space-y-6 xl:flex xl:h-full xl:flex-col">
@@ -337,6 +383,7 @@ export default function FakeDetectionPage() {
               label={resultLabel}
               details={resultDetails}
               riskLevel={riskLevel}
+              finalScore={finalScore}
               steps={steps}
               explanation={explanation}
               analyzedText={analyzedText}
@@ -351,6 +398,12 @@ export default function FakeDetectionPage() {
               limeModel={limeModel}
               canExplain={Boolean(lastPayload) && !isTooShort && !error}
               isExplaining={isExplaining}
+              isLoading={isLoading}
+              examples={EXAMPLES}
+              onPrefill={(example) => {
+                setArticleText(example.text);
+                setSourceUrl(example.url);
+              }}
               onExplain={handleExplain}
             />
 
@@ -371,6 +424,20 @@ export default function FakeDetectionPage() {
 
         <Footer />
       </main>
+
+      <HistoryDrawer
+        open={historyOpen}
+        entries={historyEntries}
+        onClose={() => setHistoryOpen(false)}
+        onRerun={(entry: DetectionHistoryEntry) => {
+          setArticleText(entry.inputExcerpt);
+          setSourceUrl(entry.sourceUrl);
+          setInputMode(entry.inputMode);
+          setHistoryOpen(false);
+        }}
+        onRemove={removeHistoryEntry}
+        onClear={clearHistory}
+      />
     </div>
   );
 }

@@ -16,10 +16,10 @@ export default function AdminMetricsGrid({ metricCards }: AdminMetricsGridProps)
           key={card.label}
           className={`section-reveal rounded-[1.75rem] border border-(--line) ${card.tone} p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)]`}
         >
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#867a6a]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
             {card.label}
           </p>
-          <p className="mt-4 page-title display-title text-4xl font-bold text-[#17130f]">
+          <p className="mt-4 page-title display-title text-4xl font-bold text-(--foreground-strong)">
             {card.value}
           </p>
         </article>

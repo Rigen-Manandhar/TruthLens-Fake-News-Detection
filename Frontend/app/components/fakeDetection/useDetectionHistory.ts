@@ -6,6 +6,9 @@ import type { DetectionInputMode } from "@/lib/shared/detection-feedback";
 export type DetectionHistoryEntry = {
   id: string;
   createdAt: string;
+  /** Full input text, capped to FULL_TEXT_LIMIT to keep localStorage usage bounded. */
+  inputText: string;
+  /** Truncated single-line preview shown in the drawer; never use for re-running. */
   inputExcerpt: string;
   sourceUrl: string;
   inputMode: DetectionInputMode;
@@ -15,7 +18,7 @@ export type DetectionHistoryEntry = {
 };
 
 type Envelope = {
-  version: 1;
+  version: 2;
   entries: DetectionHistoryEntry[];
 };
 
@@ -23,6 +26,7 @@ const STORAGE_KEY = "truthlens.detection.history";
 const STORE_EVENT = "truthlens.detection.history:change";
 const MAX_ENTRIES = 10;
 const EXCERPT_LIMIT = 200;
+const FULL_TEXT_LIMIT = 8000;
 const EMPTY_ENTRIES: DetectionHistoryEntry[] = [];
 
 const isEntry = (value: unknown): value is DetectionHistoryEntry => {
@@ -43,6 +47,15 @@ const isEntry = (value: unknown): value is DetectionHistoryEntry => {
   );
 };
 
+const upgradeEntry = (raw: DetectionHistoryEntry): DetectionHistoryEntry => {
+  // Older v1 envelopes don't have inputText; fall back to the excerpt so
+  // Reload at least re-fills something close to the original input.
+  if (typeof raw.inputText === "string" && raw.inputText.length > 0) {
+    return raw;
+  }
+  return { ...raw, inputText: raw.inputExcerpt };
+};
+
 const readEntries = (): DetectionHistoryEntry[] => {
   if (typeof window === "undefined") {
     return EMPTY_ENTRIES;
@@ -59,7 +72,10 @@ const readEntries = (): DetectionHistoryEntry[] => {
       "entries" in parsed &&
       Array.isArray((parsed as Envelope).entries)
     ) {
-      return (parsed as Envelope).entries.filter(isEntry).slice(0, MAX_ENTRIES);
+      return (parsed as Envelope).entries
+        .filter(isEntry)
+        .map(upgradeEntry)
+        .slice(0, MAX_ENTRIES);
     }
   } catch {
     /* malformed JSON or localStorage unavailable */
@@ -108,7 +124,7 @@ const persist = (entries: DetectionHistoryEntry[]) => {
     if (trimmed.length === 0) {
       window.localStorage.removeItem(STORAGE_KEY);
     } else {
-      const envelope: Envelope = { version: 1, entries: trimmed };
+      const envelope: Envelope = { version: 2, entries: trimmed };
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(envelope));
     }
   } catch {
@@ -139,15 +155,28 @@ const generateId = () => {
 const sanitizeExcerpt = (text: string) =>
   text.trim().replace(/\s+/g, " ").slice(0, EXCERPT_LIMIT);
 
+const truncateFullText = (text: string) => text.slice(0, FULL_TEXT_LIMIT);
+
+const isSameInput = (
+  a: DetectionHistoryEntry,
+  next: { inputText: string; sourceUrl: string; inputMode: string }
+) =>
+  a.inputText === next.inputText &&
+  a.sourceUrl === next.sourceUrl &&
+  a.inputMode === next.inputMode;
+
 export function useDetectionHistory() {
   const entries = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const pushEntry = useCallback((input: PushEntryInput) => {
+    const inputText = truncateFullText(input.inputText ?? "");
+    const sourceUrl = input.sourceUrl.trim();
     const next: DetectionHistoryEntry = {
       id: generateId(),
       createdAt: new Date().toISOString(),
-      inputExcerpt: sanitizeExcerpt(input.inputText),
-      sourceUrl: input.sourceUrl.trim(),
+      inputText,
+      inputExcerpt: sanitizeExcerpt(inputText),
+      sourceUrl,
       inputMode: input.inputMode,
       verdict: input.verdict,
       riskLevel: input.riskLevel,
@@ -155,7 +184,19 @@ export function useDetectionHistory() {
     };
 
     const current = readEntries();
-    const merged = [next, ...current].slice(0, MAX_ENTRIES);
+    // Drop the most recent entry if it's identical input — typical case is
+    // the user clicking Re-explain on the same prediction.
+    const deduped =
+      current.length > 0 &&
+      isSameInput(current[0], {
+        inputText: next.inputText,
+        sourceUrl: next.sourceUrl,
+        inputMode: next.inputMode,
+      })
+        ? current.slice(1)
+        : current;
+
+    const merged = [next, ...deduped].slice(0, MAX_ENTRIES);
     persist(merged);
   }, []);
 

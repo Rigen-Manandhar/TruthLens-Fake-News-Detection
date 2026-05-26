@@ -77,9 +77,6 @@ export default function Footer({ className = "mt-16" }: FooterProps) {
 
       <div className="mt-6 flex flex-col items-center justify-between gap-3 border-t border-(--line)/70 pt-4 text-xs text-(--muted-foreground) sm:flex-row">
         <span>&copy; {year} TruthLens</span>
-        <span className="text-[11px] uppercase tracking-[0.18em] text-(--muted-foreground-strong)">
-          Final Year Project
-        </span>
       </div>
     </footer>
   );

@@ -67,12 +67,12 @@ export default function AdminDashboard() {
       {
         label: "Marked correct",
         value: dashboard.metrics.correctFeedback,
-        tone: "bg-emerald-50",
+        tone: "bg-(--success-surface)",
       },
       {
         label: "Marked wrong",
         value: dashboard.metrics.wrongFeedback,
-        tone: "bg-red-50",
+        tone: "bg-(--danger-surface)",
       },
     ];
   }, [dashboard]);

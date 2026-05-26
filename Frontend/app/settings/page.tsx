@@ -11,7 +11,7 @@ import SettingsSideNav, {
 import { useSettingsController } from "../components/settings/useSettingsController";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
-import { KeyRound, Plug, ShieldCheck, UserCircle2 } from "lucide-react";
+import { KeyRound, Plug, ShieldCheck, UserCircle2 } from "../components/ui/icons";
 
 const NAV_ITEMS: SettingsNavItem[] = [
   { id: "account", label: "Account", Icon: ShieldCheck },

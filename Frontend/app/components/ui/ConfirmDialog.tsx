@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId } from "react";
 import { createPortal } from "react-dom";
+import FocusTrap from "focus-trap-react";
 import Button from "./Button";
 import { AlertTriangle, HelpCircle } from "./icons";
 
@@ -13,6 +14,7 @@ type ConfirmDialogProps = {
   cancelLabel?: string;
   isLoading?: boolean;
   iconType?: "help" | "warn";
+  initialFocus?: "confirm" | "cancel";
   onConfirm: () => void | Promise<void>;
   onCancel: () => void;
 };
@@ -25,24 +27,17 @@ export default function ConfirmDialog({
   cancelLabel = "No",
   isLoading = false,
   iconType = "help",
+  initialFocus = "cancel",
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
   const titleId = useId();
   const messageId = useId();
-  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!open) {
       return;
     }
-
-    // Capture the element that opened the dialog so we can restore focus
-    // after it closes — keeps keyboard users oriented.
-    previouslyFocusedRef.current =
-      typeof document !== "undefined"
-        ? (document.activeElement as HTMLElement | null)
-        : null;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !isLoading) {
@@ -51,15 +46,7 @@ export default function ConfirmDialog({
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      const previous = previouslyFocusedRef.current;
-      if (previous && typeof previous.focus === "function") {
-        // Defer focus restoration to the next tick so React can finish
-        // unmounting the dialog DOM before we move focus back.
-        queueMicrotask(() => previous.focus());
-      }
-    };
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [open, isLoading, onCancel]);
 
   if (!open || typeof document === "undefined") {
@@ -70,63 +57,91 @@ export default function ConfirmDialog({
   const iconBgClass =
     iconType === "warn"
       ? "bg-amber-100 text-amber-700"
-      : "bg-gray-900/5 text-gray-700";
+      : "bg-(--surface-pill) text-(--muted-foreground-strong)";
+
+  const initialFocusSelector =
+    initialFocus === "confirm"
+      ? "[data-confirm-dialog-action='confirm']"
+      : "[data-confirm-dialog-action='cancel']";
 
   const dialog = (
-    <div
-      className="fixed inset-0 z-60 flex items-end justify-center overflow-y-auto bg-gray-900/45 backdrop-blur-md px-4 py-4 sm:items-center"
-      onClick={() => {
-        if (!isLoading) {
-          onCancel();
-        }
+    <FocusTrap
+      active={open}
+      focusTrapOptions={{
+        initialFocus: initialFocusSelector,
+        // Restore focus to the element that opened the dialog when it closes.
+        returnFocusOnDeactivate: true,
+        // Allow clicks outside to bubble to our overlay handler so the user
+        // can dismiss by clicking the backdrop.
+        allowOutsideClick: true,
+        // Esc handling is owned by our keydown listener so we can guard the
+        // loading state; let focus-trap delegate it.
+        escapeDeactivates: false,
       }}
     >
       <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        aria-describedby={messageId}
-        aria-busy={isLoading}
-        className="relative w-full max-w-sm max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-white/80 bg-white/95 p-5 shadow-[0_25px_60px_-35px_rgba(15,23,42,0.45)] sm:p-6"
-        onClick={(event) => event.stopPropagation()}
+        className="fixed inset-0 z-60 flex items-end justify-center overflow-y-auto bg-gray-900/45 backdrop-blur-md px-4 py-4 sm:items-center"
+        onClick={() => {
+          if (!isLoading) {
+            onCancel();
+          }
+        }}
       >
-        <div className="flex items-center gap-3">
-          <div
-            aria-hidden="true"
-            className={`h-10 w-10 rounded-full flex items-center justify-center ${iconBgClass}`}
-          >
-            <Icon className="h-5 w-5" aria-hidden />
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          aria-describedby={messageId}
+          aria-busy={isLoading}
+          className="relative w-full max-w-sm max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-(--line) bg-(--surface) p-5 shadow-[0_25px_60px_-35px_rgba(15,23,42,0.45)] sm:p-6"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              aria-hidden="true"
+              className={`h-10 w-10 rounded-full flex items-center justify-center ${iconBgClass}`}
+            >
+              <Icon className="h-5 w-5" aria-hidden />
+            </div>
+            <div>
+              <h3
+                id={titleId}
+                className="text-base font-semibold text-(--foreground-strong)"
+              >
+                {title}
+              </h3>
+              <p
+                id={messageId}
+                className="text-sm text-(--muted-foreground) mt-1"
+              >
+                {message}
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 id={titleId} className="text-base font-semibold text-gray-900">
-              {title}
-            </h3>
-            <p id={messageId} className="text-sm text-gray-600 mt-1">
-              {message}
-            </p>
+          <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onCancel}
+              disabled={isLoading}
+              className="w-full sm:w-auto px-4"
+              data-confirm-dialog-action="cancel"
+            >
+              {cancelLabel}
+            </Button>
+            <Button
+              type="button"
+              onClick={onConfirm}
+              disabled={isLoading}
+              className="w-full sm:w-auto px-4 bg-(--ink) text-(--ink-foreground) hover:bg-(--accent)"
+              data-confirm-dialog-action="confirm"
+            >
+              {isLoading ? "Working..." : confirmLabel}
+            </Button>
           </div>
-        </div>
-        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onCancel}
-            disabled={isLoading}
-            className="w-full sm:w-auto px-4"
-          >
-            {cancelLabel}
-          </Button>
-          <Button
-            type="button"
-            onClick={onConfirm}
-            disabled={isLoading}
-            className="w-full sm:w-auto px-4 bg-gray-900 text-white hover:bg-black"
-          >
-            {isLoading ? "Working..." : confirmLabel}
-          </Button>
         </div>
       </div>
-    </div>
+    </FocusTrap>
   );
 
   return createPortal(dialog, document.body);

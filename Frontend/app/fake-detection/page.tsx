@@ -63,6 +63,11 @@ const EXAMPLES: DetectionExample[] = [
   },
 ];
 
+// Sentinel string used by FakeDetectionResult to detect the empty / awaiting
+// state. Kept in sync with INITIAL_LABEL inside that component.
+const INITIAL_RESULT_LABEL =
+  "Paste text or a URL to assess misinformation risk";
+
 const buildPredictionSnapshot = (
   data: PredictResponse
 ): DetectionPredictionSnapshot => ({
@@ -97,7 +102,7 @@ export default function FakeDetectionPage() {
   } = useDetectionHistory();
 
   const [resultLevel, setResultLevel] = useState<CredibilityLevel>("mixed");
-  const [resultLabel, setResultLabel] = useState("Paste text or a URL to assess misinformation risk");
+  const [resultLabel, setResultLabel] = useState(INITIAL_RESULT_LABEL);
   const [riskLevel, setRiskLevel] = useState<string>("Needs Review");
   const [finalScore, setFinalScore] = useState<number | undefined>(undefined);
   const [resultDetails, setResultDetails] = useState(
@@ -182,18 +187,22 @@ export default function FakeDetectionPage() {
     setLimeModel(data.lime_model);
     setLastPayload(payload);
     setPredictionSnapshot(buildPredictionSnapshot(data));
+  };
 
-    if (!tooShort) {
-      pushHistoryEntry({
-        inputText: payload.text,
-        sourceUrl: payload.url,
-        inputMode: payload.input_mode,
-        verdict: mapVerdictToDisplayLabel(data.verdict),
-        riskLevel: data.risk_level ?? "Needs Review",
-        finalScore:
-          typeof data.final_score === "number" ? data.final_score : null,
-      });
+  const recordHistory = (data: PredictResponse, payload: PredictPayload) => {
+    const tooShort = data.uncertainty?.reason_code === "INSUFFICIENT_TEXT";
+    if (tooShort) {
+      return;
     }
+    pushHistoryEntry({
+      inputText: payload.text,
+      sourceUrl: payload.url,
+      inputMode: payload.input_mode,
+      verdict: mapVerdictToDisplayLabel(data.verdict),
+      riskLevel: data.risk_level ?? "Needs Review",
+      finalScore:
+        typeof data.final_score === "number" ? data.final_score : null,
+    });
   };
 
   const runPrediction = async (payload: PredictPayload, explanationMode: ExplanationMode) => {
@@ -233,6 +242,14 @@ export default function FakeDetectionPage() {
     };
 
     setIsLoading(true);
+    // Reset every piece of derived result state so the UI never shows
+    // stale verdict pills, meters, or signals from a previous run while
+    // the new request is in flight (or if the new request fails).
+    setResultLevel("mixed");
+    setResultLabel(INITIAL_RESULT_LABEL);
+    setRiskLevel("Needs Review");
+    setIsTooShort(false);
+    setResultDetails("");
     setSteps(undefined);
     setExplanation(undefined);
     setAnalyzedText(undefined);
@@ -243,6 +260,7 @@ export default function FakeDetectionPage() {
     setConflict(undefined);
     setFetchMetadata(undefined);
     setEvidenceSummary(undefined);
+    setExplanationSummary(undefined);
     setLimeModel(undefined);
     setFinalScore(undefined);
     setLastPayload(null);
@@ -255,6 +273,9 @@ export default function FakeDetectionPage() {
     try {
       const data = await runPrediction(payload, preferredExplanationMode);
       applyPrediction(data, payload);
+      // History is recorded only on a successful end-user-initiated run,
+      // not on Re-explain re-runs (those reuse the existing prediction).
+      recordHistory(data, payload);
     } catch (e: unknown) {
       const message =
         e instanceof Error
@@ -276,6 +297,9 @@ export default function FakeDetectionPage() {
     try {
       const data = await runPrediction(lastPayload, "force");
       applyPrediction(data, lastPayload);
+      // Intentionally NOT calling recordHistory — Re-explain is a follow-up
+      // on the existing assessment, not a new one. Pushing here would
+      // create duplicate history entries on every Explain click.
     } catch (e: unknown) {
       const message =
         e instanceof Error
@@ -343,8 +367,8 @@ export default function FakeDetectionPage() {
 
   return (
     <div className="page-shell ambient-grid">
-      <div className="pointer-events-none absolute -top-14 -left-16 h-64 w-64 rounded-full bg-[rgba(232,176,116,0.28)] blur-3xl" />
-      <div className="pointer-events-none absolute top-32 -right-12 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
+      <div className="pointer-events-none absolute -top-14 -left-16 h-64 w-64 rounded-full bg-(--warm)/30 blur-3xl" />
+      <div className="pointer-events-none absolute top-32 -right-12 h-72 w-72 rounded-full bg-(--accent)/15 blur-3xl" />
 
       <main id="main-content" className="page-main space-y-8 sm:space-y-10">
         <header className="space-y-4 max-w-2xl">
@@ -430,7 +454,9 @@ export default function FakeDetectionPage() {
         entries={historyEntries}
         onClose={() => setHistoryOpen(false)}
         onRerun={(entry: DetectionHistoryEntry) => {
-          setArticleText(entry.inputExcerpt);
+          // inputText is the full original input (capped to FULL_TEXT_LIMIT
+          // by the hook); inputExcerpt is only for the drawer preview UI.
+          setArticleText(entry.inputText);
           setSourceUrl(entry.sourceUrl);
           setInputMode(entry.inputMode);
           setHistoryOpen(false);

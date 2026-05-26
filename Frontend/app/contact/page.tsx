@@ -90,8 +90,8 @@ export default function ContactPage() {
 
   return (
     <div className="page-shell ambient-grid flex flex-col">
-      <div className="pointer-events-none absolute -top-12 -left-10 h-56 w-56 rounded-full bg-[rgba(232,176,116,0.28)] blur-3xl" />
-      <div className="pointer-events-none absolute top-[9rem] right-0 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
+      <div className="pointer-events-none absolute -top-12 -left-10 h-56 w-56 rounded-full bg-(--warm)/30 blur-3xl" />
+      <div className="pointer-events-none absolute top-[9rem] right-0 h-72 w-72 rounded-full bg-(--accent)/15 blur-3xl" />
 
       <div className="flex min-h-[calc(100vh-5.5rem)] flex-1 flex-col sm:min-h-[calc(100vh-5.75rem)]">
         <main id="main-content" className="page-main flex flex-1 flex-col justify-center">
@@ -156,7 +156,7 @@ export default function ContactPage() {
                     type="text"
                     value={form.name}
                     onChange={(event) => updateField("name", event.target.value)}
-                    className="w-full rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
+                    className="w-full rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 dark:placeholder:text-(--muted-foreground)/90 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
                     placeholder="What should we call you?"
                     maxLength={80}
                     disabled={isSubmitting}
@@ -196,7 +196,7 @@ export default function ContactPage() {
                       type="email"
                       value={form.email}
                       onChange={(event) => updateField("email", event.target.value)}
-                      className="w-full rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
+                      className="w-full rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 dark:placeholder:text-(--muted-foreground)/90 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
                       placeholder="Where should replies go?"
                       maxLength={120}
                       disabled={isSubmitting}
@@ -221,8 +221,8 @@ export default function ContactPage() {
                   <p
                     className={`rounded-2xl border px-4 py-3 text-sm ${
                       status.type === "success"
-                        ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                        : "border-red-200 bg-red-50 text-red-700"
+                        ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-400/30 dark:bg-emerald-500/10 dark:text-emerald-200"
+                        : "border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200"
                     }`}
                   >
                     {status.message}

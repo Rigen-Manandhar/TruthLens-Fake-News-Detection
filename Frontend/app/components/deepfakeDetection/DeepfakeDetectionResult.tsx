@@ -9,9 +9,12 @@ interface DeepfakeDetectionResultProps {
 }
 
 const levelStyles: Record<DeepfakeVerdict, string> = {
-  "Likely Authentic": "bg-emerald-50 text-emerald-900 border-emerald-200",
-  "Needs Review": "bg-amber-50 text-amber-900 border-amber-200",
-  "Likely Manipulated": "bg-red-50 text-red-900 border-red-200",
+  "Likely Authentic":
+    "bg-emerald-50 text-emerald-900 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-200 dark:border-emerald-400/30",
+  "Needs Review":
+    "bg-amber-50 text-amber-900 border-amber-200 dark:bg-amber-500/10 dark:text-amber-200 dark:border-amber-400/30",
+  "Likely Manipulated":
+    "bg-red-50 text-red-900 border-red-200 dark:bg-red-500/10 dark:text-red-200 dark:border-red-400/30",
 };
 
 export default function DeepfakeDetectionResult({
@@ -22,7 +25,7 @@ export default function DeepfakeDetectionResult({
 
   return (
     <section className="relative flex h-full flex-col rounded-3xl border border-(--line) bg-(--surface)/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] px-5 sm:px-8 py-6 sm:py-7 overflow-hidden lg:min-h-144">
-      <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#e8b074] via-(--accent) to-[#12100d]" />
+      <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-(--warm) via-(--accent) to-(--ink)" />
 
       <div className="relative flex flex-col h-full">
         <div className="flex flex-wrap items-center gap-3">
@@ -53,7 +56,7 @@ export default function DeepfakeDetectionResult({
 
         {hasResult && !isLoading && (
           <div className="mt-6 flex flex-col gap-4">
-            <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900">
+            <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-200">
               <p className="font-semibold uppercase tracking-wide">What this result means</p>
               <p className="mt-1">
                 TruthLens supports review. It cannot prove whether media is real or fake.

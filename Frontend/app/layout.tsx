@@ -6,13 +6,11 @@ import ThemeInit from "./components/ThemeInit";
 import ToastProvider from "./components/ToastProvider";
 import AuthSessionProvider from "./components/Auth/SessionProvider";
 
-const bodyFont = Instrument_Sans({
+// Single Instrument_Sans registration. We assign it to --font-body via the
+// font loader and re-alias it to --font-display through inline CSS below so
+// .display-title still works without registering the font twice.
+const instrumentSans = Instrument_Sans({
   variable: "--font-body",
-  subsets: ["latin"],
-});
-
-const displayFont = Instrument_Sans({
-  variable: "--font-display",
   subsets: ["latin"],
 });
 
@@ -28,7 +26,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${bodyFont.variable} ${displayFont.variable} antialiased`}>
+      <body
+        className={`${instrumentSans.variable} antialiased`}
+        style={{
+          // Alias --font-display to the same font without a second load.
+          ["--font-display" as string]: "var(--font-body)",
+        }}
+      >
         {/* ThemeInit runs synchronously during HTML parsing, before any
             visible content is painted, so the user never sees a flash of
             the wrong theme. Placed inside <body> rather than <head> to

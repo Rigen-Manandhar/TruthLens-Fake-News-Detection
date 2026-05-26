@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Sparkles, type LucideIcon } from "lucide-react";
+import { Sparkles, type LucideIcon } from "../ui/icons";
 
 export type SettingsNavItem = {
   id: string;
@@ -22,34 +22,77 @@ export default function SettingsSideNav({ items }: SettingsSideNavProps) {
       return;
     }
 
-    // IntersectionObserver wakes up whenever a section's top crosses the
-    // top viewport offset; we pick whichever section currently has the
-    // largest intersection ratio as the "active" one for nav highlighting.
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        const next = visible[0];
-        if (next?.target?.id) {
-          setActiveId(next.target.id);
+    const sectionEls = items
+      .map((item) => document.getElementById(item.id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    // Pick whichever observed section currently has the largest visible
+    // intersection ratio, falling back to the closest section above the
+    // top viewport offset when none are inside the active band — that way
+    // the sidebar stays accurate even between very short / tall sections.
+    const recompute = () => {
+      const viewportTop = 96; // matches scroll-mt-24
+      let bestVisible: { id: string; ratio: number } | null = null;
+      let nearestAbove: { id: string; distance: number } | null = null;
+
+      for (const el of sectionEls) {
+        const rect = el.getBoundingClientRect();
+        const isVisible = rect.bottom > viewportTop && rect.top < window.innerHeight;
+        if (isVisible) {
+          // Approximate intersection ratio as fraction of element visible.
+          const visibleHeight =
+            Math.min(rect.bottom, window.innerHeight) -
+            Math.max(rect.top, viewportTop);
+          const ratio = Math.max(0, visibleHeight / Math.max(1, rect.height));
+          if (!bestVisible || ratio > bestVisible.ratio) {
+            bestVisible = { id: el.id, ratio };
+          }
+        } else if (rect.bottom <= viewportTop) {
+          const distance = viewportTop - rect.bottom;
+          if (!nearestAbove || distance < nearestAbove.distance) {
+            nearestAbove = { id: el.id, distance };
+          }
         }
-      },
-      {
-        rootMargin: "-30% 0px -55% 0px",
-        threshold: [0, 0.25, 0.5, 0.75, 1],
       }
-    );
 
-    items.forEach((item) => {
-      const el = document.getElementById(item.id);
-      if (el) {
-        observer.observe(el);
+      const next =
+        bestVisible?.id ?? nearestAbove?.id ?? sectionEls[0]?.id ?? null;
+      if (next) {
+        setActiveId(next);
       }
+    };
+
+    // Observer kicks recompute on entry/exit; the scroll listener handles
+    // the gap between sections where no entry is currently intersecting.
+    const observer = new IntersectionObserver(() => recompute(), {
+      rootMargin: "-25% 0px -55% 0px",
+      threshold: [0, 0.25, 0.5, 0.75, 1],
     });
-
+    sectionEls.forEach((el) => observer.observe(el));
     observerRef.current = observer;
-    return () => observer.disconnect();
+
+    let scrollFrame: number | null = null;
+    const onScroll = () => {
+      if (scrollFrame !== null) {
+        cancelAnimationFrame(scrollFrame);
+      }
+      scrollFrame = requestAnimationFrame(recompute);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    // Run once on mount so a deep-link / mid-page hydrate picks the right
+    // active item without waiting for the first scroll event.
+    recompute();
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (scrollFrame !== null) {
+        cancelAnimationFrame(scrollFrame);
+      }
+    };
   }, [items]);
 
   const navLinkClass = (active: boolean, mobile = false) =>
@@ -71,6 +114,7 @@ export default function SettingsSideNav({ items }: SettingsSideNavProps) {
             <li key={id}>
               <a
                 href={`#${id}`}
+                aria-current={activeId === id ? "true" : undefined}
                 className={navLinkClass(activeId === id, true)}
               >
                 <Icon aria-hidden className="h-3.5 w-3.5" />
@@ -89,7 +133,11 @@ export default function SettingsSideNav({ items }: SettingsSideNavProps) {
         <ul className="space-y-1 rounded-2xl border border-(--line) bg-(--surface)/80 p-2 shadow-[0_8px_24px_rgba(24,16,8,0.06)]">
           {items.map(({ id, label, Icon }) => (
             <li key={id}>
-              <a href={`#${id}`} className={navLinkClass(activeId === id)}>
+              <a
+                href={`#${id}`}
+                aria-current={activeId === id ? "true" : undefined}
+                className={navLinkClass(activeId === id)}
+              >
                 <Icon aria-hidden className="h-4 w-4" />
                 {label}
               </a>

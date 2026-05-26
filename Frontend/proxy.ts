@@ -10,5 +10,5 @@ export default withAuth({
 });
 
 export const config = {
-  matcher: ["/fake-detection", "/deepfake-detection", "/settings"],
+  matcher: ["/admin", "/fake-detection", "/deepfake-detection", "/settings"],
 };

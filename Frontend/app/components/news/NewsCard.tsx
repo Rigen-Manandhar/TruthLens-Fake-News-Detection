@@ -37,7 +37,7 @@ export default function NewsCard({ article, analysis }: NewsCardProps) {
         aria-hidden
         className={`pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-linear-to-r ${accentClass}`}
       />
-      <div className="relative w-full h-48 overflow-hidden bg-linear-to-br from-[#e8dfcf] via-[#f7f3ea] to-[#e7dcc6]">
+      <div className="relative w-full h-48 overflow-hidden bg-linear-to-br from-(--surface-pill) via-(--surface-deep) to-(--surface-pill)">
         {article.urlToImage && (
           // eslint-disable-next-line @next/next/no-img-element
           <img

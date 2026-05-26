@@ -79,8 +79,8 @@ export default function AdminDashboard() {
 
   return (
     <div className="page-shell ambient-grid">
-      <div className="pointer-events-none absolute -top-12 -left-12 h-56 w-56 rounded-full bg-[rgba(232,176,116,0.28)] blur-3xl" />
-      <div className="pointer-events-none absolute top-36 right-0 h-72 w-72 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
+      <div className="pointer-events-none absolute -top-12 -left-12 h-56 w-56 rounded-full bg-(--warm)/30 blur-3xl" />
+      <div className="pointer-events-none absolute top-36 right-0 h-72 w-72 rounded-full bg-(--accent)/15 blur-3xl" />
 
       <main id="main-content" className="page-main space-y-10 sm:space-y-12">
         <section className="section-reveal rounded-4xl border border-(--line) bg-(--surface)/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10">
@@ -100,7 +100,7 @@ export default function AdminDashboard() {
         </section>
 
         {error && (
-          <section className="rounded-3xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
+          <section className="rounded-3xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200">
             {error}
           </section>
         )}

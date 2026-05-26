@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId } from "react";
+import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import FocusTrap from "focus-trap-react";
 import Button from "./Button";
@@ -34,20 +34,33 @@ export default function ConfirmDialog({
   const titleId = useId();
   const messageId = useId();
 
+  // Stash the latest cancel handler + loading flag in refs so the keydown
+  // effect below can read them without listing them as dependencies — that
+  // way we attach exactly one document listener for the lifetime of an
+  // open dialog instead of tearing it down on every parent re-render.
+  const onCancelRef = useRef(onCancel);
+  const isLoadingRef = useRef(isLoading);
+  useEffect(() => {
+    onCancelRef.current = onCancel;
+  }, [onCancel]);
+  useEffect(() => {
+    isLoadingRef.current = isLoading;
+  }, [isLoading]);
+
   useEffect(() => {
     if (!open) {
       return;
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !isLoading) {
-        onCancel();
+      if (event.key === "Escape" && !isLoadingRef.current) {
+        onCancelRef.current();
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [open, isLoading, onCancel]);
+  }, [open]);
 
   if (!open || typeof document === "undefined") {
     return null;

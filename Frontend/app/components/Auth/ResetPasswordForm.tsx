@@ -66,8 +66,8 @@ export default function ResetPasswordForm({ token = "" }: ResetPasswordFormProps
   return (
     <div className="relative w-full max-w-md rounded-3xl border border-(--line) bg-(--surface)/90 shadow-[0_22px_46px_rgba(24,16,8,0.1)] p-6 sm:p-8 overflow-hidden auth-appear-delay">
       <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#12100d] via-(--accent) to-[#e8b074]" />
-      <div className="absolute -top-16 -right-10 h-32 w-32 rounded-full bg-[rgba(14,124,102,0.14)] blur-3xl" />
-      <div className="absolute -bottom-16 -left-10 h-32 w-32 rounded-full bg-[rgba(232,176,116,0.2)] blur-3xl" />
+      <div className="absolute -top-16 -right-10 h-32 w-32 rounded-full bg-(--accent)/15 blur-3xl" />
+      <div className="absolute -bottom-16 -left-10 h-32 w-32 rounded-full bg-(--warm)/20 blur-3xl" />
 
       <div className="relative">
         <div className="mb-6">
@@ -83,7 +83,7 @@ export default function ResetPasswordForm({ token = "" }: ResetPasswordFormProps
         </div>
 
         {!token ? (
-          <div className="rounded-2xl border border-[rgba(199,103,84,0.22)] bg-[rgba(199,103,84,0.08)] px-4 py-4 text-sm text-[#7b2d1f]">
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200">
             This reset link is invalid or incomplete. Request a fresh email to continue.
           </div>
         ) : null}

@@ -131,7 +131,7 @@ export default function FakeDetectionForm({
             value={sourceUrl}
             onChange={(e) => onSourceUrlChange(e.target.value)}
             placeholder="https://example.com"
-            className="w-full rounded-2xl border border-(--line) bg-(--surface-deep) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
+            className="w-full rounded-2xl border border-(--line) bg-(--surface-deep) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 dark:placeholder:text-(--muted-foreground)/90 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
           />
           <p className="text-xs text-(--muted-foreground)">
             Optional: include a URL for source and evidence-context signals.
@@ -139,7 +139,7 @@ export default function FakeDetectionForm({
         </div>
 
         {error && (
-          <p className="mb-3 text-xs text-red-700 bg-red-50 border border-red-200 rounded-xl px-3 py-2">
+          <p className="mb-3 text-xs text-red-700 bg-red-50 border border-red-200 rounded-xl dark:bg-red-500/10 dark:border-red-400/30 dark:text-red-200 px-3 py-2">
             {error}
           </p>
         )}

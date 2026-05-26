@@ -267,6 +267,9 @@ export default function Header() {
               height: navIndicator.height,
               transform: `translate3d(${navIndicator.left}px, ${navIndicator.top}px, 0)`,
               opacity: navIndicator.visible ? 1 : 0,
+              // Hide until measured so we don't paint a 0x0 nub at (0,0)
+              // for one frame before the rect lands.
+              visibility: navIndicator.visible ? "visible" : "hidden",
             }}
           />
           <Link
@@ -372,7 +375,7 @@ export default function Header() {
                   <div className="mt-3 grid gap-2 border-t border-(--line) pt-3">
                     <Link
                       href="/login"
-                      className="inline-flex items-center justify-center rounded-full border border-(--line) bg-(--surface) px-4 py-2.5 text-sm font-semibold text-(--muted-foreground) transition-colors hover:bg-(--surface-hover) hover:text-foreground"
+                      className="inline-flex items-center justify-center rounded-full border border-(--line) bg-(--surface) px-4 py-2.5 text-sm font-semibold text-(--muted-foreground) transition-colors hover:bg-(--surface-hover) hover:text-(--foreground)"
                     >
                       Log in
                     </Link>
@@ -444,7 +447,7 @@ export default function Header() {
             <>
               <Link
                 href="/login"
-                className="hidden md:inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold text-(--muted-foreground) transition-colors hover:bg-(--surface-hover) hover:text-foreground sm:text-sm"
+                className="hidden md:inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold text-(--muted-foreground) transition-colors hover:bg-(--surface-hover) hover:text-(--foreground) sm:text-sm"
               >
                 Log in
               </Link>

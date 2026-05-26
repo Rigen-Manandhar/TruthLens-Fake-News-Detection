@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import FocusTrap from "focus-trap-react";
 import type {
@@ -20,12 +20,12 @@ interface HistoryDrawerProps {
 const verdictPillClass = (verdict: string) => {
   const v = verdict.toUpperCase();
   if (v.includes("HIGHER") || v.includes("SUSPICIOUS")) {
-    return "border-red-200 bg-red-50 text-red-900";
+    return "border-red-200 bg-red-50 text-red-900 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200";
   }
   if (v.includes("LOWER") || v.includes("LIKELY REAL")) {
-    return "border-emerald-200 bg-emerald-50 text-emerald-900";
+    return "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-400/30 dark:bg-emerald-500/10 dark:text-emerald-200";
   }
-  return "border-amber-200 bg-amber-50 text-amber-900";
+  return "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-200";
 };
 
 const formatRelative = (iso: string) => {
@@ -54,14 +54,22 @@ export default function HistoryDrawer({
   onRemove,
   onClear,
 }: HistoryDrawerProps) {
+  // Stash the latest close handler so the keydown effect doesn't tear
+  // down its listener every time the parent re-renders with a new
+  // closure (typical when the parent wraps onClose in an arrow fn).
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   useEffect(() => {
     if (!open) return;
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
+      if (event.key === "Escape") onCloseRef.current();
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open || typeof document === "undefined") {
     return null;

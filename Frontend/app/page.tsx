@@ -62,8 +62,8 @@ export default function Home() {
 
   return (
     <div className="page-shell ambient-grid">
-      <div className="pointer-events-none absolute -top-10 -left-12 h-52 w-52 rounded-full bg-[rgba(232,176,116,0.26)] blur-3xl" />
-      <div className="pointer-events-none absolute top-[7.5rem] -right-14 h-60 w-60 rounded-full bg-[rgba(14,124,102,0.16)] blur-3xl" />
+      <div className="pointer-events-none absolute -top-10 -left-12 h-52 w-52 rounded-full bg-(--warm)/25 blur-3xl" />
+      <div className="pointer-events-none absolute top-[7.5rem] -right-14 h-60 w-60 rounded-full bg-(--accent)/15 blur-3xl" />
 
       <main id="main-content" className="page-main">
         <HeroSection

@@ -36,8 +36,8 @@ export default function HeroSection({
 
   return (
     <section className="mb-12 lg:mb-16 relative section-reveal">
-      <div className="pointer-events-none absolute -top-8 left-0 h-44 w-44 rounded-full bg-[rgba(232,176,116,0.36)] blur-3xl" />
-      <div className="pointer-events-none absolute top-4 right-16 h-36 w-36 rounded-full bg-[rgba(14,124,102,0.28)] blur-3xl" />
+      <div className="pointer-events-none absolute -top-8 left-0 h-44 w-44 rounded-full bg-(--warm)/35 blur-3xl" />
+      <div className="pointer-events-none absolute top-4 right-16 h-36 w-36 rounded-full bg-(--accent)/30 blur-3xl" />
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1.26fr)_minmax(0,1fr)] items-center py-2 sm:py-6 lg:py-8">
         <div className="section-reveal delay-1 min-w-0">
@@ -62,7 +62,7 @@ export default function HeroSection({
               value={searchInput}
               onChange={(e) => onSearchInputChange(e.target.value)}
               placeholder="Search a headline, publisher, topic..."
-              className="flex-1 px-5 py-3 rounded-full border border-(--line) bg-(--surface-strong) shadow-[0_10px_24px_rgba(20,14,7,0.08)] text-sm text-(--foreground) focus:outline-none focus:ring-2 focus:ring-(--accent)/45 placeholder:text-(--muted-foreground)/70"
+              className="flex-1 px-5 py-3 rounded-full border border-(--line) bg-(--surface-strong) shadow-[0_10px_24px_rgba(20,14,7,0.08)] text-sm text-(--foreground) focus:outline-none focus:ring-2 focus:ring-(--accent)/45 placeholder:text-(--muted-foreground)/70 dark:placeholder:text-(--muted-foreground)/90"
             />
             <button
               type="submit"

@@ -33,4 +33,9 @@ export {
   Monitor,
   History,
   Trash2,
+  KeyRound,
+  Plug,
+  ShieldCheck,
 } from "lucide-react";
+
+export type { LucideIcon } from "lucide-react";

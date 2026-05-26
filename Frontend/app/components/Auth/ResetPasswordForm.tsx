@@ -83,7 +83,7 @@ export default function ResetPasswordForm({ token = "" }: ResetPasswordFormProps
         </div>
 
         {!token ? (
-          <div className="rounded-2xl border border-[rgba(199,103,84,0.22)] bg-[rgba(199,103,84,0.08)] px-4 py-4 text-sm text-[#7b2d1f]">
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200">
             This reset link is invalid or incomplete. Request a fresh email to continue.
           </div>
         ) : null}

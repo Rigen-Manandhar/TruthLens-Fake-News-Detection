@@ -71,7 +71,7 @@ export default function ForgotPasswordForm() {
           />
 
           {successMessage ? (
-            <p className="rounded-2xl border border-[rgba(14,124,102,0.18)] bg-[rgba(14,124,102,0.08)] px-4 py-3 text-sm text-(--accent)">
+            <p className="rounded-2xl border border-(--accent)/30 bg-(--accent-soft) px-4 py-3 text-sm text-(--accent-strong)">
               {successMessage}
             </p>
           ) : (

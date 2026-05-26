@@ -101,7 +101,12 @@ body {
   color: var(--ink-foreground);
   font-weight: 600;
   font-size: 0.85rem;
-  box-shadow: 0 12px 24px rgba(24, 16, 8, 0.22);
+  /* outline ring uses --accent so it stays visible in both themes; the
+     drop-shadow below is intentionally subtle and may be muted in dark
+     mode against the dark backdrop, which is fine. */
+  box-shadow:
+    0 0 0 2px var(--accent),
+    0 12px 24px color-mix(in oklab, var(--ink) 55%, transparent);
   transition: transform 180ms ease;
 }
 

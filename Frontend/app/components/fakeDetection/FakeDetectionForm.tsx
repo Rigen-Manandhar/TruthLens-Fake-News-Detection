@@ -131,7 +131,7 @@ export default function FakeDetectionForm({
             value={sourceUrl}
             onChange={(e) => onSourceUrlChange(e.target.value)}
             placeholder="https://example.com"
-            className="w-full rounded-2xl border border-(--line) bg-(--surface-deep) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
+            className="w-full rounded-2xl border border-(--line) bg-(--surface-deep) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 dark:placeholder:text-(--muted-foreground)/90 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
           />
           <p className="text-xs text-(--muted-foreground)">
             Optional: include a URL for source and evidence-context signals.

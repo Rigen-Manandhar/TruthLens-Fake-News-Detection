@@ -156,7 +156,7 @@ export default function ContactPage() {
                     type="text"
                     value={form.name}
                     onChange={(event) => updateField("name", event.target.value)}
-                    className="w-full rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
+                    className="w-full rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 dark:placeholder:text-(--muted-foreground)/90 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
                     placeholder="What should we call you?"
                     maxLength={80}
                     disabled={isSubmitting}
@@ -196,7 +196,7 @@ export default function ContactPage() {
                       type="email"
                       value={form.email}
                       onChange={(event) => updateField("email", event.target.value)}
-                      className="w-full rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
+                      className="w-full rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 dark:placeholder:text-(--muted-foreground)/90 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
                       placeholder="Where should replies go?"
                       maxLength={120}
                       disabled={isSubmitting}

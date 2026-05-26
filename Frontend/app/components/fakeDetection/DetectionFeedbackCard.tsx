@@ -80,7 +80,7 @@ export default function DetectionFeedbackCard({
           onChange={(event) => onCommentChange(event.target.value)}
           disabled={isSubmitting || isSubmitted}
           placeholder="Share what you noticed or what should be improved..."
-          className="mt-2 min-h-28 w-full rounded-2xl border border-(--line) bg-(--surface-deep) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-2 min-h-28 w-full rounded-2xl border border-(--line) bg-(--surface-deep) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 dark:placeholder:text-(--muted-foreground)/90 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45 disabled:cursor-not-allowed disabled:opacity-60"
         />
       </div>
 

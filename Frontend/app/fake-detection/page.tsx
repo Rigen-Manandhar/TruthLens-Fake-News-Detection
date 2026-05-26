@@ -6,6 +6,11 @@ import FakeDetectionForm from "../components/fakeDetection/FakeDetectionForm";
 import FakeDetectionResult, {
   type DetectionExample,
 } from "../components/fakeDetection/FakeDetectionResult";
+import HistoryDrawer from "../components/fakeDetection/HistoryDrawer";
+import {
+  useDetectionHistory,
+  type DetectionHistoryEntry,
+} from "../components/fakeDetection/useDetectionHistory";
 import Footer from "../components/Footer";
 import { normalizePreferences } from "@/lib/shared/settings";
 import {
@@ -83,6 +88,13 @@ export default function FakeDetectionPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isExplaining, setIsExplaining] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const {
+    entries: historyEntries,
+    pushEntry: pushHistoryEntry,
+    removeEntry: removeHistoryEntry,
+    clear: clearHistory,
+  } = useDetectionHistory();
 
   const [resultLevel, setResultLevel] = useState<CredibilityLevel>("mixed");
   const [resultLabel, setResultLabel] = useState("Paste text or a URL to assess misinformation risk");
@@ -170,6 +182,18 @@ export default function FakeDetectionPage() {
     setLimeModel(data.lime_model);
     setLastPayload(payload);
     setPredictionSnapshot(buildPredictionSnapshot(data));
+
+    if (!tooShort) {
+      pushHistoryEntry({
+        inputText: payload.text,
+        sourceUrl: payload.url,
+        inputMode: payload.input_mode,
+        verdict: mapVerdictToDisplayLabel(data.verdict),
+        riskLevel: data.risk_level ?? "Needs Review",
+        finalScore:
+          typeof data.final_score === "number" ? data.final_score : null,
+      });
+    }
   };
 
   const runPrediction = async (payload: PredictPayload, explanationMode: ExplanationMode) => {
@@ -345,10 +369,12 @@ export default function FakeDetectionPage() {
             inputMode={inputMode}
             isLoading={isLoading}
             error={error}
+            historyCount={historyEntries.length}
             onArticleChange={setArticleText}
             onSourceUrlChange={setSourceUrl}
             onInputModeChange={setInputMode}
             onAnalyze={analyze}
+            onOpenHistory={() => setHistoryOpen(true)}
           />
 
           <div className="space-y-6 xl:flex xl:h-full xl:flex-col">
@@ -398,6 +424,20 @@ export default function FakeDetectionPage() {
 
         <Footer />
       </main>
+
+      <HistoryDrawer
+        open={historyOpen}
+        entries={historyEntries}
+        onClose={() => setHistoryOpen(false)}
+        onRerun={(entry: DetectionHistoryEntry) => {
+          setArticleText(entry.inputExcerpt);
+          setSourceUrl(entry.sourceUrl);
+          setInputMode(entry.inputMode);
+          setHistoryOpen(false);
+        }}
+        onRemove={removeHistoryEntry}
+        onClear={clearHistory}
+      />
     </div>
   );
 }

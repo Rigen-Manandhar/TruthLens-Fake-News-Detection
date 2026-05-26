@@ -1,6 +1,12 @@
 import type { NewsAnalysis } from "./NewsCard";
 import type { NewsArticle } from "./types";
-import { formatNewsDate, getAnalysisStyle, getAnalysisText } from "./utils";
+import {
+  formatNewsDate,
+  getAnalysisConfidence,
+  getAnalysisLabel,
+  getAnalysisStyle,
+  getVerdictAccentClass,
+} from "./utils";
 import { ArrowRight } from "../ui/icons";
 
 type FeaturedNewsStoryProps = {
@@ -12,8 +18,16 @@ export default function FeaturedNewsStory({
   article,
   analysis,
 }: FeaturedNewsStoryProps) {
+  const label = getAnalysisLabel(analysis);
+  const confidence = getAnalysisConfidence(analysis);
+  const accentClass = getVerdictAccentClass(analysis);
+
   return (
-    <article className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] items-center rounded-4xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_18px_36px_rgba(24,16,8,0.1)] overflow-hidden">
+    <article className="relative grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] items-center rounded-4xl border border-(--line) bg-[#fffdfa]/90 shadow-[0_18px_36px_rgba(24,16,8,0.1)] overflow-hidden">
+      <span
+        aria-hidden
+        className={`pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-linear-to-r ${accentClass}`}
+      />
       <div className="relative h-56 sm:h-72 lg:h-full">
         <div className="absolute inset-0 bg-linear-to-br from-[#e8dfcf] via-[#f7f3ea] to-[#e7dcc6]" />
         {article.urlToImage && (
@@ -43,11 +57,27 @@ export default function FeaturedNewsStory({
         </div>
         <div className="mt-3">
           <span
-            className={`inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-semibold ${getAnalysisStyle(
+            className={`inline-flex flex-col gap-1 rounded-full border px-3 py-1 text-[11px] font-semibold ${getAnalysisStyle(
               analysis
             )}`}
           >
-            {getAnalysisText(analysis)}
+            <span className="flex items-center gap-1">
+              <span>{label}</span>
+              {confidence !== null && (
+                <span className="text-[10px] opacity-80">{confidence}%</span>
+              )}
+            </span>
+            {confidence !== null && (
+              <span
+                aria-hidden
+                className="block h-[2px] w-full overflow-hidden rounded-full bg-current/20"
+              >
+                <span
+                  className="block h-full bg-current"
+                  style={{ width: `${confidence}%` }}
+                />
+              </span>
+            )}
           </span>
         </div>
         <p className="text-sm text-[#5f5548] mt-4 line-clamp-4">

@@ -19,23 +19,23 @@ export const formatNewsDate = (dateString: string) => {
 
 export const getAnalysisStyle = (analysis?: NewsAnalysis) => {
   if (!analysis || analysis.status === "loading") {
-    return "border-sky-200/80 bg-sky-50 text-sky-900 dark:border-sky-400/30 dark:bg-sky-500/10 dark:text-sky-200";
+    return "border-sky-200/80 bg-sky-50 text-(--news-risk-text) dark:border-sky-400/30 dark:bg-sky-500/10";
   }
 
   if (analysis.status === "error") {
-    return "border-(--line) bg-(--surface-pill) text-(--muted-foreground)";
+    return "border-(--line) bg-(--surface-pill) text-(--foreground-strong)";
   }
 
   const verdict = (analysis.verdict || "").toUpperCase();
   if (verdict === "LIKELY REAL") {
-    return "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-400/30 dark:bg-emerald-500/10 dark:text-emerald-200";
+    return "border-emerald-200 bg-emerald-50 text-(--news-risk-text) dark:border-emerald-400/30 dark:bg-emerald-500/10";
   }
 
   if (verdict === "SUSPICIOUS") {
-    return "border-red-200 bg-red-50 text-red-900 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200";
+    return "border-red-200 bg-red-50 text-(--news-risk-text) dark:border-red-400/30 dark:bg-red-500/10";
   }
 
-  return "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-200";
+  return "border-amber-200 bg-amber-50 text-(--news-risk-text) dark:border-amber-400/30 dark:bg-amber-500/10";
 };
 
 /**
@@ -48,7 +48,7 @@ export const getAnalysisLabel = (analysis?: NewsAnalysis): string => {
   }
 
   if (analysis.status === "error") {
-    return "Analysis unavailable";
+    return "Unable to fetch article";
   }
 
   const verdict = (analysis.verdict || "UNCERTAIN").toUpperCase();

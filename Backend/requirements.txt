@@ -2,10 +2,10 @@ fastapi==0.128.0
 uvicorn==0.40.0
 python-multipart==0.0.29
 pydantic==2.12.5
-# CUDA wheel selection is environment-specific; install the matching torch wheel separately if using GPU.
-# Versions below are pinned to the public release; the local "+cpu" tag has been stripped.
-torch==2.12.0
-torchvision==0.27.0
+# CUDA wheels are required for GPU inference/LIME model calls on the local RTX GPU.
+--extra-index-url https://download.pytorch.org/whl/cu130
+torch==2.12.0+cu130
+torchvision==0.27.0+cu130
 transformers==4.57.3
 peft==0.18.0
 python-dotenv==1.2.1

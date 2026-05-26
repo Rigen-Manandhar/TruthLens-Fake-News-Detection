@@ -1,46 +1,105 @@
 import type { CSSProperties } from "react";
 
-type RiskLevel = "high" | "mixed" | "low";
+/**
+ * The page's CredibilityLevel encodes credibility, not risk:
+ *   - "high"  = high credibility → "Lower Risk"  (verdict LIKELY REAL)
+ *   - "mixed" = "Needs Review"                   (verdict UNCERTAIN / overrides)
+ *   - "low"   = low credibility  → "Higher Risk" (verdict SUSPICIOUS)
+ *
+ * The risk meter reads left-to-right as Lower → Needs Review → Higher, so
+ * "high" credibility lands in the LEFT band and "low" credibility lands in
+ * the RIGHT band. This was the cause of the verdict-vs-pointer mismatch.
+ */
+type CredibilityLevel = "high" | "mixed" | "low";
 
 interface RiskMeterProps {
-  level: RiskLevel;
+  level: CredibilityLevel;
   riskLabel: string;
   finalScore?: number;
-  riskLevelText?: string;
   disabled?: boolean;
 }
 
+// Visual padding so the pointer never sits flush against either edge.
 const POINTER_MIN = 0.04;
 const POINTER_MAX = 0.96;
+const USABLE_WIDTH = POINTER_MAX - POINTER_MIN;
+const BAND_WIDTH = USABLE_WIDTH / 3;
 
-const levelTextClass: Record<RiskLevel, string> = {
-  low: "text-emerald-800 dark:text-emerald-300",
+const levelTextClass: Record<CredibilityLevel, string> = {
+  // high credibility = lower risk = green
+  high: "text-emerald-800 dark:text-emerald-300",
   mixed: "text-amber-800 dark:text-amber-300",
-  high: "text-red-800 dark:text-red-300",
+  // low credibility = higher risk = red
+  low: "text-red-800 dark:text-red-300",
 };
 
-const clampPointer = (value: number) =>
+/**
+ * Backend sends `final_score` as either:
+ *   - a signed integer roughly in [-100, 100] (current scoring.py output), or
+ *   - a signed float in [-1, 1] (legacy / probabilistic output).
+ *
+ * Either way we want a 0..1 magnitude where 0 = strongly likely real and
+ * 1 = strongly suspicious, so the pointer can be placed deterministically.
+ */
+const normalizeScore = (value: number): number => {
+  const signedScore = Math.abs(value) <= 1 ? value * 100 : value;
+  const meterScore = (signedScore + 100) / 200;
+  return Math.max(0, Math.min(1, meterScore));
+};
+
+/**
+ * Map a normalized 0..1 score to a position inside the band that matches the
+ * verdict's credibility level. Anchoring to the band fixes the
+ * "verdict says Lower Risk but pointer sits in Higher Risk" mismatch that
+ * happens whenever the backend overrides the verdict (CONFLICT,
+ * LOW_CONFIDENCE, FETCH_FAILED) and leaves the raw score outside that band.
+ */
+const positionForBand = (
+  level: CredibilityLevel,
+  normalized: number
+): number => {
+  switch (level) {
+    case "high":
+      // Lower Risk → green band on the left
+      return POINTER_MIN + normalized * BAND_WIDTH;
+    case "mixed":
+      // Needs Review → amber band in the middle
+      return POINTER_MIN + BAND_WIDTH + normalized * BAND_WIDTH;
+    case "low":
+      // Higher Risk → red band on the right
+      return POINTER_MIN + 2 * BAND_WIDTH + normalized * BAND_WIDTH;
+  }
+};
+
+const clampPosition = (value: number) =>
   Math.max(POINTER_MIN, Math.min(POINTER_MAX, value));
 
 export default function RiskMeter({
   level,
   riskLabel,
   finalScore,
-  riskLevelText,
   disabled = false,
 }: RiskMeterProps) {
   const hasScore = !disabled && typeof finalScore === "number";
-  const clamped = hasScore ? clampPointer(finalScore as number) : 0.5;
-  const percent = hasScore ? Math.round((finalScore as number) * 100) : null;
+  const normalized = hasScore ? normalizeScore(finalScore as number) : 0.5;
+  const position = hasScore
+    ? clampPosition(positionForBand(level, normalized))
+    : 0.5;
+  // Display percent matches the pointer position so users never see a verdict
+  // band that disagrees with the percentage. Always 0–100, always inside the
+  // band corresponding to the verdict label.
+  const percent = hasScore ? Math.round(position * 100) : null;
 
   const pointerStyle: CSSProperties = {
-    left: `${clamped * 100}%`,
+    left: `${position * 100}%`,
   };
 
   return (
     <div
       role="img"
-      aria-label={`Risk level: ${riskLabel}`}
+      aria-label={`Risk level: ${riskLabel}${
+        percent !== null ? ` (${percent}%)` : ""
+      }`}
       className="rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-4"
     >
       <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
@@ -54,9 +113,6 @@ export default function RiskMeter({
             }`}
           >
             {riskLabel}
-            {riskLevelText && riskLevelText !== riskLabel && !disabled
-              ? ` · ${riskLevelText}`
-              : ""}
           </span>
         </div>
         {percent !== null && (

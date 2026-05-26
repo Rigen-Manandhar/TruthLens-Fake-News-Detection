@@ -14,18 +14,10 @@ import { ScanSearch } from "../ui/icons";
 
 type CredibilityLevel = "high" | "mixed" | "low";
 
-export type DetectionExample = {
-  key: string;
-  label: string;
-  text: string;
-  url: string;
-};
-
 interface FakeDetectionResultProps {
   level: CredibilityLevel;
   label: string;
   details: string;
-  riskLevel?: string;
   finalScore?: number;
   steps?: Step[];
   explanation?: [string, number][];
@@ -42,8 +34,6 @@ interface FakeDetectionResultProps {
   canExplain?: boolean;
   isExplaining?: boolean;
   isLoading?: boolean;
-  examples?: DetectionExample[];
-  onPrefill?: (example: DetectionExample) => void;
   onExplain?: () => void;
 }
 
@@ -69,7 +59,6 @@ export default function FakeDetectionResult({
   level,
   label,
   details,
-  riskLevel,
   finalScore,
   explanation,
   analyzedText,
@@ -84,8 +73,6 @@ export default function FakeDetectionResult({
   canExplain = false,
   isExplaining = false,
   isLoading = false,
-  examples,
-  onPrefill,
   onExplain,
 }: FakeDetectionResultProps) {
   const hasResult = label !== INITIAL_LABEL;
@@ -291,11 +278,6 @@ export default function FakeDetectionResult({
               >
                 {label}
               </div>
-              {riskLevel && (
-                <span className="inline-flex items-center rounded-full border border-(--line) bg-(--surface-strong) px-3 py-1 text-xs font-semibold text-(--muted-foreground)">
-                  Risk: {riskLevel}
-                </span>
-              )}
             </div>
 
             <p className="mt-4 text-sm text-(--foreground) leading-relaxed font-medium">
@@ -330,23 +312,8 @@ export default function FakeDetectionResult({
               Awaiting input
             </p>
             <p className="text-xs text-(--muted-foreground)">
-              Paste an article or URL on the left to begin, or jump in with one
-              of these examples.
+              Paste an article or URL on the left to begin.
             </p>
-            {examples && examples.length > 0 && onPrefill && (
-              <div className="flex flex-wrap gap-2 pt-1">
-                {examples.map((example) => (
-                  <button
-                    key={example.key}
-                    type="button"
-                    onClick={() => onPrefill(example)}
-                    className="inline-flex items-center rounded-full border border-(--line) bg-(--surface-strong) px-3.5 py-1.5 text-xs font-semibold text-(--foreground-strong) transition-colors hover:bg-(--surface-hover)"
-                  >
-                    {example.label}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         )}
 
@@ -355,7 +322,6 @@ export default function FakeDetectionResult({
             level={level}
             riskLabel={hasResult ? label : isLoading ? "Analyzing…" : "Awaiting input"}
             finalScore={finalScore}
-            riskLevelText={riskLevel}
             disabled={!hasResult}
           />
           {hasResult && (
@@ -397,7 +363,6 @@ export default function FakeDetectionResult({
         {hasResult && (() => {
           const hasUncertainty = Boolean(uncertaintyReason);
           const hasDetails = Boolean(details && !uncertainty?.reason_message);
-          const hasClaimHints = Boolean(evidenceSummary?.claim_hints?.length);
           const showLanguageSignalsCta = Boolean(
             !explanation?.length && canExplain && onExplain
           );
@@ -412,7 +377,6 @@ export default function FakeDetectionResult({
           const hasAnyContent =
             hasUncertainty ||
             hasDetails ||
-            hasClaimHints ||
             showLanguageSignalsCta ||
             hasExplanationSummary ||
             hasHighlightedText;
@@ -441,19 +405,6 @@ export default function FakeDetectionResult({
                 {details}
               </div>
             )}
-
-            {evidenceSummary?.claim_hints?.length ? (
-              <div className="mb-4 rounded-xl border border-(--line) bg-(--surface-strong) px-3 py-3">
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-(--foreground-strong)">
-                  Claim hints to verify manually
-                </p>
-                <ul className="mt-2 list-disc space-y-1 pl-4 text-xs text-(--muted-foreground)">
-                  {evidenceSummary.claim_hints.map((claim) => (
-                    <li key={claim}>{claim}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
 
             {!explanation?.length && canExplain && onExplain && (
               <div className="mb-4 rounded-xl border border-(--line) bg-(--accent-soft) px-3 py-3 text-xs text-(--accent-strong)">

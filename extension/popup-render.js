@@ -162,24 +162,6 @@ function buildLanguageAnalysisText(modelOutputs, conflict) {
   return text;
 }
 
-function buildCoverageText(coverageSignal, claimHints) {
-  if (!coverageSignal?.checked) return "";
-
-  const message =
-    typeof coverageSignal.message === "string" && coverageSignal.message.trim()
-      ? coverageSignal.message.trim()
-      : "Trusted-source coverage was checked.";
-
-  if (Array.isArray(claimHints) && claimHints.length > 0) {
-    const hintLines = claimHints
-      .map((hint) => `  \u2022 ${hint}`)
-      .join("\n");
-    return `${message}\n${hintLines}`;
-  }
-
-  return message;
-}
-
 function buildChecksSummary(raw) {
   const sections = [];
 
@@ -196,14 +178,6 @@ function buildChecksSummary(raw) {
   const languageText = buildLanguageAnalysisText(raw?.model_outputs, raw?.conflict);
   if (languageText) {
     sections.push(`Language analysis — ${languageText}`);
-  }
-
-  const coverageText = buildCoverageText(
-    raw?.evidence_summary?.coverage_signal,
-    raw?.evidence_summary?.claim_hints
-  );
-  if (coverageText) {
-    sections.push(`Claim cross-reference — ${coverageText}`);
   }
 
   if (sections.length === 0) {

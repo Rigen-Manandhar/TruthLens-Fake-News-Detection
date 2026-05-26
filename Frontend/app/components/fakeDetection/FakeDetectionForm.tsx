@@ -1,6 +1,5 @@
 import Select from "../ui/Select";
 import Textarea from "../ui/Textarea";
-import { History } from "../ui/icons";
 
 interface FakeDetectionFormProps {
   articleText: string;
@@ -8,14 +7,12 @@ interface FakeDetectionFormProps {
   inputMode: "auto" | "headline_only" | "full_article" | "headline_plus_article";
   isLoading: boolean;
   error: string | null;
-  historyCount?: number;
   onArticleChange: (value: string) => void;
   onSourceUrlChange: (value: string) => void;
   onInputModeChange: (
     value: "auto" | "headline_only" | "full_article" | "headline_plus_article"
   ) => void;
   onAnalyze: () => void;
-  onOpenHistory?: () => void;
 }
 
 export default function FakeDetectionForm({
@@ -24,12 +21,10 @@ export default function FakeDetectionForm({
   inputMode,
   isLoading,
   error,
-  historyCount = 0,
   onArticleChange,
   onSourceUrlChange,
   onInputModeChange,
   onAnalyze,
-  onOpenHistory,
 }: FakeDetectionFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,8 +45,6 @@ export default function FakeDetectionForm({
     }
   };
 
-  const showHistoryButton = Boolean(onOpenHistory) && historyCount > 0;
-
   return (
     <form
       onSubmit={handleSubmit}
@@ -60,26 +53,12 @@ export default function FakeDetectionForm({
       <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-(--ink) via-(--accent) to-(--warm)" />
 
       <div className="relative flex flex-col">
-        <div className="flex items-start justify-between gap-3 mb-4">
+        <div className="mb-4">
           <div className="space-y-1.5">
             <p className="text-[11px] font-semibold tracking-[0.25em] text-(--muted-foreground-strong) uppercase">
               Input
             </p>
           </div>
-          {showHistoryButton && (
-            <button
-              type="button"
-              onClick={onOpenHistory}
-              className="inline-flex items-center gap-1.5 rounded-full border border-(--line) bg-(--surface-strong) px-3 py-1 text-[11px] font-semibold text-(--muted-foreground-strong) transition-colors hover:bg-(--surface-hover) hover:text-(--foreground-strong)"
-              aria-label={`Open recent assessments (${historyCount})`}
-            >
-              <History aria-hidden className="h-3.5 w-3.5" />
-              Recent
-              <span className="rounded-full bg-(--surface-pill) px-1.5 text-[10px]">
-                {historyCount}
-              </span>
-            </button>
-          )}
         </div>
 
         <div className="mb-4">

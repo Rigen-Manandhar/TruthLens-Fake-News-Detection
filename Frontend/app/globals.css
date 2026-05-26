@@ -26,6 +26,7 @@
   --accent-soft: rgba(14, 124, 102, 0.12);
   --success-surface: #dff2e3;
   --danger-surface: #fbe2dc;
+  --news-risk-text: #12100d;
   --warm: #e8b074;
   --ink: #12100d;
   --ink-strong: #17130f;
@@ -54,6 +55,7 @@
   --accent-soft: rgba(45, 184, 158, 0.18);
   --success-surface: #1f3526;
   --danger-surface: #3a241e;
+  --news-risk-text: #ffffff;
   --warm: #e8b074;
   --ink: #f4ecdc;
   --ink-strong: #fbf3e5;

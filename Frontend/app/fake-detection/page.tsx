@@ -3,14 +3,7 @@
 import { useEffect, useState } from "react";
 import DetectionFeedbackCard from "../components/fakeDetection/DetectionFeedbackCard";
 import FakeDetectionForm from "../components/fakeDetection/FakeDetectionForm";
-import FakeDetectionResult, {
-  type DetectionExample,
-} from "../components/fakeDetection/FakeDetectionResult";
-import HistoryDrawer from "../components/fakeDetection/HistoryDrawer";
-import {
-  useDetectionHistory,
-  type DetectionHistoryEntry,
-} from "../components/fakeDetection/useDetectionHistory";
+import FakeDetectionResult from "../components/fakeDetection/FakeDetectionResult";
 import Footer from "../components/Footer";
 import { normalizePreferences } from "@/lib/shared/settings";
 import {
@@ -48,20 +41,15 @@ const mapVerdictToDisplayLabel = (verdict: string): string => {
   return "Needs Review";
 };
 
-const EXAMPLES: DetectionExample[] = [
-  {
-    key: "headline",
-    label: "Try a headline",
-    text: "Local agency reports a 14% drop in traffic incidents after new pedestrian zones were introduced this quarter.",
-    url: "",
-  },
-  {
-    key: "url",
-    label: "Try a URL",
-    text: "",
-    url: "https://www.reuters.com/",
-  },
-];
+const isArticleRetrievalFailure = (data: PredictResponse): boolean => {
+  const reasonCode = data.uncertainty?.reason_code;
+  return (
+    reasonCode === "FETCH_FAILED" ||
+    reasonCode === "UNSUPPORTED_URL" ||
+    (data.fetch_metadata?.attempted === true &&
+      data.fetch_metadata.success === false)
+  );
+};
 
 // Sentinel string used by FakeDetectionResult to detect the empty / awaiting
 // state. Kept in sync with INITIAL_LABEL inside that component.
@@ -93,17 +81,9 @@ export default function FakeDetectionPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isExplaining, setIsExplaining] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [historyOpen, setHistoryOpen] = useState(false);
-  const {
-    entries: historyEntries,
-    pushEntry: pushHistoryEntry,
-    removeEntry: removeHistoryEntry,
-    clear: clearHistory,
-  } = useDetectionHistory();
 
   const [resultLevel, setResultLevel] = useState<CredibilityLevel>("mixed");
   const [resultLabel, setResultLabel] = useState(INITIAL_RESULT_LABEL);
-  const [riskLevel, setRiskLevel] = useState<string>("Needs Review");
   const [finalScore, setFinalScore] = useState<number | undefined>(undefined);
   const [resultDetails, setResultDetails] = useState(
     "Paste some text and a source URL, then run an analysis to see a preview of credibility insights."
@@ -121,6 +101,7 @@ export default function FakeDetectionPage() {
   const [limeModel, setLimeModel] = useState<"A" | "B" | null | undefined>(undefined);
   const [explanationSummary, setExplanationSummary] = useState<ExplanationSummary | undefined>(undefined);
   const [isTooShort, setIsTooShort] = useState(false);
+  const [isFetchFailed, setIsFetchFailed] = useState(false);
   const [lastPayload, setLastPayload] = useState<PredictPayload | null>(null);
   const [predictionSnapshot, setPredictionSnapshot] =
     useState<DetectionPredictionSnapshot | null>(null);
@@ -166,12 +147,18 @@ export default function FakeDetectionPage() {
   const applyPrediction = (data: PredictResponse, payload: PredictPayload) => {
     const level = mapVerdictToLevel(data.verdict);
     const tooShort = data.uncertainty?.reason_code === "INSUFFICIENT_TEXT";
+    const fetchFailed = isArticleRetrievalFailure(data);
+    const displayLabel = fetchFailed
+      ? "Unable to fetch article"
+      : tooShort
+        ? "Too short"
+        : mapVerdictToDisplayLabel(data.verdict);
 
     setResultLevel(level);
-    setResultLabel(tooShort ? "Too short" : mapVerdictToDisplayLabel(data.verdict));
-    setRiskLevel(tooShort ? "Too short" : (data.risk_level ?? "Needs Review"));
+    setResultLabel(displayLabel);
     setFinalScore(typeof data.final_score === "number" ? data.final_score : undefined);
     setIsTooShort(tooShort);
+    setIsFetchFailed(fetchFailed);
     setResultDetails(data.uncertainty?.reason_message ?? "");
     setSteps(data.steps);
     setExplanation(data.explanation);
@@ -187,22 +174,6 @@ export default function FakeDetectionPage() {
     setLimeModel(data.lime_model);
     setLastPayload(payload);
     setPredictionSnapshot(buildPredictionSnapshot(data));
-  };
-
-  const recordHistory = (data: PredictResponse, payload: PredictPayload) => {
-    const tooShort = data.uncertainty?.reason_code === "INSUFFICIENT_TEXT";
-    if (tooShort) {
-      return;
-    }
-    pushHistoryEntry({
-      inputText: payload.text,
-      sourceUrl: payload.url,
-      inputMode: payload.input_mode,
-      verdict: mapVerdictToDisplayLabel(data.verdict),
-      riskLevel: data.risk_level ?? "Needs Review",
-      finalScore:
-        typeof data.final_score === "number" ? data.final_score : null,
-    });
   };
 
   const runPrediction = async (payload: PredictPayload, explanationMode: ExplanationMode) => {
@@ -247,8 +218,8 @@ export default function FakeDetectionPage() {
     // the new request is in flight (or if the new request fails).
     setResultLevel("mixed");
     setResultLabel(INITIAL_RESULT_LABEL);
-    setRiskLevel("Needs Review");
     setIsTooShort(false);
+    setIsFetchFailed(false);
     setResultDetails("");
     setSteps(undefined);
     setExplanation(undefined);
@@ -273,9 +244,6 @@ export default function FakeDetectionPage() {
     try {
       const data = await runPrediction(payload, preferredExplanationMode);
       applyPrediction(data, payload);
-      // History is recorded only on a successful end-user-initiated run,
-      // not on Re-explain re-runs (those reuse the existing prediction).
-      recordHistory(data, payload);
     } catch (e: unknown) {
       const message =
         e instanceof Error
@@ -297,9 +265,6 @@ export default function FakeDetectionPage() {
     try {
       const data = await runPrediction(lastPayload, "force");
       applyPrediction(data, lastPayload);
-      // Intentionally NOT calling recordHistory — Re-explain is a follow-up
-      // on the existing assessment, not a new one. Pushing here would
-      // create duplicate history entries on every Explain click.
     } catch (e: unknown) {
       const message =
         e instanceof Error
@@ -393,12 +358,10 @@ export default function FakeDetectionPage() {
             inputMode={inputMode}
             isLoading={isLoading}
             error={error}
-            historyCount={historyEntries.length}
             onArticleChange={setArticleText}
             onSourceUrlChange={setSourceUrl}
             onInputModeChange={setInputMode}
             onAnalyze={analyze}
-            onOpenHistory={() => setHistoryOpen(true)}
           />
 
           <div className="space-y-6 xl:flex xl:h-full xl:flex-col">
@@ -406,7 +369,6 @@ export default function FakeDetectionPage() {
               level={resultLevel}
               label={resultLabel}
               details={resultDetails}
-              riskLevel={riskLevel}
               finalScore={finalScore}
               steps={steps}
               explanation={explanation}
@@ -420,18 +382,13 @@ export default function FakeDetectionPage() {
               evidenceSummary={evidenceSummary}
               explanationSummary={explanationSummary}
               limeModel={limeModel}
-              canExplain={Boolean(lastPayload) && !isTooShort && !error}
+              canExplain={Boolean(lastPayload) && !isTooShort && !isFetchFailed && !error}
               isExplaining={isExplaining}
               isLoading={isLoading}
-              examples={EXAMPLES}
-              onPrefill={(example) => {
-                setArticleText(example.text);
-                setSourceUrl(example.url);
-              }}
               onExplain={handleExplain}
             />
 
-            {lastPayload && predictionSnapshot && !isLoading && !isTooShort && !error && (
+            {lastPayload && predictionSnapshot && !isLoading && !isTooShort && !isFetchFailed && !error && (
               <DetectionFeedbackCard
                 selectedValue={feedbackSelection}
                 comment={feedbackComment}
@@ -448,22 +405,6 @@ export default function FakeDetectionPage() {
 
         <Footer />
       </main>
-
-      <HistoryDrawer
-        open={historyOpen}
-        entries={historyEntries}
-        onClose={() => setHistoryOpen(false)}
-        onRerun={(entry: DetectionHistoryEntry) => {
-          // inputText is the full original input (capped to FULL_TEXT_LIMIT
-          // by the hook); inputExcerpt is only for the drawer preview UI.
-          setArticleText(entry.inputText);
-          setSourceUrl(entry.sourceUrl);
-          setInputMode(entry.inputMode);
-          setHistoryOpen(false);
-        }}
-        onRemove={removeHistoryEntry}
-        onClear={clearHistory}
-      />
     </div>
   );
 }

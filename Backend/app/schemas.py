@@ -73,21 +73,9 @@ class EvidenceSourceSignal(BaseModel):
     notes: str | None = None
 
 
-class EvidenceCoverageSignal(BaseModel):
-    checked: bool = False
-    status: str
-    query: str | None = None
-    trusted_match_count: int = 0
-    total_results: int | None = None
-    matched_sources: list[str] = Field(default_factory=list)
-    message: str
-
-
 class EvidenceSummary(BaseModel):
-    claim_hints: list[str] = Field(default_factory=list)
     source_signal: EvidenceSourceSignal
-    coverage_signal: EvidenceCoverageSignal
-    evidence_status: Literal["SUPPORTED_HINTS_FOUND", "NO_COVERAGE_FOUND", "SOURCE_ONLY", "NOT_CHECKED"]
+    evidence_status: Literal["SOURCE_ONLY", "NOT_CHECKED"]
     limitations: str
 
 

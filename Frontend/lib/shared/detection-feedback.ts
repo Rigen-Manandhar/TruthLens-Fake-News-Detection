@@ -80,25 +80,9 @@ export type EvidenceSourceSignal = {
   notes?: string | null;
 };
 
-export type EvidenceCoverageSignal = {
-  checked: boolean;
-  status: string;
-  query?: string | null;
-  trusted_match_count: number;
-  total_results?: number | null;
-  matched_sources: string[];
-  message: string;
-};
-
 export type EvidenceSummary = {
-  claim_hints: string[];
   source_signal: EvidenceSourceSignal;
-  coverage_signal: EvidenceCoverageSignal;
-  evidence_status:
-    | "SUPPORTED_HINTS_FOUND"
-    | "NO_COVERAGE_FOUND"
-    | "SOURCE_ONLY"
-    | "NOT_CHECKED";
+  evidence_status: "SOURCE_ONLY" | "NOT_CHECKED";
   limitations: string;
 };
 

@@ -68,7 +68,8 @@ const buildRows = ({
   modelOutputs,
 }: SignalsChecklistProps): SignalRow[] => {
   const sourceSignal = evidenceSummary?.source_signal;
-  const coverageSignal = evidenceSummary?.coverage_signal;
+  const retrievalFailed =
+    fetchMetadata?.attempted === true && fetchMetadata.success === false;
 
   // 1. Source credibility
   const sourceRow: SignalRow = sourceSignal?.known
@@ -106,7 +107,7 @@ const buildRows = ({
       : {
           key: "retrieval",
           label: "Article retrieval",
-          Icon: Download,
+          Icon: XCircle,
           status: "fail",
           context: "Retrieval attempted but did not succeed.",
         };
@@ -138,9 +139,11 @@ const buildRows = ({
     : {
         key: "headline",
         label: "Headline analysis",
-        Icon: MessageSquare,
-        status: "skipped",
-        context: "Headline model did not run.",
+        Icon: retrievalFailed ? XCircle : MessageSquare,
+        status: retrievalFailed ? "fail" : "skipped",
+        context: retrievalFailed
+          ? "Headline analysis did not run because article text could not be fetched."
+          : "Headline model did not run.",
       };
 
   // 4. Article analysis
@@ -149,7 +152,7 @@ const buildRows = ({
     ? {
         key: "article",
         label: "Article analysis",
-        Icon: MessageSquare,
+        Icon: Search,
         status: "pass",
         context: (() => {
           const conf = formatConfidence(modelB.confidence);
@@ -161,30 +164,14 @@ const buildRows = ({
     : {
         key: "article",
         label: "Article analysis",
-        Icon: MessageSquare,
-        status: "skipped",
-        context: "Article model did not run.",
+        Icon: retrievalFailed ? XCircle : MessageSquare,
+        status: retrievalFailed ? "fail" : "skipped",
+        context: retrievalFailed
+          ? "Article analysis did not run because article text could not be fetched."
+          : "Article model did not run.",
       };
 
-  // 5. Coverage cross-reference
-  const coverageRow: SignalRow = coverageSignal?.checked
-    ? {
-        key: "coverage",
-        label: "Coverage cross-reference",
-        Icon: Search,
-        status:
-          coverageSignal.trusted_match_count > 0 ? "pass" : "warn",
-        context: coverageSignal.message,
-      }
-    : {
-        key: "coverage",
-        label: "Coverage cross-reference",
-        Icon: Search,
-        status: "skipped",
-        context: coverageSignal?.message ?? "Coverage check not performed.",
-      };
-
-  return [sourceRow, retrievalRow, headlineRow, articleRow, coverageRow];
+  return [sourceRow, retrievalRow, headlineRow, articleRow];
 };
 
 export default function SignalsChecklist(props: SignalsChecklistProps) {

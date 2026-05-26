@@ -15,6 +15,14 @@ const TITLE_SNAPSHOT_LIMIT = 300;
 type PredictResponse = {
   verdict?: string;
   risk_level?: string;
+  uncertainty?: {
+    reason_code?: string | null;
+  } | null;
+  fetch_metadata?: {
+    attempted?: boolean;
+    success?: boolean | null;
+    error_type?: string | null;
+  } | null;
   model_outputs?: {
     model_a?: {
       ran?: boolean;
@@ -65,6 +73,17 @@ function extractPrimaryConfidence(prediction: PredictResponse): number | null {
   }
 
   return null;
+}
+
+function isArticleRetrievalFailure(prediction: PredictResponse): boolean {
+  const reasonCode = prediction.uncertainty?.reason_code;
+  const fetchMetadata = prediction.fetch_metadata;
+
+  return (
+    reasonCode === "FETCH_FAILED" ||
+    reasonCode === "UNSUPPORTED_URL" ||
+    (fetchMetadata?.attempted === true && fetchMetadata.success === false)
+  );
 }
 
 function toResponseSummary(
@@ -150,6 +169,29 @@ async function analyzeArticle(article: PreparedArticle): Promise<AnalyzedArticle
       url: article.url,
       input_mode: "auto",
     });
+
+    if (isArticleRetrievalFailure(primary)) {
+      const now = new Date();
+      const errorExpiresAt = new Date(now.getTime() + ERROR_TTL_MS);
+      const errorRecord: CacheRecord = {
+        normalizedUrl: article.cacheKey,
+        sourceUrl: article.url,
+        status: "error",
+        analysisSource: "url",
+        cachedAt: now,
+        expiresAt: errorExpiresAt,
+        failureExpiresAt: errorExpiresAt,
+        publishedAt: article.publishedAt ?? null,
+        titleSnapshot: article.title.trim().slice(0, TITLE_SNAPSHOT_LIMIT) || null,
+      };
+
+      return {
+        article,
+        response: toResponseSummary(errorRecord, false),
+        record: errorRecord,
+      };
+    }
+
     const primaryRecord = buildSuccessRecord(article, primary, "url");
 
     if (primaryRecord.confidence !== null || fallbackText.length < 10) {

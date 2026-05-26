@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 
 import Footer from "../components/Footer";
 import Textarea from "../components/ui/Textarea";
+import MailLink from "../components/ui/MailLink";
 
 type ContactStatus = {
   type: "success" | "error";
@@ -115,7 +116,7 @@ export default function ContactPage() {
                     Inbox
                   </p>
                   <p className="mt-3 break-words text-base font-semibold text-[#17130f]">
-                    rigenmanandharrm@gmail.com
+                    <MailLink user="rigenmanandharrm" domain="gmail.com" />
                   </p>
                   <p className="mt-2 text-sm leading-6 text-[#5f5548]">
                     Every submission from this page is routed to this address.

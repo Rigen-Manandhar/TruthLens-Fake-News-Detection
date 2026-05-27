@@ -8,6 +8,8 @@ import torch
 from dotenv import load_dotenv
 
 from app.inference_model import InferenceModel
+from app.hybrid.model_output_builder import build_initial_model_outputs, set_model_output
+from app.hybrid.model_runner import select_lime_source
 from app.parsing import BODY_MIN_WORDS_FOR_B, parse_input
 from app.scoring import (
     CONFLICT_EVIDENCE_THRESHOLD,
@@ -124,27 +126,11 @@ class HybridModelLoader:
             }
         )
 
-        model_outputs = {
-            "model_a": {
-                "ran": False,
-                "label": None,
-                "confidence": None,
-                "score_impact": 0,
-                "input_word_count": parsed["headline_word_count"],
-            },
-            "model_b": {
-                "ran": False,
-                "label": None,
-                "confidence": None,
-                "score_impact": 0,
-                "input_word_count": parsed["body_word_count"],
-            },
-        }
-
         headline_text = parsed.get("headline_text") or ""
         body_text = parsed.get("body_text") or ""
         headline_words = int(parsed.get("headline_word_count") or 0)
         body_words = int(parsed.get("body_word_count") or 0)
+        model_outputs = build_initial_model_outputs(headline_words, body_words)
 
         run_a, run_b = determine_model_runs(
             parsed["used_mode"], headline_words, body_words, BODY_MIN_WORDS_FOR_B
@@ -198,13 +184,14 @@ class HybridModelLoader:
             headline_label, headline_conf = self.model_headline.predict(headline_text)
             headline_class = label_to_class(headline_label)
             headline_evidence = model_confidence_to_evidence(headline_label, headline_conf)
-            model_outputs["model_a"] = {
-                "ran": True,
-                "label": headline_label,
-                "confidence": headline_conf,
-                "score_impact": headline_score_impact,
-                "input_word_count": headline_words,
-            }
+            set_model_output(
+                model_outputs,
+                key="model_a",
+                label=headline_label,
+                confidence=headline_conf,
+                score_impact=headline_score_impact,
+                input_word_count=headline_words,
+            )
         else:
             steps.append(
                 {
@@ -224,13 +211,14 @@ class HybridModelLoader:
             body_label, body_conf = self.model_article.predict(body_text)
             body_class = label_to_class(body_label)
             body_evidence = model_confidence_to_evidence(body_label, body_conf)
-            model_outputs["model_b"] = {
-                "ran": True,
-                "label": body_label,
-                "confidence": body_conf,
-                "score_impact": article_score_impact,
-                "input_word_count": body_words,
-            }
+            set_model_output(
+                model_outputs,
+                key="model_b",
+                label=body_label,
+                confidence=body_conf,
+                score_impact=article_score_impact,
+                input_word_count=body_words,
+            )
         else:
             steps.append(
                 {
@@ -298,14 +286,12 @@ class HybridModelLoader:
         )
 
         article_class = body_class if run_b else headline_class
-        lime_model = None
-        lime_input_text = None
-        if run_b and body_text:
-            lime_model = "B"
-            lime_input_text = body_text
-        elif run_a and headline_text:
-            lime_model = "A"
-            lime_input_text = headline_text
+        lime_model, lime_input_text = select_lime_source(
+            run_a=run_a,
+            run_b=run_b,
+            headline_text=headline_text,
+            body_text=body_text,
+        )
 
         return {
             "final_score": int(scoring["final_score"]),

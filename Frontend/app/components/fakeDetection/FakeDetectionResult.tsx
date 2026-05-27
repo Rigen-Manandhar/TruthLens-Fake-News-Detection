@@ -9,10 +9,10 @@ import type {
   UncertaintyInfo,
 } from "@/lib/shared/detection-feedback";
 import RiskMeter from "./RiskMeter";
+import ResultStatusPanel from "./ResultStatusPanel";
 import SignalsChecklist from "./SignalsChecklist";
+import { INITIAL_RESULT_LABEL, type CredibilityLevel } from "./resultMapping";
 import { ScanSearch } from "../ui/icons";
-
-type CredibilityLevel = "high" | "mixed" | "low";
 
 interface FakeDetectionResultProps {
   level: CredibilityLevel;
@@ -53,8 +53,6 @@ const reasonLabelMap: Record<string, string> = {
   UNSUPPORTED_URL: "Unsupported URL",
 };
 
-const INITIAL_LABEL = "Paste text or a URL to assess misinformation risk";
-
 export default function FakeDetectionResult({
   level,
   label,
@@ -75,192 +73,10 @@ export default function FakeDetectionResult({
   isLoading = false,
   onExplain,
 }: FakeDetectionResultProps) {
-  const hasResult = label !== INITIAL_LABEL;
+  const hasResult = label !== INITIAL_RESULT_LABEL;
   const uncertaintyReason = uncertainty?.reason_code
     ? reasonLabelMap[uncertainty.reason_code] ?? uncertainty.reason_code
     : null;
-
-  const renderExplanationSummary = () => {
-    if (
-      !explanationSummary ||
-      (!explanationSummary.top_fake_words.length &&
-        !explanationSummary.top_real_words.length)
-    ) {
-      return null;
-    }
-
-    const modelName =
-      explanationSummary.model_used === "A"
-        ? "Headline"
-        : explanationSummary.model_used === "B"
-          ? "Article"
-          : null;
-
-    return (
-      <div className="mb-4 space-y-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h4 className="font-semibold text-(--foreground-strong) text-xs uppercase tracking-wide font-sans">
-            Language Signal Analysis
-            {modelName ? ` — Model ${explanationSummary.model_used} (${modelName})` : ""}
-          </h4>
-          {onExplain && (
-            <button
-              type="button"
-              onClick={onExplain}
-              disabled={isExplaining}
-              className="inline-flex h-7 items-center rounded-full border border-(--line) bg-(--surface-strong) px-3 text-[11px] font-semibold text-(--muted-foreground) hover:bg-(--surface-hover) disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {isExplaining ? "Explaining..." : "Re-explain"}
-            </button>
-          )}
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-2">
-          {explanationSummary.top_fake_words.length > 0 && (
-            <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 dark:border-red-400/30 dark:bg-red-500/10">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-red-800 dark:text-red-300">
-                Fake indicators
-              </p>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {explanationSummary.top_fake_words.map((w) => (
-                  <span
-                    key={w.word}
-                    className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-900 dark:bg-red-500/20 dark:text-red-200"
-                    style={{ opacity: Math.min(1, Math.abs(w.weight) * 2 + 0.3) }}
-                    title={`Weight: ${w.weight.toFixed(4)} (pushes toward FAKE)`}
-                  >
-                    {w.word}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-          {explanationSummary.top_real_words.length > 0 && (
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3 dark:border-emerald-400/30 dark:bg-emerald-500/10">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">
-                Real indicators
-              </p>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {explanationSummary.top_real_words.map((w) => (
-                  <span
-                    key={w.word}
-                    className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-900 dark:bg-emerald-500/20 dark:text-emerald-200"
-                    style={{ opacity: Math.min(1, Math.abs(w.weight) * 2 + 0.3) }}
-                    title={`Weight: ${w.weight.toFixed(4)} (pushes toward REAL)`}
-                  >
-                    {w.word}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const renderHighlightedText = () => {
-    if (!analyzedText || !explanation || explanation.length === 0) {
-      return null;
-    }
-
-    const normalizedClass = (explanationClass ?? "").toUpperCase();
-    let colorMode: "fake" | "real" | "neutral" = "neutral";
-    if (normalizedClass.includes("FAKE") || normalizedClass.includes("FALSE")) {
-      colorMode = "fake";
-    } else if (
-      normalizedClass.includes("REAL") ||
-      normalizedClass.includes("TRUE")
-    ) {
-      colorMode = "real";
-    } else if (level === "low") {
-      colorMode = "fake";
-    } else if (level === "high") {
-      colorMode = "real";
-    }
-
-    const weightMap = new Map(
-      explanation.map(([word, weight]) => [word.toLowerCase(), weight])
-    );
-
-    const tokens = analyzedText.split(/(\s+)/);
-
-    return (
-      <div className="mb-6 font-serif text-sm leading-relaxed">
-        <div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h4 className="font-semibold text-(--foreground-strong) text-xs uppercase tracking-wide font-sans">
-            Language Signal Analysis (LIME{limeModel ? ` - Model ${limeModel}` : ""})
-          </h4>
-          {onExplain && (
-            <button
-              type="button"
-              onClick={onExplain}
-              disabled={isExplaining}
-              className="inline-flex h-7 items-center rounded-full border border-(--line) bg-(--surface-strong) px-3 text-[11px] font-semibold text-(--muted-foreground) hover:bg-(--surface-hover) disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {isExplaining ? "Explaining..." : "Explain"}
-            </button>
-          )}
-        </div>
-        <div className="wrap-break-word rounded-xl border border-dotted border-(--line) bg-(--surface-deep) p-3">
-          {tokens.map((token, idx) => {
-            const cleanWord = token.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
-            const weight = weightMap.get(cleanWord);
-
-            if (weight === undefined) {
-              return <span key={idx}>{token}</span>;
-            }
-
-            const isPositive = weight >= 0;
-            let bgColor = "transparent";
-            let textColor = "inherit";
-
-            if (colorMode === "fake") {
-              if (isPositive) {
-                bgColor = "rgba(239, 68, 68, 0.2)";
-                textColor = "#991b1b";
-              } else {
-                bgColor = "rgba(34, 197, 94, 0.2)";
-                textColor = "#166534";
-              }
-            } else if (colorMode === "real") {
-              if (isPositive) {
-                bgColor = "rgba(34, 197, 94, 0.2)";
-                textColor = "#166534";
-              } else {
-                bgColor = "rgba(239, 68, 68, 0.2)";
-                textColor = "#991b1b";
-              }
-            } else {
-              if (isPositive) {
-                bgColor = "rgba(34, 197, 94, 0.2)";
-                textColor = "#166534";
-              } else {
-                bgColor = "rgba(239, 68, 68, 0.2)";
-                textColor = "#991b1b";
-              }
-            }
-
-            return (
-              <span
-                key={idx}
-                style={{
-                  backgroundColor: bgColor,
-                  color: textColor,
-                  padding: "1px 2px",
-                  borderRadius: "2px",
-                  fontWeight: 600,
-                }}
-                title={`Weight: ${weight.toFixed(4)}`}
-              >
-                {token}
-              </span>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
 
   return (
     <section
@@ -271,56 +87,21 @@ export default function FakeDetectionResult({
 
       <div className="relative flex flex-col h-full">
         {hasResult ? (
-          <>
-            <div className="flex flex-wrap items-center gap-3">
-              <div
-                className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${levelStyles[level]} shrink-0 w-fit`}
-              >
-                {label}
-              </div>
-            </div>
-
-            <p className="mt-4 text-sm text-(--foreground) leading-relaxed font-medium">
-              {level === "high" &&
-                "The available signals show lower misinformation risk, but this is not a guarantee that every claim is true."}
-              {level === "low" &&
-                "The available signals show higher misinformation risk. Review the source and evidence before trusting or sharing."}
-              {level === "mixed" &&
-                "The system does not have enough reliable evidence to make a strong risk judgment."}
-            </p>
-
-            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-200">
-              <p className="font-semibold uppercase tracking-wide">What this result means</p>
-              <p className="mt-1">
-                TruthLens supports review. It does not replace human fact-checking or prove truth.
-              </p>
-            </div>
-          </>
+          <ResultHeader level={level} label={label} />
         ) : isLoading ? (
           <div className="flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center rounded-full border border-(--line) bg-(--surface-deep) px-3 py-1 text-xs font-semibold text-(--muted-foreground-strong)">
-              Analyzing…
+              Analyzing...
             </span>
           </div>
         ) : (
-          <div className="flex flex-col items-start gap-3">
-            <ScanSearch
-              aria-hidden
-              className="h-8 w-8 text-(--muted-foreground)/60"
-            />
-            <p className="text-sm font-semibold text-(--foreground-strong)">
-              Awaiting input
-            </p>
-            <p className="text-xs text-(--muted-foreground)">
-              Paste an article or URL on the left to begin.
-            </p>
-          </div>
+          <EmptyState />
         )}
 
         <div className="mt-5 space-y-3">
           <RiskMeter
             level={level}
-            riskLabel={hasResult ? label : isLoading ? "Analyzing…" : "Awaiting input"}
+            riskLabel={hasResult ? label : isLoading ? "Analyzing..." : "Awaiting input"}
             finalScore={finalScore}
             disabled={!hasResult}
           />
@@ -332,107 +113,112 @@ export default function FakeDetectionResult({
               conflict={conflict}
             />
           )}
-          {isLoading && !hasResult && (
-            <div className="rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-(--muted-foreground-strong)">
-                Signals checked
-              </p>
-              <ul className="mt-3 space-y-2.5">
-                {[0, 1, 2].map((idx) => (
-                  <li key={idx} className="flex items-center gap-3">
-                    <span
-                      aria-hidden
-                      className="h-4 w-4 shrink-0 rounded-full bg-(--surface-pill)"
-                    />
-                    <span
-                      aria-hidden
-                      className="h-3 flex-1 rounded-full bg-(--surface-pill)"
-                    />
-                    <span
-                      aria-hidden
-                      className="h-3 w-12 rounded-full bg-(--surface-pill)"
-                    />
-                  </li>
-                ))}
-              </ul>
-              <span className="sr-only">Analyzing in progress</span>
-            </div>
-          )}
+          {isLoading && !hasResult && <SignalsSkeleton />}
         </div>
 
-        {hasResult && (() => {
-          const hasUncertainty = Boolean(uncertaintyReason);
-          const hasDetails = Boolean(details && !uncertainty?.reason_message);
-          const showLanguageSignalsCta = Boolean(
-            !explanation?.length && canExplain && onExplain
-          );
-          const hasExplanationSummary = Boolean(
-            explanationSummary &&
-              (explanationSummary.top_fake_words.length > 0 ||
-                explanationSummary.top_real_words.length > 0)
-          );
-          const hasHighlightedText = Boolean(
-            analyzedText && explanation && explanation.length > 0
-          );
-          const hasAnyContent =
-            hasUncertainty ||
-            hasDetails ||
-            showLanguageSignalsCta ||
-            hasExplanationSummary ||
-            hasHighlightedText;
-
-          if (!hasAnyContent) {
-            return null;
-          }
-
-          return (
-            <div className="mt-5 rounded-2xl border border-dashed border-(--line) bg-(--surface-deep) px-4 py-4 text-sm text-(--muted-foreground) wrap-break-word max-h-[60vh] overflow-y-auto overscroll-contain sm:max-h-128 lg:flex-1 lg:min-h-0 lg:max-h-144">
-            {uncertaintyReason && (
-              <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-200">
-                <p className="font-semibold uppercase tracking-wide">
-                  Reason: {uncertaintyReason}
-                </p>
-                {uncertainty?.reason_message && (
-                  <p className="mt-1 wrap-break-word text-amber-800 dark:text-amber-300">
-                    {uncertainty.reason_message}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {details && !uncertainty?.reason_message && (
-              <div className="mb-4 whitespace-pre-wrap wrap-break-word text-xs text-(--muted-foreground)">
-                {details}
-              </div>
-            )}
-
-            {!explanation?.length && canExplain && onExplain && (
-              <div className="mb-4 rounded-xl border border-(--line) bg-(--accent-soft) px-3 py-3 text-xs text-(--accent-strong)">
-                <p className="font-semibold uppercase tracking-wide">Language signals on demand</p>
-                <p className="mt-1 text-(--accent-strong)">
-                  See which words pushed the result toward FAKE or REAL. Click Language signals to run a detailed analysis.
-                </p>
-                <button
-                  type="button"
-                  onClick={onExplain}
-                  disabled={isExplaining}
-                  className="mt-3 inline-flex h-8 items-center rounded-full bg-(--ink) px-4 text-[11px] font-semibold text-(--ink-foreground) hover:bg-(--accent) disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {isExplaining ? "Explaining..." : "Language signals"}
-                </button>
-              </div>
-            )}
-
-            {renderExplanationSummary()}
-            {renderHighlightedText()}
-          </div>
-          );
-        })()}
+        {hasResult && (
+          <ResultStatusPanel
+            level={level}
+            details={details}
+            explanation={explanation}
+            analyzedText={analyzedText}
+            explanationClass={explanationClass}
+            uncertainty={uncertainty}
+            explanationSummary={explanationSummary}
+            limeModel={limeModel}
+            uncertaintyReason={uncertaintyReason}
+            canExplain={canExplain}
+            isExplaining={isExplaining}
+            onExplain={onExplain}
+          />
+        )}
 
         <p className="mt-4 text-[11px] text-(--muted-foreground) shrink-0">
           Results powered by Hybrid Evidence and Risk Analysis.
         </p>
       </div>
     </section>
+  );
+}
+
+function ResultHeader({
+  level,
+  label,
+}: {
+  level: CredibilityLevel;
+  label: string;
+}) {
+  return (
+    <>
+      <div className="flex flex-wrap items-center gap-3">
+        <div
+          className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${levelStyles[level]} shrink-0 w-fit`}
+        >
+          {label}
+        </div>
+      </div>
+
+      <p className="mt-4 text-sm text-(--foreground) leading-relaxed font-medium">
+        {level === "high" &&
+          "The available signals show lower misinformation risk, but this is not a guarantee that every claim is true."}
+        {level === "low" &&
+          "The available signals show higher misinformation risk. Review the source and evidence before trusting or sharing."}
+        {level === "mixed" &&
+          "The system does not have enough reliable evidence to make a strong risk judgment."}
+      </p>
+
+      <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-200">
+        <p className="font-semibold uppercase tracking-wide">What this result means</p>
+        <p className="mt-1">
+          TruthLens supports review. It does not replace human fact-checking or prove truth.
+        </p>
+      </div>
+    </>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="flex flex-col items-start gap-3">
+      <ScanSearch
+        aria-hidden
+        className="h-8 w-8 text-(--muted-foreground)/60"
+      />
+      <p className="text-sm font-semibold text-(--foreground-strong)">
+        Awaiting input
+      </p>
+      <p className="text-xs text-(--muted-foreground)">
+        Paste an article or URL on the left to begin.
+      </p>
+    </div>
+  );
+}
+
+function SignalsSkeleton() {
+  return (
+    <div className="rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-4">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-(--muted-foreground-strong)">
+        Signals checked
+      </p>
+      <ul className="mt-3 space-y-2.5">
+        {[0, 1, 2].map((idx) => (
+          <li key={idx} className="flex items-center gap-3">
+            <span
+              aria-hidden
+              className="h-4 w-4 shrink-0 rounded-full bg-(--surface-pill)"
+            />
+            <span
+              aria-hidden
+              className="h-3 flex-1 rounded-full bg-(--surface-pill)"
+            />
+            <span
+              aria-hidden
+              className="h-3 w-12 rounded-full bg-(--surface-pill)"
+            />
+          </li>
+        ))}
+      </ul>
+      <span className="sr-only">Analyzing in progress</span>
+    </div>
   );
 }

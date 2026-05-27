@@ -3,29 +3,18 @@ from __future__ import annotations
 from fastapi import HTTPException
 
 from app.article_extractor import ExtractionError, fetch_and_extract
-from app.config import INPUT_TEXT_MIN_LEN, INPUT_TEXT_MIN_WORDS, LIME_NUM_SAMPLES_FORCE, LIME_RAW_FEATURES
+from app.config import INPUT_TEXT_MIN_WORDS
 from app.evidence import build_evidence_summary
-from app.explanations import build_explanation_summary, filter_lime_features
 from app.parsing import word_count
 from app.schemas import (
-    ConflictInfo,
     FetchMetadata,
-    ModelOutputs,
-    ParseMetadata,
     PredictRequest,
     PredictResponse,
-    SingleModelOutput,
     StepDetail,
-    UncertaintyInfo,
 )
+from app.services.predict_explanations import build_forced_lime_explanation
+from app.services.predict_response_builders import build_uncertain_response
 from app.url_eligibility import classify_url_eligibility
-
-
-def _empty_model_outputs(headline_words: int = 0, body_words: int = 0) -> ModelOutputs:
-    return ModelOutputs(
-        model_a=SingleModelOutput(ran=False, input_word_count=headline_words),
-        model_b=SingleModelOutput(ran=False, input_word_count=body_words),
-    )
 
 
 def build_predict_response(req: PredictRequest, model, explainer) -> PredictResponse:
@@ -75,10 +64,8 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
                     details=eligibility.reason_message,
                     metadata={"supported": False, "reason_code": eligibility.reason_code},
                 )
-                return PredictResponse(
+                return build_uncertain_response(
                     final_score=0,
-                    verdict="UNCERTAIN",
-                    risk_level="Needs Review",
                     steps=[
                         eligibility_step,
                         StepDetail(
@@ -87,24 +74,15 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
                             details="Text too short for a proper review. Paste article text to run text-only analysis.",
                         ),
                     ],
-                    article_class="UNKNOWN",
-                    uncertainty=UncertaintyInfo(
-                        reason_code="UNSUPPORTED_URL",
-                        reason_message="This page does not look like a supported article page. Paste article text to run text-only analysis.",
-                    ),
-                    parse_metadata=ParseMetadata(
-                        used_mode=req.input_mode,
-                        detected_shape="unsupported_url",
-                        headline_word_count=0,
-                        body_word_count=0,
-                        headline_source=None,
-                    ),
-                    model_outputs=_empty_model_outputs(0, 0),
-                    conflict=ConflictInfo(is_conflict=False, threshold=0.80, raw_score_before_override=0),
+                    reason_code="UNSUPPORTED_URL",
+                    reason_message="This page does not look like a supported article page. Paste article text to run text-only analysis.",
+                    used_mode=req.input_mode,
+                    detected_shape="unsupported_url",
+                    headline_word_count=0,
+                    body_word_count=0,
+                    headline_source=None,
                     fetch_metadata=fetch_metadata,
                     evidence_summary=build_evidence_summary(text, original_url, source_db),
-                    lime_model=None,
-                    lime_input_text=None,
                 )
 
     if word_count(text) < INPUT_TEXT_MIN_WORDS and analysis_url:
@@ -134,33 +112,22 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
                 ]
                 if eligibility_step:
                     steps.insert(0, eligibility_step)
-                return PredictResponse(
+                return build_uncertain_response(
                     final_score=final_score,
-                    verdict="UNCERTAIN",
-                    risk_level="Needs Review",
                     steps=steps,
-                    article_class="UNKNOWN",
-                    uncertainty=UncertaintyInfo(
-                        reason_code="INSUFFICIENT_TEXT",
-                        reason_message=(
-                            "Text too short for a proper review. "
-                            "The article was retrieved but does not contain enough text. "
-                            "Please paste the full article text manually."
-                        ),
+                    reason_code="INSUFFICIENT_TEXT",
+                    reason_message=(
+                        "Text too short for a proper review. "
+                        "The article was retrieved but does not contain enough text. "
+                        "Please paste the full article text manually."
                     ),
-                    parse_metadata=ParseMetadata(
-                        used_mode=req.input_mode,
-                        detected_shape="insufficient",
-                        headline_word_count=0,
-                        body_word_count=0,
-                        headline_source=None,
-                    ),
-                    model_outputs=_empty_model_outputs(0, 0),
-                    conflict=ConflictInfo(is_conflict=False, threshold=0.80, raw_score_before_override=final_score),
+                    used_mode=req.input_mode,
+                    detected_shape="insufficient",
+                    headline_word_count=0,
+                    body_word_count=0,
+                    headline_source=None,
                     fetch_metadata=fetch_metadata,
                     evidence_summary=build_evidence_summary(text, analysis_url, source_db),
-                    lime_model=None,
-                    lime_input_text=None,
                 )
         except ExtractionError as exc:
             source_res = model.check_source(analysis_url)
@@ -179,27 +146,18 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
             ]
             if eligibility_step:
                 steps.insert(0, eligibility_step)
-            return PredictResponse(
+            return build_uncertain_response(
                 final_score=final_score,
-                verdict="UNCERTAIN",
-                risk_level="Needs Review",
                 steps=steps,
-                article_class="UNKNOWN",
-                uncertainty=UncertaintyInfo(
-                    reason_code="FETCH_FAILED",
-                    reason_message=(
-                        "Unable to fetch article text from URL (paywall, timeout, access denied, or extraction failed)."
-                    ),
+                reason_code="FETCH_FAILED",
+                reason_message=(
+                    "Unable to fetch article text from URL (paywall, timeout, access denied, or extraction failed)."
                 ),
-                parse_metadata=ParseMetadata(
-                    used_mode=req.input_mode,
-                    detected_shape="url_only",
-                    headline_word_count=0,
-                    body_word_count=0,
-                    headline_source=None,
-                ),
-                model_outputs=_empty_model_outputs(0, 0),
-                conflict=ConflictInfo(is_conflict=False, threshold=0.80, raw_score_before_override=final_score),
+                used_mode=req.input_mode,
+                detected_shape="url_only",
+                headline_word_count=0,
+                body_word_count=0,
+                headline_source=None,
                 fetch_metadata=FetchMetadata(
                     attempted=True,
                     success=False,
@@ -208,8 +166,6 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
                     resolved_url=exc.resolved_url,
                 ),
                 evidence_summary=build_evidence_summary(text, analysis_url, source_db),
-                lime_model=None,
-                lime_input_text=None,
             )
 
     if word_count(text) < INPUT_TEXT_MIN_WORDS:
@@ -229,32 +185,21 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
         ]
         if eligibility_step:
             steps.insert(0, eligibility_step)
-        return PredictResponse(
+        return build_uncertain_response(
             final_score=final_score,
-            verdict="UNCERTAIN",
-            risk_level="Needs Review",
             steps=steps,
-            article_class="UNKNOWN",
-            uncertainty=UncertaintyInfo(
-                reason_code="INSUFFICIENT_TEXT",
-                reason_message=(
-                    "Text too short for a proper review. "
-                    "Please provide more text or a valid article URL."
-                ),
+            reason_code="INSUFFICIENT_TEXT",
+            reason_message=(
+                "Text too short for a proper review. "
+                "Please provide more text or a valid article URL."
             ),
-            parse_metadata=ParseMetadata(
-                used_mode=req.input_mode,
-                detected_shape="insufficient",
-                headline_word_count=0,
-                body_word_count=0,
-                headline_source=None,
-            ),
-            model_outputs=_empty_model_outputs(0, 0),
-            conflict=ConflictInfo(is_conflict=False, threshold=0.80, raw_score_before_override=final_score),
+            used_mode=req.input_mode,
+            detected_shape="insufficient",
+            headline_word_count=0,
+            body_word_count=0,
+            headline_source=None,
             fetch_metadata=fetch_metadata,
             evidence_summary=build_evidence_summary(text, analysis_url, source_db),
-            lime_model=None,
-            lime_input_text=None,
         )
 
     try:
@@ -268,30 +213,12 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
         print(f"Error during analysis: {exc}")
         raise HTTPException(status_code=500, detail=str(exc))
 
-    explanation_list: list[tuple[str, float]] | None = None
-    explanation_html: str | None = None
-    explanation_summary = None
-
     should_explain = req.explanation_mode == "force"
-
-    lime_model = report_dict.get("lime_model")
-    lime_input_text = (report_dict.get("lime_input_text") or "").strip()
-
-    if should_explain and explainer is not None and lime_model in {"A", "B"} and lime_input_text:
-        predictor = model.model_article.predict_proba if lime_model == "B" else model.model_headline.predict_proba
-
-        try:
-            exp = explainer.explain_instance(
-                lime_input_text,
-                predictor,
-                num_features=LIME_RAW_FEATURES,
-                num_samples=LIME_NUM_SAMPLES_FORCE,
-            )
-            explanation_list = filter_lime_features(exp.as_list())
-            explanation_html = exp.as_html()
-            explanation_summary = build_explanation_summary(explanation_list, lime_model)
-        except Exception as exc:
-            print(f"LIME Error: {exc}")
+    explanation_list, explanation_html, explanation_summary = (
+        build_forced_lime_explanation(model, explainer, report_dict)
+        if should_explain
+        else (None, None, None)
+    )
 
     if eligibility_step:
         report_dict["steps"] = [eligibility_step, *report_dict["steps"]]

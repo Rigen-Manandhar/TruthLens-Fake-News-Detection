@@ -1,9 +1,10 @@
 import { classifyUrlEligibility } from "./url-eligibility.mjs";
 import { callPredict, getActiveTab, readChromeStorage, submitFeedbackRequest, writeChromeStorage } from "./popup-api.js";
 import { bindIfPresent, els, hasRequiredElements } from "./popup-dom.js";
+import { buildFeedbackSubmission, buildPredictionSnapshot } from "./popup-feedback.js";
+import { normalizePredictResponse } from "./popup-normalize.js";
 import {
   clearFormError,
-  normalizePredictResponse,
   renderError,
   renderFeedbackSection,
   renderResult,
@@ -61,22 +62,6 @@ function syncConfigInputs() {
   els.bearerToken.value = state.bearerToken;
 }
 
-function buildPredictionSnapshot(raw) {
-  return {
-    verdict: raw?.verdict,
-    riskLevel: raw?.risk_level ?? "Needs Review",
-    finalScore: raw?.final_score,
-    uncertainty: raw?.uncertainty,
-    parseMetadata: raw?.parse_metadata,
-    modelOutputs: raw?.model_outputs,
-    conflict: raw?.conflict,
-    fetchMetadata: raw?.fetch_metadata,
-    evidenceSummary: raw?.evidence_summary,
-    explanationSummary: raw?.explanation_summary,
-    limeModel: raw?.lime_model === "A" || raw?.lime_model === "B" ? raw.lime_model : null,
-  };
-}
-
 function resetFeedbackState() {
   state.feedbackSelection = null;
   state.feedbackSubmitted = false;
@@ -129,15 +114,17 @@ async function submitFeedback() {
   syncFeedbackControls();
 
   try {
-    await submitFeedbackRequest(state.apiBaseUrl, state.bearerToken, {
-      source: "extension",
-      input: state.lastPayload,
-      prediction: buildPredictionSnapshot(state.lastRaw),
-      feedback: {
+    await submitFeedbackRequest(
+      state.apiBaseUrl,
+      state.bearerToken,
+      buildFeedbackSubmission({
+        source: "extension",
+        input: state.lastPayload,
+        prediction: buildPredictionSnapshot(state.lastRaw),
         isCorrect: state.feedbackSelection,
         comment: els.feedbackComment.value.trim(),
-      },
-    });
+      })
+    );
 
     state.feedbackSubmitted = true;
     setFeedbackStatus("Feedback saved to your account.", "success");

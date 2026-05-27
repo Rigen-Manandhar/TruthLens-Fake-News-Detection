@@ -38,8 +38,7 @@ interface FakeDetectionResultProps {
 }
 
 const levelStyles: Record<CredibilityLevel, string> = {
-  high:
-    "bg-emerald-50 text-emerald-900 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-200 dark:border-emerald-400/30",
+  high: "bg-emerald-50 text-emerald-900 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-200 dark:border-emerald-400/30",
   mixed:
     "bg-amber-50 text-amber-900 border-amber-200 dark:bg-amber-500/10 dark:text-amber-200 dark:border-amber-400/30",
   low: "bg-red-50 text-red-900 border-red-200 dark:bg-red-500/10 dark:text-red-200 dark:border-red-400/30",
@@ -75,7 +74,7 @@ export default function FakeDetectionResult({
 }: FakeDetectionResultProps) {
   const hasResult = label !== INITIAL_RESULT_LABEL;
   const uncertaintyReason = uncertainty?.reason_code
-    ? reasonLabelMap[uncertainty.reason_code] ?? uncertainty.reason_code
+    ? (reasonLabelMap[uncertainty.reason_code] ?? uncertainty.reason_code)
     : null;
 
   return (
@@ -101,7 +100,9 @@ export default function FakeDetectionResult({
         <div className="mt-5 space-y-3">
           <RiskMeter
             level={level}
-            riskLabel={hasResult ? label : isLoading ? "Analyzing..." : "Awaiting input"}
+            riskLabel={
+              hasResult ? label : isLoading ? "Analyzing..." : "Awaiting input"
+            }
             finalScore={finalScore}
             disabled={!hasResult}
           />
@@ -158,7 +159,7 @@ function ResultHeader({
         </div>
       </div>
 
-      <p className="mt-4 text-sm text-(--foreground) leading-relaxed font-medium">
+      <p className="mt-4 text-sm text-foreground leading-relaxed font-medium">
         {level === "high" &&
           "The available signals show lower misinformation risk, but this is not a guarantee that every claim is true."}
         {level === "low" &&
@@ -168,9 +169,12 @@ function ResultHeader({
       </p>
 
       <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-200">
-        <p className="font-semibold uppercase tracking-wide">What this result means</p>
+        <p className="font-semibold uppercase tracking-wide">
+          What this result means
+        </p>
         <p className="mt-1">
-          TruthLens supports review. It does not replace human fact-checking or prove truth.
+          TruthLens supports review. It does not replace human fact-checking or
+          prove truth.
         </p>
       </div>
     </>

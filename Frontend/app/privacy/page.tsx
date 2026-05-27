@@ -43,8 +43,8 @@ export default function PrivacyPage() {
               <p className="max-w-2xl text-sm leading-7 text-(--muted-foreground) sm:text-base">
                 TruthLens collects only the information needed to operate the
                 platform, personalize your experience, protect your account, and
-                support the misinformation risk assessment workflow. This page summarizes
-                what data is used and what control you have over it.
+                support the misinformation risk assessment workflow. This page
+                summarizes what data is used and what control you have over it.
               </p>
             </div>
 
@@ -53,7 +53,7 @@ export default function PrivacyPage() {
                 <div className="inline-flex rounded-full border border-(--line) bg-(--surface-pill) px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-(--muted-foreground)">
                   Privacy at a glance
                 </div>
-                <ul className="space-y-3 text-sm leading-6 text-(--foreground)">
+                <ul className="space-y-3 text-sm leading-6 text-foreground">
                   {privacyCommitments.map((item) => (
                     <li
                       key={item}

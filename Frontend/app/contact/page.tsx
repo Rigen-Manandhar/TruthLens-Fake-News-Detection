@@ -62,9 +62,10 @@ export default function ContactPage() {
         body: JSON.stringify(payload),
       });
 
-      const data = (await response.json().catch(() => null)) as
-        | { error?: string; message?: string }
-        | null;
+      const data = (await response.json().catch(() => null)) as {
+        error?: string;
+        message?: string;
+      } | null;
 
       if (!response.ok) {
         throw new Error(data?.error ?? "Failed to send message.");
@@ -79,9 +80,7 @@ export default function ContactPage() {
       setStatus({
         type: "error",
         message:
-          error instanceof Error
-            ? error.message
-            : "Failed to send message.",
+          error instanceof Error ? error.message : "Failed to send message.",
       });
     } finally {
       setIsSubmitting(false);
@@ -91,162 +90,176 @@ export default function ContactPage() {
   return (
     <div className="page-shell ambient-grid flex flex-col">
       <div className="pointer-events-none absolute -top-12 -left-10 h-56 w-56 rounded-full bg-(--warm)/30 blur-3xl" />
-      <div className="pointer-events-none absolute top-[9rem] right-0 h-72 w-72 rounded-full bg-(--accent)/15 blur-3xl" />
+      <div className="pointer-events-none absolute top-36y right-0 h-72 w-72 rounded-full bg-(--accent)/15 blur-3xl" />
 
       <div className="flex min-h-[calc(100vh-5.5rem)] flex-1 flex-col sm:min-h-[calc(100vh-5.75rem)]">
-        <main id="main-content" className="page-main flex flex-1 flex-col justify-center">
+        <main
+          id="main-content"
+          className="page-main flex flex-1 flex-col justify-center"
+        >
           <section className="section-reveal rounded-[2.2rem] border border-(--line) bg-(--surface)/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10 lg:px-10 lg:py-12">
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(29rem,0.88fr)] lg:items-center xl:gap-10">
               <div className="space-y-7">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-(--muted-foreground-strong)">
-                Contact TruthLens
-              </p>
-              <h1 className="page-title display-title max-w-3xl text-4xl font-bold text-(--foreground-strong) sm:text-[3.35rem] lg:text-[3.9rem]">
-                Send a message without leaving the product.
-              </h1>
-              <p className="max-w-2xl text-sm leading-8 text-(--muted-foreground) sm:text-base">
-                Use this form for project questions, collaboration requests,
-                bug reports, or feedback about the credibility workflow. Messages
-                submitted here are sent directly to the TruthLens inbox.
-              </p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-(--muted-foreground-strong)">
+                  Contact TruthLens
+                </p>
+                <h1 className="page-title display-title max-w-3xl text-4xl font-bold text-(--foreground-strong) sm:text-[3.35rem] lg:text-[3.9rem]">
+                  Send a message without leaving the product.
+                </h1>
+                <p className="max-w-2xl text-sm leading-8 text-(--muted-foreground) sm:text-base">
+                  Use this form for project questions, collaboration requests,
+                  bug reports, or feedback about the credibility workflow.
+                  Messages submitted here are sent directly to the TruthLens
+                  inbox.
+                </p>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <article className="rounded-[1.5rem] border border-(--line) bg-(--surface-deep)/92 p-5 shadow-[0_16px_32px_rgba(24,16,8,0.08)]">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
-                    Inbox
-                  </p>
-                  <p className="mt-3 break-words text-base font-semibold text-(--foreground-strong)">
-                    <MailLink user="rigenmanandharrm" domain="gmail.com" />
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-(--muted-foreground)">
-                    Every submission from this page is routed to this address.
-                  </p>
-                </article>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <article className="rounded-3xl border border-(--line) bg-(--surface-deep)/92 p-5 shadow-[0_16px_32px_rgba(24,16,8,0.08)]">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
+                      Inbox
+                    </p>
+                    <p className="mt-3 wrap-break-word text-base font-semibold text-(--foreground-strong)">
+                      <MailLink user="rigenmanandharrm" domain="gmail.com" />
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-(--muted-foreground)">
+                      Every submission from this page is routed to this address.
+                    </p>
+                  </article>
 
-                <article className="rounded-[1.5rem] border border-(--line) bg-(--surface-strong) p-5 shadow-[0_16px_32px_rgba(24,16,8,0.08)]">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
-                    Best for
-                  </p>
-                  <p className="mt-3 text-sm leading-7 text-(--muted-foreground)">
-                    Feature feedback, integration questions, project inquiries,
-                    and issues affecting the news feed or detection flow.
-                  </p>
-                </article>
-              </div>
-
-              <div className="rounded-[1.6rem] border border-dashed border-(--line) bg-[linear-gradient(135deg,rgba(14,124,102,0.08),rgba(232,176,116,0.12))] px-5 py-4 text-sm leading-7 text-(--foreground) shadow-[0_14px_28px_rgba(24,16,8,0.05)]">
-                Messages from this form go directly to the TruthLens inbox, and{" "}
-                {useAccountEmail
-                  ? "your signed-in account email is used as the reply target."
-                  : "your entered email address is used as the reply target."}
-              </div>
-            </div>
-
-            <section className="rounded-[2rem] border border-(--line) bg-[linear-gradient(145deg,rgba(255,253,248,0.98),rgba(247,241,230,0.92))] p-5 shadow-[0_18px_36px_rgba(24,16,8,0.1)] sm:p-6 lg:p-7">
-              <form className="space-y-5" onSubmit={handleSubmit}>
-                <div className="space-y-2">
-                  <label
-                    htmlFor="contact-name"
-                    className="text-sm font-semibold text-(--foreground-strong)"
-                  >
-                    Your name
-                  </label>
-                  <input
-                    id="contact-name"
-                    type="text"
-                    value={form.name}
-                    onChange={(event) => updateField("name", event.target.value)}
-                    className="w-full rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 dark:placeholder:text-(--muted-foreground)/90 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
-                    placeholder="What should we call you?"
-                    maxLength={80}
-                    disabled={isSubmitting}
-                  />
+                  <article className="rounded-3xl border border-(--line) bg-(--surface-strong) p-5 shadow-[0_16px_32px_rgba(24,16,8,0.08)]">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
+                      Best for
+                    </p>
+                    <p className="mt-3 text-sm leading-7 text-(--muted-foreground)">
+                      Feature feedback, integration questions, project
+                      inquiries, and issues affecting the news feed or detection
+                      flow.
+                    </p>
+                  </article>
                 </div>
 
-                {useAccountEmail ? (
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-(--foreground-strong)">
-                      Reply email
-                    </label>
-                    <div className="rounded-2xl border border-(--line) bg-(--accent-soft) px-4 py-3 text-sm text-(--accent-strong)">
-                      <div className="font-semibold">Signed in as</div>
-                      <div className="mt-1 break-words">{sessionEmail}</div>
-                    </div>
-                  </div>
-                ) : authStatus === "loading" ? (
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-(--foreground-strong)">
-                      Reply email
-                    </label>
-                    <div
-                      className="h-[3.125rem] rounded-2xl border border-(--line) bg-(--surface-pill) animate-pulse"
-                      aria-hidden="true"
-                    />
-                  </div>
-                ) : (
+                <div className="rounded-[1.6rem] border border-dashed border-(--line) bg-[linear-gradient(135deg,rgba(14,124,102,0.08),rgba(232,176,116,0.12))] px-5 py-4 text-sm leading-7 text-foreground shadow-[0_14px_28px_rgba(24,16,8,0.05)]">
+                  Messages from this form go directly to the TruthLens inbox,
+                  and{" "}
+                  {useAccountEmail
+                    ? "your signed-in account email is used as the reply target."
+                    : "your entered email address is used as the reply target."}
+                </div>
+              </div>
+
+              <section className="rounded-4xl border border-(--line) bg-[linear-gradient(145deg,rgba(255,253,248,0.98),rgba(247,241,230,0.92))] p-5 shadow-[0_18px_36px_rgba(24,16,8,0.1)] sm:p-6 lg:p-7">
+                <form className="space-y-5" onSubmit={handleSubmit}>
                   <div className="space-y-2">
                     <label
-                      htmlFor="contact-email"
+                      htmlFor="contact-name"
                       className="text-sm font-semibold text-(--foreground-strong)"
                     >
-                      Your email
+                      Your name
                     </label>
                     <input
-                      id="contact-email"
-                      type="email"
-                      value={form.email}
-                      onChange={(event) => updateField("email", event.target.value)}
+                      id="contact-name"
+                      type="text"
+                      value={form.name}
+                      onChange={(event) =>
+                        updateField("name", event.target.value)
+                      }
                       className="w-full rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 dark:placeholder:text-(--muted-foreground)/90 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
-                      placeholder="Where should replies go?"
-                      maxLength={120}
+                      placeholder="What should we call you?"
+                      maxLength={80}
                       disabled={isSubmitting}
                     />
                   </div>
-                )}
 
-                <div className="space-y-2">
-                  <Textarea
-                    label="Message"
-                    id="contact-message"
-                    value={form.message}
-                    onChange={(event) => updateField("message", event.target.value)}
-                    placeholder="Write what you want to send..."
-                    maxLength={3000}
-                    disabled={isSubmitting}
-                    className="min-h-40"
-                  />
-                </div>
+                  {useAccountEmail ? (
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-(--foreground-strong)">
+                        Reply email
+                      </label>
+                      <div className="rounded-2xl border border-(--line) bg-(--accent-soft) px-4 py-3 text-sm text-(--accent-strong)">
+                        <div className="font-semibold">Signed in as</div>
+                        <div className="mt-1 wrap-break-word">
+                          {sessionEmail}
+                        </div>
+                      </div>
+                    </div>
+                  ) : authStatus === "loading" ? (
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-(--foreground-strong)">
+                        Reply email
+                      </label>
+                      <div
+                        className="h-12.5 rounded-2xl border border-(--line) bg-(--surface-pill) animate-pulse"
+                        aria-hidden="true"
+                      />
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="contact-email"
+                        className="text-sm font-semibold text-(--foreground-strong)"
+                      >
+                        Your email
+                      </label>
+                      <input
+                        id="contact-email"
+                        type="email"
+                        value={form.email}
+                        onChange={(event) =>
+                          updateField("email", event.target.value)
+                        }
+                        className="w-full rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 dark:placeholder:text-(--muted-foreground)/90 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
+                        placeholder="Where should replies go?"
+                        maxLength={120}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  )}
 
-                {status && (
-                  <p
-                    className={`rounded-2xl border px-4 py-3 text-sm ${
-                      status.type === "success"
-                        ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-400/30 dark:bg-emerald-500/10 dark:text-emerald-200"
-                        : "border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200"
-                    }`}
-                  >
-                    {status.message}
-                  </p>
-                )}
+                  <div className="space-y-2">
+                    <Textarea
+                      label="Message"
+                      id="contact-message"
+                      value={form.message}
+                      onChange={(event) =>
+                        updateField("message", event.target.value)
+                      }
+                      placeholder="Write what you want to send..."
+                      maxLength={3000}
+                      disabled={isSubmitting}
+                      className="min-h-40"
+                    />
+                  </div>
 
-                <div className="flex flex-col gap-4 border-t border-(--line)/80 pt-4 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-xs leading-6 text-(--muted-foreground)">
-                    Submitted messages are sent to the TruthLens contact inbox
-                    with{" "}
-                    {useAccountEmail
-                      ? "your account email attached as the reply-to address."
-                      : "your email attached as the reply-to address."}
-                  </p>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="inline-flex h-12 shrink-0 items-center justify-center rounded-full bg-(--ink) px-7 text-sm font-semibold whitespace-nowrap text-(--ink-foreground) shadow-[0_12px_24px_rgba(24,16,8,0.2)] transition-colors hover:bg-(--accent) disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-[10.5rem]"
-                  >
-                    {isSubmitting ? "Sending..." : "Send message"}
-                  </button>
-                </div>
-              </form>
-            </section>
+                  {status && (
+                    <p
+                      className={`rounded-2xl border px-4 py-3 text-sm ${
+                        status.type === "success"
+                          ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-400/30 dark:bg-emerald-500/10 dark:text-emerald-200"
+                          : "border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200"
+                      }`}
+                    >
+                      {status.message}
+                    </p>
+                  )}
+
+                  <div className="flex flex-col gap-4 border-t border-(--line)/80 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs leading-6 text-(--muted-foreground)">
+                      Submitted messages are sent to the TruthLens contact inbox
+                      with{" "}
+                      {useAccountEmail
+                        ? "your account email attached as the reply-to address."
+                        : "your email attached as the reply-to address."}
+                    </p>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="inline-flex h-12 shrink-0 items-center justify-center rounded-full bg-(--ink) px-7 text-sm font-semibold whitespace-nowrap text-(--ink-foreground) shadow-[0_12px_24px_rgba(24,16,8,0.2)] transition-colors hover:bg-(--accent) disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-42"
+                    >
+                      {isSubmitting ? "Sending..." : "Send message"}
+                    </button>
+                  </div>
+                </form>
+              </section>
             </div>
           </section>
         </main>

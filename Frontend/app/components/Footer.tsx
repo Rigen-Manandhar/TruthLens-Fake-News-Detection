@@ -47,7 +47,7 @@ export default function Footer({ className = "mt-16" }: FooterProps) {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="transition-colors hover:text-(--foreground)"
+                  className="transition-colors hover:text-foreground"
                 >
                   {link.label}
                 </Link>
@@ -65,7 +65,7 @@ export default function Footer({ className = "mt-16" }: FooterProps) {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="transition-colors hover:text-(--foreground)"
+                  className="transition-colors hover:text-foreground"
                 >
                   {link.label}
                 </Link>

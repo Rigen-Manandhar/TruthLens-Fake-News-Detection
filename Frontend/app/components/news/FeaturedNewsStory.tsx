@@ -50,7 +50,7 @@ export default function FeaturedNewsStory({
       </div>
       <div className="min-w-0 p-5 sm:p-7">
         <div className="flex flex-col gap-2 text-xs text-(--muted-foreground) sm:flex-row sm:items-center sm:justify-between">
-          <span className="inline-flex max-w-full self-start items-center rounded-full border border-(--line) bg-(--surface-pill) px-3 py-1 text-[11px] font-semibold text-(--foreground)">
+          <span className="inline-flex max-w-full self-start items-center rounded-full border border-(--line) bg-(--surface-pill) px-3 py-1 text-[11px] font-semibold text-foreground">
             {article.source.name}
           </span>
           <span>{formatNewsDate(article.publishedAt)}</span>
@@ -70,7 +70,7 @@ export default function FeaturedNewsStory({
             {confidence !== null && (
               <span
                 aria-hidden
-                className="block h-[2px] w-full overflow-hidden rounded-full bg-current/20"
+                className="block h-0.5 w-full overflow-hidden rounded-full bg-current/20"
               >
                 <span
                   className="block h-full bg-current"

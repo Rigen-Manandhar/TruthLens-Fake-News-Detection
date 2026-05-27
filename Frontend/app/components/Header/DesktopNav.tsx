@@ -21,9 +21,7 @@ export default function DesktopNav({
 }: DesktopNavProps) {
   const desktopNavLinkClass = (active: boolean) =>
     `relative z-10 rounded-full px-4 py-1.5 transition-colors duration-300 ease-out ${
-      active
-        ? "text-(--ink-foreground) font-semibold"
-        : "hover:text-(--foreground)"
+      active ? "text-(--ink-foreground) font-semibold" : "hover:text-foreground"
     }`;
 
   return (
@@ -48,18 +46,20 @@ export default function DesktopNav({
           visibility: navIndicator.visible ? "visible" : "hidden",
         }}
       />
-      {MAIN_NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin).map((item) => (
-        <Link
-          key={item.key}
-          ref={(el) => {
-            itemRefs.current[item.key] = el;
-          }}
-          href={item.href}
-          className={desktopNavLinkClass(activeNavKey === item.key)}
-        >
-          {item.label}
-        </Link>
-      ))}
+      {MAIN_NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin).map(
+        (item) => (
+          <Link
+            key={item.key}
+            ref={(el) => {
+              itemRefs.current[item.key] = el;
+            }}
+            href={item.href}
+            className={desktopNavLinkClass(activeNavKey === item.key)}
+          >
+            {item.label}
+          </Link>
+        ),
+      )}
     </nav>
   );
 }

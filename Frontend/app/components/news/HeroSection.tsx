@@ -62,7 +62,7 @@ export default function HeroSection({
               value={searchInput}
               onChange={(e) => onSearchInputChange(e.target.value)}
               placeholder="Search a headline, publisher, topic..."
-              className="flex-1 px-5 py-3 rounded-full border border-(--line) bg-(--surface-strong) shadow-[0_10px_24px_rgba(20,14,7,0.08)] text-sm text-(--foreground) focus:outline-none focus:ring-2 focus:ring-(--accent)/45 placeholder:text-(--muted-foreground)/70 dark:placeholder:text-(--muted-foreground)/90"
+              className="flex-1 px-5 py-3 rounded-full border border-(--line) bg-(--surface-strong) shadow-[0_10px_24px_rgba(20,14,7,0.08)] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-(--accent)/45 placeholder:text-(--muted-foreground)/70 dark:placeholder:text-(--muted-foreground)/90"
             />
             <button
               type="submit"

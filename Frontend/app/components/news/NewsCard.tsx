@@ -50,7 +50,7 @@ export default function NewsCard({ article, analysis }: NewsCardProps) {
       </div>
       <div className="p-4 md:p-5 flex flex-col grow min-w-0">
         <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <span className="inline-flex max-w-full self-start items-center rounded-full border border-(--line) bg-(--surface-pill) px-3 py-1 text-[11px] font-semibold text-(--foreground)">
+          <span className="inline-flex max-w-full self-start items-center rounded-full border border-(--line) bg-(--surface-pill) px-3 py-1 text-[11px] font-semibold text-foreground">
             {article.source.name}
           </span>
           <span className="text-xs text-(--muted-foreground)">
@@ -72,7 +72,7 @@ export default function NewsCard({ article, analysis }: NewsCardProps) {
             {confidence !== null && (
               <span
                 aria-hidden
-                className="block h-[2px] w-full overflow-hidden rounded-full bg-current/20"
+                className="block h-0.5 w-full overflow-hidden rounded-full bg-current/20"
               >
                 <span
                   className="block h-full bg-current"

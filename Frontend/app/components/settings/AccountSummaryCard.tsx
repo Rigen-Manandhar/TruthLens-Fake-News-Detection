@@ -12,8 +12,8 @@ export default function AccountSummaryCard({
   reauthLabel,
 }: AccountSummaryCardProps) {
   return (
-    <section className="rounded-3xl bg-(--surface)/90 border border-(--line) p-5 sm:p-6 break-words">
-      <p className="text-sm font-semibold text-(--foreground-strong) break-words">{profile?.name}</p>
+    <section className="rounded-3xl bg-(--surface)/90 border border-(--line) p-5 sm:p-6 wrap-break-word">
+      <p className="text-sm font-semibold text-(--foreground-strong) wrap-break-word">{profile?.name}</p>
       <p className="text-xs text-(--muted-foreground) break-all">{profile?.email}</p>
       <div className="mt-3 flex flex-wrap items-center gap-2">
         {(profile?.providerInfo.providers ?? []).map((provider) => (

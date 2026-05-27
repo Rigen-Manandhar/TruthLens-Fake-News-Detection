@@ -32,10 +32,10 @@ export default function AboutPage() {
   return (
     <div className="page-shell ambient-grid">
       <div className="pointer-events-none absolute -top-12 -left-12 h-56 w-56 rounded-full bg-(--warm)/30 blur-3xl" />
-      <div className="pointer-events-none absolute top-[9rem] right-0 h-72 w-72 rounded-full bg-(--accent)/15 blur-3xl" />
+      <div className="pointer-events-none absolute top-36 right-0 h-72 w-72 rounded-full bg-(--accent)/15 blur-3xl" />
 
       <main id="main-content" className="page-main space-y-10 sm:space-y-12">
-        <section className="section-reveal rounded-[2rem] border border-(--line) bg-(--surface)/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10">
+        <section className="section-reveal rounded-4xl border border-(--line) bg-(--surface)/88 px-6 py-8 shadow-[0_22px_46px_rgba(24,16,8,0.1)] sm:px-8 sm:py-10">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-end">
             <div className="space-y-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-(--muted-foreground-strong)">
@@ -58,7 +58,7 @@ export default function AboutPage() {
                 <div className="inline-flex rounded-full border border-(--line) bg-(--surface-pill) px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-(--muted-foreground)">
                   What the platform does
                 </div>
-                <ul className="space-y-3 text-sm leading-6 text-(--foreground)">
+                <ul className="space-y-3 text-sm leading-6 text-foreground">
                   {capabilities.map((item) => (
                     <li
                       key={item}
@@ -95,7 +95,7 @@ export default function AboutPage() {
         </section>
 
         <section className="section-reveal delay-1 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)]">
-          <article className="rounded-[2rem] border border-(--line) bg-(--surface-deep)/92 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
+          <article className="rounded-4xl border border-(--line) bg-(--surface-deep)/92 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
               Why it exists
             </p>
@@ -116,12 +116,12 @@ export default function AboutPage() {
             </p>
           </article>
 
-          <article className="rounded-[2rem] border border-(--line) bg-(--surface)/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
+          <article className="rounded-4xl border border-(--line) bg-(--surface)/88 p-6 shadow-[0_18px_36px_rgba(24,16,8,0.08)] sm:p-7">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--muted-foreground-strong)">
               Explore
             </p>
             <div className="mt-4 space-y-4">
-              <div className="rounded-[1.5rem] border border-(--line) bg-(--surface-strong) p-4">
+              <div className="rounded-3xl border border-(--line) bg-(--surface-strong) p-4">
                 <h3 className="text-lg font-semibold text-(--foreground-strong)">
                   Read the live briefings
                 </h3>
@@ -138,7 +138,7 @@ export default function AboutPage() {
                 </Link>
               </div>
 
-              <div className="rounded-[1.5rem] border border-(--line) bg-(--surface-strong) p-4">
+              <div className="rounded-3xl border border-(--line) bg-(--surface-strong) p-4">
                 <h3 className="text-lg font-semibold text-(--foreground-strong)">
                   Run a risk assessment
                 </h3>

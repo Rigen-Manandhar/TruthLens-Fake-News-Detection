@@ -130,7 +130,7 @@ export default function ExtensionTokenCard() {
             </div>
             <div className="mt-3 flex flex-col gap-3 text-xs text-(--muted-foreground) sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
               <span>Version: {tokenData.version}</span>
-              <span className="break-words">Last rotation: {formatDateTime(tokenData.rotatedAt)}</span>
+              <span className="wrap-break-word">Last rotation: {formatDateTime(tokenData.rotatedAt)}</span>
             </div>
           </div>
 

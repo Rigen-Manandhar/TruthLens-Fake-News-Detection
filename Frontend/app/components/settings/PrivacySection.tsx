@@ -64,7 +64,7 @@ export default function PrivacySection({
         <p className="text-sm font-semibold text-red-800 dark:text-red-200">Danger zone</p>
         {deleting ? (
           <>
-            <p className="text-xs text-red-700 mt-1 dark:text-red-200 break-words">
+            <p className="text-xs text-red-700 mt-1 dark:text-red-200 wrap-break-word">
               Scheduled for{" "}
               {formatDate(profile?.deletionStatus.scheduledDeletionAt ?? null)}
             </p>

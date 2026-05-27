@@ -5,7 +5,7 @@ export default function SignupPage() {
   return (
     <div className="page-shell ambient-grid flex flex-col">
       <div className="pointer-events-none absolute -top-16 -right-16 h-72 w-72 rounded-full bg-(--warm)/30 blur-3xl" />
-      <div className="pointer-events-none absolute top-[8rem] -left-14 h-72 w-72 rounded-full bg-(--accent)/15 blur-3xl" />
+      <div className="pointer-events-none absolute top-32 -left-14 h-72 w-72 rounded-full bg-(--accent)/15 blur-3xl" />
 
       <main id="main-content" className="page-main flex-1 flex flex-col">
         <div className="grid gap-8 lg:gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-start lg:items-center">

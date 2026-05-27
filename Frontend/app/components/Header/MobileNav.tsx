@@ -27,7 +27,7 @@ export default function MobileNav({
     `rounded-full px-4 py-1.5 transition-all ${
       active
         ? "bg-(--ink) text-(--ink-foreground) font-semibold"
-        : "hover:text-(--foreground)"
+        : "hover:text-foreground"
     }`;
 
   return (
@@ -62,15 +62,17 @@ export default function MobileNav({
       {isOpen && (
         <div className="absolute right-0 mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-3xl border border-(--line) bg-(--surface-strong) p-3 shadow-[0_20px_40px_rgba(20,16,8,0.14)]">
           <div className="grid gap-2 text-sm text-(--muted-foreground)">
-            {MAIN_NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin).map((item) => (
-              <Link
-                key={item.key}
-                href={item.href}
-                className={`${navLinkClass(activeNavKey === item.key)} text-center`}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {MAIN_NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin).map(
+              (item) => (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  className={`${navLinkClass(activeNavKey === item.key)} text-center`}
+                >
+                  {item.label}
+                </Link>
+              ),
+            )}
           </div>
           {!isLoadingUser && !user && (
             <div className="mt-3 grid gap-2 border-t border-(--line) pt-3">

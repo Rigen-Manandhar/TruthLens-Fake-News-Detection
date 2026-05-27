@@ -63,7 +63,7 @@ export default function DeepfakeDetectionResult({
               </p>
             </div>
 
-            <p className="text-sm text-(--foreground) leading-relaxed font-medium">
+            <p className="text-sm text-foreground leading-relaxed font-medium">
               {result.message}
             </p>
 

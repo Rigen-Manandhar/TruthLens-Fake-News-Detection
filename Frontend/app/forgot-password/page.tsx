@@ -5,7 +5,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="page-shell ambient-grid flex flex-col">
       <div className="pointer-events-none absolute -top-16 -left-16 h-72 w-72 rounded-full bg-(--warm)/30 blur-3xl" />
-      <div className="pointer-events-none absolute top-[8rem] -right-14 h-72 w-72 rounded-full bg-(--accent)/15 blur-3xl" />
+      <div className="pointer-events-none absolute top-32 -right-14 h-72 w-72 rounded-full bg-(--accent)/15 blur-3xl" />
 
       <main id="main-content" className="page-main flex-1 flex flex-col">
         <div className="grid gap-8 lg:gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-start lg:items-center">
@@ -14,8 +14,9 @@ export default function ForgotPasswordPage() {
               Recover access to TruthLens
             </h1>
             <p className="text-sm sm:text-base text-(--muted-foreground) max-w-md">
-              We&apos;ll send a secure reset link to your email so you can get back to
-              your saved stories, personalized feed, and verification tools.
+              We&apos;ll send a secure reset link to your email so you can get
+              back to your saved stories, personalized feed, and verification
+              tools.
             </p>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -32,7 +33,8 @@ export default function ForgotPasswordPage() {
                   TruthLens branded
                 </p>
                 <p className="text-sm text-(--muted-foreground) mt-2">
-                  The email is sent from TruthLens using your configured Gmail sender.
+                  The email is sent from TruthLens using your configured Gmail
+                  sender.
                 </p>
               </div>
             </div>

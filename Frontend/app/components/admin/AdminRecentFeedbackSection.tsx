@@ -63,7 +63,7 @@ export default function AdminRecentFeedbackSection({
               </div>
 
               <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,0.78fr)]">
-                <div className="rounded-[1.25rem] border border-dashed border-(--line) bg-(--surface-deep) px-4 py-3 text-sm leading-6 text-(--foreground)">
+                <div className="rounded-[1.25rem] border border-dashed border-(--line) bg-(--surface-deep) px-4 py-3 text-sm leading-6 text-foreground">
                   {feedback.comment || "No comment was provided for this feedback entry."}
                 </div>
                 <div className="rounded-[1.25rem] border border-(--line) bg-(--surface) px-4 py-3 text-sm text-(--muted-foreground)">

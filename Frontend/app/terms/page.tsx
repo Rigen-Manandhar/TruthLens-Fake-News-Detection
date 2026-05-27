@@ -5,18 +5,15 @@ import Footer from "../components/Footer";
 const termsHighlights = [
   {
     title: "Informational use",
-    body:
-      "TruthLens provides credibility signals, risk labels, and supporting context to help users evaluate news content more carefully.",
+    body: "TruthLens provides credibility signals, risk labels, and supporting context to help users evaluate news content more carefully.",
   },
   {
     title: "Responsible submission",
-    body:
-      "Users are responsible for the text, URLs, and other content they submit through the platform and for complying with applicable laws when using the service.",
+    body: "Users are responsible for the text, URLs, and other content they submit through the platform and for complying with applicable laws when using the service.",
   },
   {
     title: "Account responsibility",
-    body:
-      "If you create an account, you are responsible for keeping your login credentials secure and for activity that happens through your authenticated access.",
+    body: "If you create an account, you are responsible for keeping your login credentials secure and for activity that happens through your authenticated access.",
   },
 ];
 
@@ -41,13 +38,14 @@ export default function TermsPage() {
                 Terms of Service
               </p>
               <h1 className="page-title display-title max-w-3xl text-4xl font-bold text-(--foreground-strong) sm:text-[3.2rem]">
-                Terms built around fair use, informed judgment, and account responsibility.
+                Terms built around fair use, informed judgment, and account
+                responsibility.
               </h1>
               <p className="max-w-2xl text-sm leading-7 text-(--muted-foreground) sm:text-base">
                 TruthLens offers live news briefings, credibility indicators,
-                and misinformation risk assessment tools to support better reading
-                decisions. These terms explain the basic expectations that apply
-                when you use the platform.
+                and misinformation risk assessment tools to support better
+                reading decisions. These terms explain the basic expectations
+                that apply when you use the platform.
               </p>
             </div>
 
@@ -56,7 +54,7 @@ export default function TermsPage() {
                 <div className="inline-flex rounded-full border border-(--line) bg-(--surface-pill) px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-(--muted-foreground)">
                   Terms at a glance
                 </div>
-                <ul className="space-y-3 text-sm leading-6 text-(--foreground)">
+                <ul className="space-y-3 text-sm leading-6 text-foreground">
                   {termsCommitments.map((item) => (
                     <li
                       key={item}
@@ -98,7 +96,8 @@ export default function TermsPage() {
               Important limitation
             </p>
             <h2 className="mt-3 page-title display-title text-3xl font-bold text-(--foreground-strong)">
-              Credibility outputs support decisions, but they are not guarantees.
+              Credibility outputs support decisions, but they are not
+              guarantees.
             </h2>
             <p className="mt-4 text-sm leading-7 text-(--muted-foreground)">
               TruthLens combines source credibility, language-model signals,

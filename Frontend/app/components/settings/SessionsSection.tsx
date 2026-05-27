@@ -28,14 +28,14 @@ export default function SessionsSection({
           className="rounded-xl border border-(--line) bg-(--surface-strong) px-3 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
         >
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-(--foreground-strong) break-words">
+            <p className="text-sm font-semibold text-(--foreground-strong) wrap-break-word">
               {session.deviceLabel}
               {session.isCurrent ? " (Current)" : ""}
             </p>
             <p className="text-xs text-(--muted-foreground) break-all">
               {session.ipPreview}
             </p>
-            <p className="text-xs text-(--muted-foreground) break-words">
+            <p className="text-xs text-(--muted-foreground) wrap-break-word">
               Created: {formatDate(session.createdAt)} | Last seen:{" "}
               {formatDate(session.lastSeenAt)}
             </p>

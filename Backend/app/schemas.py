@@ -22,7 +22,14 @@ class StepDetail(BaseModel):
 
 
 class UncertaintyInfo(BaseModel):
-    reason_code: Literal["CONFLICT", "LOW_CONFIDENCE", "INSUFFICIENT_TEXT", "FETCH_FAILED", "UNSUPPORTED_URL"] | None = None
+    reason_code: Literal[
+        "CONFLICT",
+        "LOW_CONFIDENCE",
+        "INSUFFICIENT_TEXT",
+        "INPUT_TOO_LONG",
+        "FETCH_FAILED",
+        "UNSUPPORTED_URL",
+    ] | None = None
     reason_message: str | None = None
 
 

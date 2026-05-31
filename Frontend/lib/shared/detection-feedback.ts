@@ -27,6 +27,7 @@ export type UncertaintyInfo = {
     | "CONFLICT"
     | "LOW_CONFIDENCE"
     | "INSUFFICIENT_TEXT"
+    | "INPUT_TOO_LONG"
     | "FETCH_FAILED"
     | "UNSUPPORTED_URL"
     | null;

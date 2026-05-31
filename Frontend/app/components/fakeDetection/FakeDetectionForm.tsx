@@ -26,8 +26,18 @@ export default function FakeDetectionForm({
   onInputModeChange,
   onAnalyze,
 }: FakeDetectionFormProps) {
+  const hasArticleText = articleText.trim().length > 0;
+  const hasSourceUrl = sourceUrl.trim().length > 0;
+  const hasMixedInput = hasArticleText && hasSourceUrl;
+  const mixedInputWarning =
+    "Use either pasted article text or a source URL, not both. Clear one field before assessing risk.";
+  const canAssess = !isLoading && !hasMixedInput;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canAssess) {
+      return;
+    }
     onAnalyze();
   };
 
@@ -39,7 +49,7 @@ export default function FakeDetectionForm({
   const handleTextareaKeyDown = (
     e: React.KeyboardEvent<HTMLTextAreaElement>
   ) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && !isLoading) {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && canAssess) {
       e.preventDefault();
       onAnalyze();
     }
@@ -113,9 +123,15 @@ export default function FakeDetectionForm({
             className="w-full rounded-2xl border border-(--line) bg-(--surface-deep) px-4 py-3 text-sm text-(--foreground-strong) placeholder:text-(--muted-foreground)/70 dark:placeholder:text-(--muted-foreground)/90 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--accent)/45"
           />
           <p className="text-xs text-(--muted-foreground)">
-            Optional: include a URL for source and evidence-context signals.
+            Use this instead of pasted text when you want TruthLens to fetch the article.
           </p>
         </div>
+
+        {hasMixedInput && (
+          <p className="mb-3 text-xs text-amber-900 bg-amber-50 border border-amber-200 rounded-xl dark:bg-amber-500/10 dark:border-amber-400/30 dark:text-amber-200 px-3 py-2">
+            {mixedInputWarning}
+          </p>
+        )}
 
         {error && (
           <p className="mb-3 text-xs text-red-700 bg-red-50 border border-red-200 rounded-xl dark:bg-red-500/10 dark:border-red-400/30 dark:text-red-200 px-3 py-2">
@@ -145,7 +161,8 @@ export default function FakeDetectionForm({
             </span>
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={!canAssess}
+              title={hasMixedInput ? mixedInputWarning : undefined}
               className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-full bg-(--ink) px-8 text-sm font-semibold text-(--ink-foreground) shadow-[0_12px_24px_rgba(24,16,8,0.22)] transition-all hover:bg-(--accent) disabled:cursor-not-allowed disabled:opacity-60 shrink-0"
             >
               {isLoading ? "Assessing..." : "Assess Risk"}

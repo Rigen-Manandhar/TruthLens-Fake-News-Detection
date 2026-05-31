@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from app.article_extractor import ExtractionError, fetch_and_extract
 from app.config import INPUT_TEXT_MIN_WORDS
 from app.evidence import build_evidence_summary
-from app.parsing import word_count
+from app.parsing import HEADLINE_MAX_CHARS, word_count
 from app.schemas import (
     FetchMetadata,
     PredictRequest,
@@ -22,6 +22,7 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
         raise HTTPException(status_code=500, detail="Model not loaded")
 
     text = (req.text or "").strip()
+    pasted_text = text
     original_url = (req.url or "").strip() or None
     analysis_url = original_url
     source_db = getattr(model, "source_db", [])
@@ -84,6 +85,45 @@ def build_predict_response(req: PredictRequest, model, explainer) -> PredictResp
                     fetch_metadata=fetch_metadata,
                     evidence_summary=build_evidence_summary(text, original_url, source_db),
                 )
+
+    if req.input_mode == "headline_only" and pasted_text and len(pasted_text) > HEADLINE_MAX_CHARS:
+        source_res = model.check_source(analysis_url)
+        final_score = int(source_res.get("score", 0))
+        headline_words = word_count(pasted_text)
+        steps = [
+            StepDetail(
+                step="Source Check",
+                score_impact=final_score,
+                details=str(source_res.get("reason", "Source check unavailable")),
+            ),
+            StepDetail(
+                step="Input Parsing",
+                score_impact=0,
+                details=(
+                    "Headline-only input is too long for Model A. "
+                    f"Maximum length is {HEADLINE_MAX_CHARS} characters."
+                ),
+            ),
+        ]
+        if eligibility_step:
+            steps.insert(0, eligibility_step)
+        return build_uncertain_response(
+            final_score=final_score,
+            steps=steps,
+            reason_code="INPUT_TOO_LONG",
+            reason_message=(
+                "Headline-only mode expects a short headline or claim. "
+                f"Please keep the pasted text within {HEADLINE_MAX_CHARS} characters "
+                "or switch to Full article / Auto assess."
+            ),
+            used_mode=req.input_mode,
+            detected_shape="headline_too_long",
+            headline_word_count=headline_words,
+            body_word_count=0,
+            headline_source=None,
+            fetch_metadata=fetch_metadata,
+            evidence_summary=build_evidence_summary(pasted_text, analysis_url, source_db),
+        )
 
     if word_count(text) < INPUT_TEXT_MIN_WORDS and analysis_url:
         fetch_metadata.attempted = True

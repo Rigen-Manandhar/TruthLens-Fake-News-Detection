@@ -4,6 +4,7 @@ import re
 
 
 HEADLINE_ONLY_WORD_CUTOFF = 30
+HEADLINE_MAX_CHARS = 220
 BODY_MIN_WORDS_FOR_B = 80
 
 _DASH_CLASS = r"(?:-|\u2013|\u2014|:)"
@@ -72,7 +73,7 @@ def is_plausible_headline(text: str) -> bool:
     words = word_count(sample)
     if words < 4 or words > 35:
         return False
-    if len(sample) > 220:
+    if len(sample) > HEADLINE_MAX_CHARS:
         return False
     if sample.endswith((";", ",")):
         return False

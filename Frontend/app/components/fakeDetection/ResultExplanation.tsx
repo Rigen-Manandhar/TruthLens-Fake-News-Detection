@@ -46,8 +46,6 @@ export default function ResultExplanation({
     analyzedText,
     explanationClass,
     limeModel,
-    isExplaining,
-    onExplain,
   });
 
   if (!summary && !highlightedText) {
@@ -151,9 +149,10 @@ function renderHighlightedText({
   analyzedText,
   explanationClass,
   limeModel,
-  isExplaining,
-  onExplain,
-}: ResultExplanationProps) {
+}: Pick<
+  ResultExplanationProps,
+  "level" | "explanation" | "analyzedText" | "explanationClass" | "limeModel"
+>) {
   if (!analyzedText || !explanation || explanation.length === 0) {
     return null;
   }
@@ -185,16 +184,6 @@ function renderHighlightedText({
         <h4 className="font-semibold text-(--foreground-strong) text-xs uppercase tracking-wide font-sans">
           Language Signal Analysis (LIME{limeModel ? ` - Model ${limeModel}` : ""})
         </h4>
-        {onExplain && (
-          <button
-            type="button"
-            onClick={onExplain}
-            disabled={isExplaining}
-            className="inline-flex h-7 items-center rounded-full border border-(--line) bg-(--surface-strong) px-3 text-[11px] font-semibold text-(--muted-foreground) hover:bg-(--surface-hover) disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {isExplaining ? "Explaining..." : "Explain"}
-          </button>
-        )}
       </div>
       <div className="wrap-break-word rounded-xl border border-dotted border-(--line) bg-(--surface-deep) p-3">
         {tokens.map((token, idx) => {

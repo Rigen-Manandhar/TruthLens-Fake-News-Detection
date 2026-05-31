@@ -48,6 +48,7 @@ const reasonLabelMap: Record<string, string> = {
   CONFLICT: "Conflict",
   LOW_CONFIDENCE: "Low confidence",
   INSUFFICIENT_TEXT: "Insufficient text",
+  INPUT_TOO_LONG: "Too long",
   FETCH_FAILED: "Fetch failed",
   UNSUPPORTED_URL: "Unsupported URL",
 };

@@ -57,6 +57,7 @@ export function useFakeDetectionController() {
   const [limeModel, setLimeModel] = useState<"A" | "B" | null | undefined>(undefined);
   const [explanationSummary, setExplanationSummary] = useState<ExplanationSummary | undefined>(undefined);
   const [isTooShort, setIsTooShort] = useState(false);
+  const [isTooLong, setIsTooLong] = useState(false);
   const [isFetchFailed, setIsFetchFailed] = useState(false);
   const [lastPayload, setLastPayload] = useState<PredictPayload | null>(null);
   const [predictionSnapshot, setPredictionSnapshot] =
@@ -104,6 +105,7 @@ export function useFakeDetectionController() {
     setResultLevel("mixed");
     setResultLabel(INITIAL_RESULT_LABEL);
     setIsTooShort(false);
+    setIsTooLong(false);
     setIsFetchFailed(false);
     setResultDetails("");
     setSteps(undefined);
@@ -130,17 +132,21 @@ export function useFakeDetectionController() {
   const applyPrediction = (data: PredictResponse, payload: PredictPayload) => {
     const level = mapVerdictToLevel(data.verdict);
     const tooShort = data.uncertainty?.reason_code === "INSUFFICIENT_TEXT";
+    const tooLong = data.uncertainty?.reason_code === "INPUT_TOO_LONG";
     const fetchFailed = isArticleRetrievalFailure(data);
     const displayLabel = fetchFailed
       ? "Unable to fetch article"
       : tooShort
         ? "Too short"
-        : mapVerdictToDisplayLabel(data.verdict);
+        : tooLong
+          ? "Too long"
+          : mapVerdictToDisplayLabel(data.verdict);
 
     setResultLevel(level);
     setResultLabel(displayLabel);
     setFinalScore(typeof data.final_score === "number" ? data.final_score : undefined);
     setIsTooShort(tooShort);
+    setIsTooLong(tooLong);
     setIsFetchFailed(fetchFailed);
     setResultDetails(data.uncertainty?.reason_message ?? "");
     setSteps(data.steps);
@@ -186,6 +192,13 @@ export function useFakeDetectionController() {
 
     if (!articleText.trim() && !sourceUrl.trim()) {
       setError("Please enter some article text or a source URL to analyse.");
+      return;
+    }
+
+    if (articleText.trim() && sourceUrl.trim()) {
+      setError(
+        "Use either pasted article text or a source URL, not both. Clear one field before assessing risk."
+      );
       return;
     }
 
@@ -329,8 +342,9 @@ export function useFakeDetectionController() {
       Boolean(lastPayload && predictionSnapshot) &&
       !isLoading &&
       !isTooShort &&
+      !isTooLong &&
       !isFetchFailed &&
       !error,
-    canExplain: Boolean(lastPayload) && !isTooShort && !isFetchFailed && !error,
+    canExplain: Boolean(lastPayload) && !isTooShort && !isTooLong && !isFetchFailed && !error,
   };
 }

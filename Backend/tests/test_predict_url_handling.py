@@ -109,6 +109,27 @@ class PredictUrlHandlingTests(unittest.TestCase):
         self.assertEqual(response.fetch_metadata.error_type, "UNSUPPORTED_PAGE")
         self.assertEqual(response.steps[0].step, "URL Eligibility")
 
+    def test_headline_only_long_pasted_text_returns_too_long(self):
+        long_headline = (
+            "This pasted headline-only input is intentionally far longer than the "
+            "headline model should accept because it is really an article-style "
+            "paragraph with extra context, detail, and background that belongs in "
+            "full article mode rather than headline only mode."
+        )
+
+        response = main_module.predict(
+            main_module.PredictRequest(
+                text=long_headline,
+                input_mode="headline_only",
+                explanation_mode="none",
+            )
+        )
+
+        self.assertEqual(response.verdict, "UNCERTAIN")
+        self.assertEqual(response.uncertainty.reason_code, "INPUT_TOO_LONG")
+        self.assertEqual(response.parse_metadata.detected_shape, "headline_too_long")
+        self.assertEqual(len(self.dummy_model.calls), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

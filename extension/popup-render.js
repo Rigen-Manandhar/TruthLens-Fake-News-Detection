@@ -59,17 +59,6 @@ export function setConfigStatus(message, tone) {
   }
 }
 
-export function setFeedbackStatus(message, tone) {
-  els.feedbackStatus.textContent = message || NBSP;
-  els.feedbackStatus.classList.remove("is-success", "is-error");
-
-  if (tone === "success") {
-    els.feedbackStatus.classList.add("is-success");
-  } else if (tone === "error") {
-    els.feedbackStatus.classList.add("is-error");
-  }
-}
-
 function applyToneClass(el, tone) {
   el.classList.remove("tone-ok", "tone-warn", "tone-bad");
   if (tone === "ok") {
@@ -98,44 +87,6 @@ export function showFormError(message) {
 export function clearFormError() {
   els.formError.textContent = NBSP;
   els.formError.classList.remove("is-visible");
-}
-
-export function syncFeedbackControls() {
-  const disabled =
-    !state.bearerToken || state.feedbackSubmitting || state.feedbackSubmitted;
-
-  els.feedbackCorrectBtn.classList.toggle(
-    "is-selected",
-    state.feedbackSelection === true
-  );
-  els.feedbackWrongBtn.classList.toggle(
-    "is-selected",
-    state.feedbackSelection === false
-  );
-
-  els.feedbackCorrectBtn.disabled = disabled;
-  els.feedbackWrongBtn.disabled = disabled;
-  els.feedbackComment.disabled = disabled;
-  els.feedbackSubmitBtn.disabled = disabled || state.feedbackSelection === null;
-  els.feedbackSubmitBtn.textContent = state.feedbackSubmitted
-    ? "Feedback sent"
-    : state.feedbackSubmitting
-      ? "Sending..."
-      : "Send feedback";
-}
-
-export function renderFeedbackSection() {
-  const hasPrediction = Boolean(state.lastPayload && state.lastRaw);
-  const hideForTooShort = Boolean(state.lastNormalized?.isTooShort);
-  els.feedbackSection.hidden = !hasPrediction || hideForTooShort;
-  if (!hasPrediction || hideForTooShort) {
-    return;
-  }
-
-  const hasToken = Boolean(state.bearerToken);
-  els.feedbackTokenNotice.hidden = hasToken;
-  els.feedbackForm.hidden = !hasToken;
-  syncFeedbackControls();
 }
 
 export function triggerInvalidShake() {
@@ -185,7 +136,6 @@ export function renderResult(normalized) {
     normalized.analysisDetails && normalized.analysisDetails.trim()
   );
   els.whyDetails.hidden = !shouldShowAnalysisDetails;
-  renderFeedbackSection();
 }
 
 export function renderError(message) {

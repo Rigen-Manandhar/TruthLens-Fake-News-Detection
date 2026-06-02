@@ -55,7 +55,6 @@ Default base URL in `popup-state.js`:
 Optional runtime overrides via `chrome.storage.sync`:
 
 - `truthlensApiBaseUrl`
-- `truthlensBearerToken`
 
 ## Install (Load Unpacked)
 
@@ -88,3 +87,4 @@ If CORS is not configured for extension origins, popup requests will fail.
 - Popup-only flow (no content script scraping).
 - Settings icon is visual only.
 - Result detail is concise and optimized for extension popup constraints.
+- Extension predictions are standalone and do not submit or store account feedback.

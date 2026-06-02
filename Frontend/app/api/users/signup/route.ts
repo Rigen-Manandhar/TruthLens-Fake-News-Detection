@@ -57,8 +57,6 @@ export async function POST(req: Request) {
         lastPasswordChangedAt: new Date(),
         sessionVersion: 1,
         reauthUntil: null,
-        extensionTokenVersion: 1,
-        extensionTokenRotatedAt: null,
       },
       privacy: {
         deletionRequestedAt: null,

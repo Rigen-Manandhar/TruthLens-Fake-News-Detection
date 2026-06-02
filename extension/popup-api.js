@@ -53,14 +53,10 @@ function endpointFor(apiBaseUrl, pathname) {
   return `${apiBaseUrl.replace(/\/$/, "")}${pathname}`;
 }
 
-export async function callPredict(apiBaseUrl, bearerToken, payload) {
+export async function callPredict(apiBaseUrl, payload) {
   const headers = {
     "Content-Type": "application/json",
   };
-
-  if (bearerToken) {
-    headers.Authorization = `Bearer ${bearerToken}`;
-  }
 
   const response = await fetch(endpointFor(apiBaseUrl, "/api/predict"), {
     method: "POST",
@@ -81,26 +77,4 @@ export async function callPredict(apiBaseUrl, bearerToken, payload) {
   }
 
   return json || {};
-}
-
-export async function submitFeedbackRequest(apiBaseUrl, bearerToken, payload) {
-  const response = await fetch(endpointFor(apiBaseUrl, "/api/feedback/detections"), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${bearerToken}`,
-    },
-    body: JSON.stringify(payload),
-  });
-
-  const json = await response.json().catch(() => null);
-  if (!response.ok) {
-    const errorMessage =
-      typeof json?.error === "string" && json.error.trim()
-        ? json.error.trim()
-        : "Failed to submit feedback.";
-    throw new Error(errorMessage);
-  }
-
-  return json;
 }

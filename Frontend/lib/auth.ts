@@ -14,11 +14,6 @@ export type AuthPayload = {
   email: string;
 };
 
-export type ExtensionFeedbackTokenPayload = AuthPayload & {
-  type: "extension_feedback";
-  version: number;
-};
-
 export function signAuthToken(payload: AuthPayload) {
   return jwt.sign(payload, AUTH_SECRET, { expiresIn: "7d" });
 }
@@ -38,55 +33,6 @@ export function verifyAuthToken(token: string): AuthPayload | null {
     }
 
     return { sub: payload.sub, email: payload.email };
-  } catch {
-    return null;
-  }
-}
-
-export function signExtensionFeedbackToken(payload: {
-  sub: string;
-  email: string;
-  version: number;
-}) {
-  return jwt.sign(
-    {
-      sub: payload.sub,
-      email: payload.email,
-      type: "extension_feedback",
-      version: payload.version,
-    },
-    AUTH_SECRET,
-    { expiresIn: "30d" }
-  );
-}
-
-export function verifyExtensionFeedbackToken(
-  token: string
-): ExtensionFeedbackTokenPayload | null {
-  try {
-    const decoded = jwt.verify(token, AUTH_SECRET);
-
-    if (typeof decoded === "string" || !decoded) {
-      return null;
-    }
-
-    const payload = decoded as jwt.JwtPayload;
-
-    if (
-      payload.type !== "extension_feedback" ||
-      typeof payload.sub !== "string" ||
-      typeof payload.email !== "string" ||
-      typeof payload.version !== "number"
-    ) {
-      return null;
-    }
-
-    return {
-      sub: payload.sub,
-      email: payload.email,
-      type: "extension_feedback",
-      version: payload.version,
-    };
   } catch {
     return null;
   }

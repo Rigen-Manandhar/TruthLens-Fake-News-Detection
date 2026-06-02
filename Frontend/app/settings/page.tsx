@@ -3,7 +3,6 @@
 import Footer from "../components/Footer";
 import AccountSummaryCard from "../components/settings/AccountSummaryCard";
 import DeleteAccountModal from "../components/settings/DeleteAccountModal";
-import ExtensionTokenCard from "../components/settings/ExtensionTokenCard";
 import PasswordSection from "../components/settings/PasswordSection";
 import PreferencesSection from "../components/settings/PreferencesSection";
 import PrivacySection from "../components/settings/PrivacySection";
@@ -18,7 +17,6 @@ import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import {
   KeyRound,
-  Plug,
   ShieldCheck,
   Sparkles,
   Trash2,
@@ -31,7 +29,6 @@ const NAV_ITEMS: SettingsNavItem[] = [
   { id: "preferences", label: "Preferences", Icon: Sparkles },
   { id: "security", label: "Security", Icon: KeyRound },
   { id: "sessions", label: "Sessions", Icon: ShieldCheck },
-  { id: "extension", label: "Extension", Icon: Plug },
   { id: "privacy", label: "Privacy", Icon: Trash2 },
 ];
 
@@ -209,17 +206,6 @@ export default function SettingsPage() {
                 onRevokeSession={revokeSession}
                 onRevokeOthers={revokeOthers}
               />
-            </section>
-
-            <section
-              id="extension"
-              aria-labelledby="extension-heading"
-              className="scroll-mt-24"
-            >
-              <h2 id="extension-heading" className="sr-only">
-                Extension token
-              </h2>
-              <ExtensionTokenCard />
             </section>
 
             <section

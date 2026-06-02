@@ -1,20 +1,16 @@
 import { classifyUrlEligibility } from "./url-eligibility.mjs";
-import { callPredict, getActiveTab, readChromeStorage, submitFeedbackRequest, writeChromeStorage } from "./popup-api.js";
+import { callPredict, getActiveTab, readChromeStorage, writeChromeStorage } from "./popup-api.js";
 import { bindIfPresent, els, hasRequiredElements } from "./popup-dom.js";
-import { buildFeedbackSubmission, buildPredictionSnapshot } from "./popup-feedback.js";
 import { normalizePredictResponse } from "./popup-normalize.js";
 import {
   clearFormError,
   renderError,
-  renderFeedbackSection,
   renderResult,
   renderSourceUrlStatus,
   setConfigStatus,
-  setFeedbackStatus,
   setFormLocked,
   setUiMode,
   showFormError,
-  syncFeedbackControls,
   triggerInvalidShake,
 } from "./popup-render.js";
 import { DEFAULT_API_BASE_URL, state, UI_MODES } from "./popup-state.js";
@@ -35,10 +31,7 @@ async function syncActiveTabUrl() {
 }
 
 async function loadRuntimeConfig() {
-  const cfg = await readChromeStorage([
-    "truthlensApiBaseUrl",
-    "truthlensBearerToken",
-  ]);
+  const cfg = await readChromeStorage(["truthlensApiBaseUrl"]);
 
   if (
     typeof cfg.truthlensApiBaseUrl === "string" &&
@@ -47,28 +40,11 @@ async function loadRuntimeConfig() {
     state.apiBaseUrl = cfg.truthlensApiBaseUrl.trim();
   }
 
-  if (
-    typeof cfg.truthlensBearerToken === "string" &&
-    cfg.truthlensBearerToken.trim()
-  ) {
-    state.bearerToken = cfg.truthlensBearerToken.trim();
-  }
-
   syncConfigInputs();
 }
 
 function syncConfigInputs() {
   els.apiBaseUrl.value = state.apiBaseUrl;
-  els.bearerToken.value = state.bearerToken;
-}
-
-function resetFeedbackState() {
-  state.feedbackSelection = null;
-  state.feedbackSubmitted = false;
-  state.feedbackSubmitting = false;
-  els.feedbackComment.value = "";
-  setFeedbackStatus("", "");
-  syncFeedbackControls();
 }
 
 function getPayloadFromForm() {
@@ -89,67 +65,16 @@ function validatePayload(payload) {
   return "";
 }
 
-async function submitFeedback() {
-  if (!state.lastPayload || !state.lastRaw) {
-    return;
-  }
-
-  if (!state.bearerToken) {
-    setFeedbackStatus(
-      "Configure your feedback token before submitting feedback.",
-      "error"
-    );
-    renderFeedbackSection();
-    return;
-  }
-
-  if (state.feedbackSelection === null) {
-    setFeedbackStatus("Choose whether the prediction was right or wrong.", "error");
-    syncFeedbackControls();
-    return;
-  }
-
-  state.feedbackSubmitting = true;
-  setFeedbackStatus("", "");
-  syncFeedbackControls();
-
-  try {
-    await submitFeedbackRequest(
-      state.apiBaseUrl,
-      state.bearerToken,
-      buildFeedbackSubmission({
-        source: "extension",
-        input: state.lastPayload,
-        prediction: buildPredictionSnapshot(state.lastRaw),
-        isCorrect: state.feedbackSelection,
-        comment: els.feedbackComment.value.trim(),
-      })
-    );
-
-    state.feedbackSubmitted = true;
-    setFeedbackStatus("Feedback saved to your account.", "success");
-  } catch (error) {
-    setFeedbackStatus(
-      error instanceof Error ? error.message : "Failed to submit feedback.",
-      "error"
-    );
-  } finally {
-    state.feedbackSubmitting = false;
-    syncFeedbackControls();
-  }
-}
-
 async function analyzeWithPayload(payload) {
   state.lastPayload = payload;
   state.lastRaw = null;
-  resetFeedbackState();
 
   clearFormError();
   setFormLocked(true);
   setUiMode(UI_MODES.LOADING);
 
   try {
-    const raw = await callPredict(state.apiBaseUrl, state.bearerToken, payload);
+    const raw = await callPredict(state.apiBaseUrl, payload);
     state.lastRaw = raw;
     const normalized = normalizePredictResponse(raw);
     renderResult(normalized);
@@ -198,11 +123,9 @@ function onClearFields() {
 
 async function onSaveConfig() {
   const nextApiBaseUrl = els.apiBaseUrl.value.trim() || DEFAULT_API_BASE_URL;
-  const nextBearerToken = els.bearerToken.value.trim();
 
   const saved = await writeChromeStorage({
     truthlensApiBaseUrl: nextApiBaseUrl,
-    truthlensBearerToken: nextBearerToken,
   });
 
   if (!saved) {
@@ -211,9 +134,7 @@ async function onSaveConfig() {
   }
 
   state.apiBaseUrl = nextApiBaseUrl;
-  state.bearerToken = nextBearerToken;
   setConfigStatus("Settings saved.", "success");
-  renderFeedbackSection();
 }
 
 async function onRetry() {
@@ -234,16 +155,6 @@ function onBackToForm() {
   clearFormError();
 }
 
-function onFeedbackChoice(value) {
-  if (!state.bearerToken || state.feedbackSubmitting || state.feedbackSubmitted) {
-    return;
-  }
-
-  state.feedbackSelection = value;
-  setFeedbackStatus("", "");
-  syncFeedbackControls();
-}
-
 function bindEvents() {
   bindIfPresent(els.form, "submit", onSubmit);
   bindIfPresent(els.clearBtn, "click", onClearFields);
@@ -252,9 +163,6 @@ function bindEvents() {
   bindIfPresent(els.editBtn, "click", onBackToForm);
   bindIfPresent(els.editBtnResult, "click", onBackToForm);
   bindIfPresent(els.analyzeAgainBtn, "click", onBackToForm);
-  bindIfPresent(els.feedbackCorrectBtn, "click", () => onFeedbackChoice(true));
-  bindIfPresent(els.feedbackWrongBtn, "click", () => onFeedbackChoice(false));
-  bindIfPresent(els.feedbackSubmitBtn, "click", submitFeedback);
   bindIfPresent(els.articleText, "input", clearFormError);
   bindIfPresent(els.sourceUrl, "input", clearFormError);
 }
@@ -268,8 +176,6 @@ async function init() {
   await syncActiveTabUrl();
   bindEvents();
   clearFormError();
-  resetFeedbackState();
-  renderFeedbackSection();
   setConfigStatus("", "");
   setFormLocked(false);
   setUiMode(UI_MODES.EDITING);

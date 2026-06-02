@@ -44,16 +44,9 @@ export async function POST(req: Request) {
 
   const { source, input, prediction, feedback } = normalized.value;
 
-  if (authContext.authMode === "session" && source !== "web") {
+  if (source !== "web") {
     return NextResponse.json(
-      { error: "Session-authenticated feedback must use the web source." },
-      { status: 403 }
-    );
-  }
-
-  if (authContext.authMode === "extension" && source !== "extension") {
-    return NextResponse.json(
-      { error: "Bearer-authenticated feedback must use the extension source." },
+      { error: "Feedback submissions must use the web source." },
       { status: 403 }
     );
   }
